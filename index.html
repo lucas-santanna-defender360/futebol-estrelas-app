@@ -1343,24 +1343,43 @@
             }
             
             const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            const totalJogadores = jogadoresDoJogo.length;
+            const totalJogadoresReais = jogadoresDoJogo.length;
             
             // Determinar número de times
             let numTimes;
             const selectedValue = document.getElementById('teamCount').value;
             if (selectedValue === 'auto') {
-                if (totalJogadores <= 8) numTimes = 2;
-                else if (totalJogadores <= 12) numTimes = 3;
+                if (totalJogadoresReais <= 8) numTimes = 2;
+                else if (totalJogadoresReais <= 12) numTimes = 3;
                 else numTimes = 4;
             } else {
                 numTimes = parseInt(selectedValue);
             }
             
-            // Separar jogadores por nível
-            const jogadores10Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 10);
-            const jogadores9Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 9);
-            const jogadores8Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 8);
-            const outrosJogadores = jogadoresDoJogo.filter(j => j.estrelas < 8);
+            // Calcular quantos jogadores genéricos são necessários
+            const jogadoresNecessarios = numTimes * 5;
+            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
+            
+            // Adicionar jogadores genéricos ANTES do balanceamento
+            const todosJogadores = [...jogadoresDoJogo];
+            for (let i = 0; i < genericosNecessarios; i++) {
+                todosJogadores.push({
+                    id: `generico_${i}`,
+                    nome: `Jogador Extra ${i + 1}`,
+                    estrelas: 5,
+                    tipo: 'mensalista',
+                    isGenerico: true
+                });
+            }
+            
+            // Agora rodar o algoritmo com TODOS os jogadores (reais + genéricos)
+            const totalJogadores = todosJogadores.length;
+            
+            // Separar jogadores por nível (incluindo genéricos)
+            const jogadores10Estrelas = todosJogadores.filter(j => j.estrelas === 10);
+            const jogadores9Estrelas = todosJogadores.filter(j => j.estrelas === 9);
+            const jogadores8Estrelas = todosJogadores.filter(j => j.estrelas === 8);
+            const outrosJogadores = todosJogadores.filter(j => j.estrelas < 8);
             
             outrosJogadores.sort((a, b) => b.estrelas - a.estrelas);
             
@@ -1407,7 +1426,7 @@
                 }
             }
             
-            // Distribuir outros jogadores equilibrando quantidades
+            // Distribuir outros jogadores (incluindo genéricos) equilibrando quantidades
             for (const jogador of outrosJogadores) {
                 const timeMenosJogadores = times.reduce((menor, time, index) => {
                     return time.length < times[menor].length ? index : menor;
@@ -1429,10 +1448,10 @@
                 }
             }
             
-            exibirTimes(times);
+            exibirTimes(times, genericosNecessarios);
         };
 
-        function exibirTimes(times) {
+        function exibirTimes(times, genericosAdicionados = 0) {
             const container = document.getElementById('teamsContainer');
             const numTimes = times.length;
             
@@ -1449,14 +1468,16 @@
             const estatisticasTimes = times.map(time => {
                 const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
                 const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
-                const mensalistas = time.filter(j => (j.tipo || 'mensalista') === 'mensalista').length;
-                const avulsos = time.filter(j => j.tipo === 'avulso').length;
+                const mensalistas = time.filter(j => !j.isGenerico && (j.tipo || 'mensalista') === 'mensalista').length;
+                const avulsos = time.filter(j => !j.isGenerico && j.tipo === 'avulso').length;
+                const genericos = time.filter(j => j.isGenerico).length;
                 return { 
                     totalEstrelas, 
                     media: parseFloat(media), 
                     jogadores: time.length,
                     mensalistas,
-                    avulsos
+                    avulsos,
+                    genericos
                 };
             });
             
@@ -1469,12 +1490,13 @@
                         <strong>Total: ${estatisticasTimes[index].totalEstrelas} ⭐</strong><br>
                         <strong>Média: ${estatisticasTimes[index].media}</strong><br>
                         <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong><br>
-                        <strong>Mensalistas: ${estatisticasTimes[index].mensalistas} | Avulsos: ${estatisticasTimes[index].avulsos}</strong>
+                        <strong>Mensalistas: ${estatisticasTimes[index].mensalistas} | Avulsos: ${estatisticasTimes[index].avulsos}</strong><br>
+                        ${estatisticasTimes[index].genericos > 0 ? `<strong>Genéricos: ${estatisticasTimes[index].genericos}</strong>` : ''}
                     </div>
                     <div>
                         ${time.map(jogador => `
-                            <div class="team-player">
-                                <div class="team-player-name">${formatarNomeComTipo(jogador)}</div>
+                            <div class="team-player" style="${jogador.isGenerico ? 'opacity: 0.7; font-style: italic;' : ''}">
+                                <div class="team-player-name">${jogador.isGenerico ? jogador.nome + ' 👤' : formatarNomeComTipo(jogador)}</div>
                                 <div class="team-player-stars">${criarEstrelas(jogador.estrelas)}</div>
                             </div>
                         `).join('')}
@@ -1497,7 +1519,8 @@
             const balanceInfo = document.getElementById('balanceInfo');
             balanceInfo.innerHTML = `
                 <h3>📊 Análise da Distribuição</h3>
-                <p><strong>Times formados:</strong> ${numTimes} times</p>
+                <p><strong>Times formados:</strong> ${numTimes} times de 5 jogadores cada</p>
+                ${genericosAdicionados > 0 ? `<p><strong>Jogadores genéricos adicionados:</strong> ${genericosAdicionados}</p>` : ''}
                 <p><strong>Média geral:</strong> ${mediaGeral.toFixed(1)} estrelas</p>
                 <p><strong>Maior diferença:</strong> ${maiorDiferenca.toFixed(1)} estrelas</p>
                 <p><strong>Diferença de quantidade:</strong> ${diferencaQuantidade} jogador${diferencaQuantidade !== 1 ? 'es' : ''}</p>
@@ -1509,6 +1532,7 @@
                       maiorDiferenca <= 2.0 ? '🟡 Times razoavelmente balanceados' :
                       '🔴 Considere redistribuir alguns jogadores'}
                 </p>
+                ${genericosAdicionados > 0 ? `<p style="font-size: 12px; margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404;"><strong>💡 Dica:</strong> Os jogadores genéricos (5⭐) podem ser substituídos por qualquer pessoa disponível na hora do jogo.</p>` : ''}
             `;
             
             balanceInfo.style.display = 'block';

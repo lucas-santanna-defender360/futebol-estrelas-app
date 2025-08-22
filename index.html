@@ -708,6 +708,121 @@
             }
         }
 
+        /* Abas financeiras */
+        .aba-financeiro {
+            min-height: 200px;
+        }
+
+        .sessao-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 15px;
+        }
+
+        .sessao-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sessao-data {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .sessao-valor {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .sessao-avulsos {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .pendencia-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pendencia-nome {
+            font-weight: 600;
+        }
+
+        .pendencia-valor {
+            background: #f44336;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .pagamento-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 12px;
+        }
+
+        .pagamento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .status-pago {
+            background: #4CAF50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .status-pendente {
+            background: #f44336;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .btn-marcar-pago {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .btn-marcar-pendente {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
         /* Landscape mobile optimization */
         @media (max-height: 500px) and (orientation: landscape) {
             .main-content {
@@ -754,6 +869,10 @@
                 <button class="menu-item active" onclick="showSection('separar')">
                     <span class="menu-icon">⚽</span>
                     <span>Separar Times</span>
+                </button>
+                <button class="menu-item" onclick="showSection('financeiro')">
+                    <span class="menu-icon">💰</span>
+                    <span>Controle Financeiro</span>
                 </button>
                 <button class="menu-item" onclick="showSection('jogadores')">
                     <span class="menu-icon">👥</span>
@@ -821,6 +940,36 @@
                 </div>
             </div>
 
+            <!-- Seção Controle Financeiro -->
+            <div id="financeiro" class="content-section">
+                <h2>💰 Controle Financeiro</h2>
+                <p style="color: #666; margin-bottom: 20px;">Gerencie pagamentos dos jogadores avulsos:</p>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #e0e0e0;">
+                    <button class="btn" id="tabSessoes" onclick="mostrarAbaFinanceiro('sessoes')" style="background: #4CAF50; margin: 0; border-radius: 0; border-bottom: 3px solid #4CAF50;">
+                        Sessões de Jogo
+                    </button>
+                    <button class="btn" id="tabPendencias" onclick="mostrarAbaFinanceiro('pendencias')" style="background: #666; margin: 0; border-radius: 0;">
+                        Pendências
+                    </button>
+                    <button class="btn" id="tabPagamentos" onclick="mostrarAbaFinanceiro('pagamentos')" style="background: #666; margin: 0; border-radius: 0;">
+                        Controle de Pagamentos
+                    </button>
+                </div>
+
+                <div id="abaFinanceiroSessoes" class="aba-financeiro">
+                    <div id="listaSessoes"></div>
+                </div>
+
+                <div id="abaFinanceiroPendencias" class="aba-financeiro" style="display: none;">
+                    <div id="resumoPendencias"></div>
+                </div>
+
+                <div id="abaFinanceiroPagamentos" class="aba-financeiro" style="display: none;">
+                    <div id="controlePagamentos"></div>
+                </div>
+            </div>
+
             <!-- Seção Jogadores -->
             <div id="jogadores" class="content-section">
                 <h2>👥 Gerenciar Jogadores</h2>
@@ -877,6 +1026,38 @@
                 </div>
                 <button class="btn btn-full" id="btnCadastrar" onclick="cadastrarJogador()">
                     ➕ Cadastrar Jogador
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Registrar Sessão -->
+        <div id="sessaoModal" class="edit-modal">
+            <div class="edit-modal-content">
+                <h3>💰 Registrar Sessão de Jogo</h3>
+                <div class="form-group">
+                    <label for="dataSessao">Data:</label>
+                    <input type="date" id="dataSessao" readonly style="background: #f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label for="valorDiaria">Valor da Diária (R$):</label>
+                    <input type="number" id="valorDiaria" value="15.00" step="0.01" placeholder="15.00">
+                </div>
+                <div class="form-group">
+                    <label>Avulsos Presentes:</label>
+                    <div id="avulsosPresentes" style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                        <!-- Lista será preenchida dinamicamente -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="salvarSessao()">
+                        💾 Registrar Sessão
+                    </button>
+                    <button class="btn" onclick="pularRegistroSessao()" style="background: #666;">
+                        ⏭️ Pular Registro
+                    </button>
+                </div>
+                <button class="btn btn-full" onclick="fecharSessaoModal()" style="margin-top: 10px; background: #666;">
+                    ❌ Cancelar
                 </button>
             </div>
         </div>
@@ -944,6 +1125,8 @@
         let jogadoresPresentes = [];
         let jogadorEditando = null;
         let isOnline = navigator.onLine;
+        let sessoes = {};
+        let timesFormados = null; // Para armazenar times antes do registro da sessão
 
         // Inicializar Firebase
         function initFirebase() {
@@ -955,6 +1138,11 @@
                     jogadores = snapshot.val() || {};
                     updateUI();
                     updateSyncStatus('synced');
+                });
+
+                database.ref('sessoes').on('value', (snapshot) => {
+                    sessoes = snapshot.val() || {};
+                    updateFinanceiroUI();
                 });
 
                 database.ref('.info/connected').on('value', (snapshot) => {
@@ -1035,12 +1223,31 @@
                 exibirJogadores();
             } else if (currentSection === 'separar') {
                 exibirJogadoresPresentes();
+            } else if (currentSection === 'financeiro') {
+                updateFinanceiroUI();
             }
             
             const total = Object.keys(jogadores).length;
             const totalElement = document.getElementById('totalJogadores');
             if (totalElement) {
                 totalElement.textContent = total;
+            }
+        }
+
+        function updateFinanceiroUI() {
+            const currentSection = document.querySelector('.content-section.active')?.id;
+            if (currentSection === 'financeiro') {
+                const abaAtiva = document.querySelector('.aba-financeiro[style*="block"], .aba-financeiro:not([style*="none"])');
+                if (abaAtiva) {
+                    const abaId = abaAtiva.id;
+                    if (abaId === 'abaFinanceiroSessoes') {
+                        exibirSessoes();
+                    } else if (abaId === 'abaFinanceiroPendencias') {
+                        exibirPendencias();
+                    } else if (abaId === 'abaFinanceiroPagamentos') {
+                        exibirControlePagamentos();
+                    }
+                }
             }
         }
 
@@ -1094,6 +1301,8 @@
                 exibirJogadores();
             } else if (sectionName === 'separar') {
                 exibirJogadoresPresentes();
+            } else if (sectionName === 'financeiro') {
+                mostrarAbaFinanceiro('sessoes');
             }
         };
 
@@ -1557,6 +1766,255 @@
             balanceInfo.style.display = 'block';
             balanceInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+
+        // Funções do controle financeiro
+        window.abrirModalSessao = function(avulsosPresentes) {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataSessao').value = hoje;
+            document.getElementById('valorDiaria').value = '15.00';
+            
+            const container = document.getElementById('avulsosPresentes');
+            container.innerHTML = avulsosPresentes.map(jogador => `
+                <div style="padding: 8px; border-bottom: 1px solid #e0e0e0;">
+                    <strong>${jogador.nome}</strong> - R$ <span id="valor_${jogador.id}">15.00</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('sessaoModal').style.display = 'flex';
+        };
+
+        window.fecharSessaoModal = function() {
+            document.getElementById('sessaoModal').style.display = 'none';
+            timesFormados = null;
+        };
+
+        window.pularRegistroSessao = function() {
+            fecharSessaoModal();
+        };
+
+        window.salvarSessao = function() {
+            const data = document.getElementById('dataSessao').value;
+            const valor = parseFloat(document.getElementById('valorDiaria').value);
+            
+            if (!data || !valor || valor <= 0) {
+                alert('Por favor, preencha todos os campos corretamente!');
+                return;
+            }
+            
+            const avulsosPresentes = jogadoresPresentes
+                .map(id => jogadores[id])
+                .filter(j => j && j.tipo === 'avulso');
+            
+            const novaSessao = {
+                id: Date.now().toString(),
+                data: data,
+                valorDiaria: valor,
+                avulsosPresentes: avulsosPresentes.map(j => j.id),
+                times: timesFormados,
+                pagamentos: {}
+            };
+            
+            // Inicializar pagamentos como pendentes
+            avulsosPresentes.forEach(jogador => {
+                novaSessao.pagamentos[jogador.id] = 'pendente';
+            });
+            
+            salvarSessaoDB(novaSessao);
+            fecharSessaoModal();
+            
+            alert(`Sessão registrada! ${avulsosPresentes.length} avulsos - Total: R$ ${(valor * avulsosPresentes.length).toFixed(2)}`);
+        };
+
+        function salvarSessaoDB(sessao) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('sessoes/' + sessao.id).set(sessao);
+            } else {
+                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+                sessoesLocal[sessao.id] = sessao;
+                localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+                sessoes = sessoesLocal;
+                updateFinanceiroUI();
+            }
+        }
+
+        window.mostrarAbaFinanceiro = function(aba) {
+            // Atualizar botões
+            document.getElementById('tabSessoes').style.background = '#666';
+            document.getElementById('tabSessoes').style.borderBottom = 'none';
+            document.getElementById('tabPendencias').style.background = '#666';
+            document.getElementById('tabPendencias').style.borderBottom = 'none';
+            document.getElementById('tabPagamentos').style.background = '#666';
+            document.getElementById('tabPagamentos').style.borderBottom = 'none';
+            
+            // Esconder todas as abas
+            document.getElementById('abaFinanceiroSessoes').style.display = 'none';
+            document.getElementById('abaFinanceiroPendencias').style.display = 'none';
+            document.getElementById('abaFinanceiroPagamentos').style.display = 'none';
+            
+            // Mostrar aba selecionada
+            if (aba === 'sessoes') {
+                document.getElementById('tabSessoes').style.background = '#4CAF50';
+                document.getElementById('tabSessoes').style.borderBottom = '3px solid #4CAF50';
+                document.getElementById('abaFinanceiroSessoes').style.display = 'block';
+                exibirSessoes();
+            } else if (aba === 'pendencias') {
+                document.getElementById('tabPendencias').style.background = '#4CAF50';
+                document.getElementById('tabPendencias').style.borderBottom = '3px solid #4CAF50';
+                document.getElementById('abaFinanceiroPendencias').style.display = 'block';
+                exibirPendencias();
+            } else if (aba === 'pagamentos') {
+                document.getElementById('tabPagamentos').style.background = '#4CAF50';
+                document.getElementById('tabPagamentos').style.borderBottom = '3px solid #4CAF50';
+                document.getElementById('abaFinanceiroPagamentos').style.display = 'block';
+                exibirControlePagamentos();
+            }
+        };
+
+        function exibirSessoes() {
+            const container = document.getElementById('listaSessoes');
+            const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (sessoesArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📋</span>
+                        Nenhuma sessão registrada ainda.<br>
+                        Separe times com avulsos para registrar sessões.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = sessoesArray.map(sessao => {
+                const avulsos = sessao.avulsosPresentes.map(id => jogadores[id]).filter(j => j);
+                const total = sessao.valorDiaria * avulsos.length;
+                
+                return `
+                    <div class="sessao-item">
+                        <div class="sessao-header">
+                            <div class="sessao-data">${new Date(sessao.data).toLocaleDateString('pt-BR')}</div>
+                            <div class="sessao-valor">R$ ${total.toFixed(2)}</div>
+                        </div>
+                        <div class="sessao-avulsos">
+                            <strong>Avulsos:</strong> ${avulsos.map(j => j.nome).join(', ')}
+                        </div>
+                        <div style="font-size: 12px; color: #888;">
+                            Valor individual: R$ ${sessao.valorDiaria.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function exibirPendencias() {
+            const container = document.getElementById('resumoPendencias');
+            const pendencias = {};
+            
+            // Calcular pendências por jogador
+            Object.values(sessoes).forEach(sessao => {
+                sessao.avulsosPresentes.forEach(jogadorId => {
+                    if (sessao.pagamentos[jogadorId] === 'pendente') {
+                        if (!pendencias[jogadorId]) {
+                            pendencias[jogadorId] = {
+                                nome: jogadores[jogadorId]?.nome || 'Jogador removido',
+                                total: 0,
+                                jogos: 0
+                            };
+                        }
+                        pendencias[jogadorId].total += sessao.valorDiaria;
+                        pendencias[jogadorId].jogos += 1;
+                    }
+                });
+            });
+            
+            const pendenciasArray = Object.values(pendencias);
+            
+            if (pendenciasArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">✅</span>
+                        Todos os pagamentos estão em dia!
+                    </div>
+                `;
+                return;
+            }
+            
+            const totalGeral = pendenciasArray.reduce((sum, p) => sum + p.total, 0);
+            
+            container.innerHTML = `
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                    <strong>Total a receber: R$ ${totalGeral.toFixed(2)}</strong>
+                </div>
+                ${pendenciasArray.map(pendencia => `
+                    <div class="pendencia-item">
+                        <div>
+                            <div class="pendencia-nome">${pendencia.nome}</div>
+                            <div style="font-size: 12px; color: #666;">${pendencia.jogos} ${pendencia.jogos === 1 ? 'jogo' : 'jogos'}</div>
+                        </div>
+                        <div class="pendencia-valor">R$ ${pendencia.total.toFixed(2)}</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function exibirControlePagamentos() {
+            const container = document.getElementById('controlePagamentos');
+            const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (sessoesArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📋</span>
+                        Nenhuma sessão para controlar.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = sessoesArray.map(sessao => {
+                const avulsos = sessao.avulsosPresentes.map(id => jogadores[id]).filter(j => j);
+                
+                return `
+                    <div class="pagamento-item">
+                        <div class="pagamento-header">
+                            <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                            <span style="font-size: 12px; color: #666;">R$ ${sessao.valorDiaria.toFixed(2)} cada</span>
+                        </div>
+                        ${avulsos.map(jogador => {
+                            const status = sessao.pagamentos[jogador.id] || 'pendente';
+                            return `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                                    <span>${jogador.nome}</span>
+                                    <div>
+                                        <span class="status-${status}">${status === 'pago' ? 'PAGO' : 'PENDENTE'}</span>
+                                        ${status === 'pendente' ? 
+                                            `<button class="btn-marcar-pago" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pago')">Marcar como Pago</button>` :
+                                            `<button class="btn-marcar-pendente" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pendente')">Marcar como Pendente</button>`
+                                        }
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.marcarPagamento = function(sessaoId, jogadorId, status) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref(`sessoes/${sessaoId}/pagamentos/${jogadorId}`).set(status);
+            } else {
+                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+                if (sessoesLocal[sessaoId]) {
+                    sessoesLocal[sessaoId].pagamentos[jogadorId] = status;
+                    localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+                    sessoes = sessoesLocal;
+                    updateFinanceiroUI();
+                }
+            }
+        };
 
         // Event listeners
         document.addEventListener('click', function(event) {

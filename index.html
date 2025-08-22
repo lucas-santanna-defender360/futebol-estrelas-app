@@ -107,8 +107,8 @@
             padding: 12px;
             border-radius: 8px;
             transition: background 0.2s;
-            min-width: 44px;
-            min-height: 44px;
+            min-width: 48px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -167,8 +167,8 @@
             font-size: 24px;
             cursor: pointer;
             padding: 8px;
-            min-width: 44px;
-            min-height: 44px;
+            min-width: 48px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -318,8 +318,6 @@
             margin: 8px 0;
         }
 
-
-
         .filter-controls {
             background: #f8f9fa;
             border-radius: 12px;
@@ -345,7 +343,7 @@
             color: #333;
             margin-bottom: 0;
             white-space: nowrap;
-            min-width: 80px;
+            min-width: 60px;
         }
 
         .filter-controls select {
@@ -354,7 +352,7 @@
             font-size: 14px;
             border-radius: 8px;
             border: 1px solid #ddd;
-            min-height: 44px;
+            min-height: 48px;
         }
 
         .selected-counter {
@@ -367,7 +365,7 @@
             white-space: nowrap;
             min-width: 80px;
             text-align: center;
-            min-height: 44px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -462,8 +460,8 @@
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
-            min-width: 44px;
-            min-height: 44px;
+            min-width: 48px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -692,7 +690,7 @@
 
         /* Melhorar acessibilidade touch */
         @media (pointer: coarse) {
-            .btn, .list-item, .edit-btn, input, select, .menu-item, .team-count-btn {
+            .btn, .list-item, .edit-btn, input, select, .menu-item {
                 min-height: 48px;
             }
             
@@ -731,7 +729,7 @@
                 <h1>⚽ Separador de Times</h1>
                 <p>Compartilhado com o grupo</p>
             </div>
-            <div style="width: 44px;"></div>
+            <div style="width: 48px;"></div>
         </div>
 
         <!-- Sidebar -->
@@ -744,17 +742,17 @@
                 <button class="close-btn" onclick="closeSidebar()">✕</button>
             </div>
             <div class="sidebar-menu">
-                <button class="menu-item active" onclick="showSection('cadastro')">
-                    <span class="menu-icon">➕</span>
-                    <span>Cadastrar Jogador</span>
+                <button class="menu-item active" onclick="showSection('separar')">
+                    <span class="menu-icon">⚽</span>
+                    <span>Separar Times</span>
                 </button>
                 <button class="menu-item" onclick="showSection('jogadores')">
                     <span class="menu-icon">👥</span>
                     <span>Gerenciar Jogadores</span>
                 </button>
-                <button class="menu-item" onclick="showSection('separar')">
-                    <span class="menu-icon">⚽</span>
-                    <span>Separar Times</span>
+                <button class="menu-item" onclick="showSection('cadastro')">
+                    <span class="menu-icon">➕</span>
+                    <span>Cadastrar Jogador</span>
                 </button>
             </div>
         </div>
@@ -764,67 +762,15 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Seção Cadastro -->
-            <div id="cadastro" class="content-section active">
-                <div class="info-banner">
-                    <h4>🌐 Dados Compartilhados</h4>
-                    <p>Todos do grupo podem ver e editar os jogadores em tempo real!</p>
-                </div>
-                
-                <h2>➕ Cadastrar Novo Jogador</h2>
-                <div class="form-group">
-                    <label for="nomeJogador">Nome do Jogador:</label>
-                    <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador">
-                </div>
-                <div class="form-group">
-                    <label for="estrelas">Nível de Habilidade:</label>
-                    <select id="estrelas">
-                        <option value="1">⭐ 1 Estrela</option>
-                        <option value="2">⭐⭐ 2 Estrelas</option>
-                        <option value="3">⭐⭐⭐ 3 Estrelas</option>
-                        <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 Estrelas</option>
-                        <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
-                        <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
-                        <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
-                        <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
-                        <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
-                    </select>
-                </div>
-                <button class="btn btn-full" id="btnCadastrar" onclick="cadastrarJogador()">
-                    ➕ Cadastrar Jogador
-                </button>
-            </div>
-
-            <!-- Seção Jogadores -->
-            <div id="jogadores" class="content-section">
-                <h2>👥 Gerenciar Jogadores</h2>
-                <p style="color: #666; margin-bottom: 15px;">Total: <span id="totalJogadores">0</span> jogadores cadastrados</p>
-                
-                <div class="filter-controls">
-                    <div class="filter-row">
-                        <label for="sortOrderJogadores">Ordenar por:</label>
-                        <select id="sortOrderJogadores" onchange="atualizarOrdenacaoJogadores()">
-                            <option value="alfabetica-az">Nome (A-Z)</option>
-                            <option value="alfabetica-za">Nome (Z-A)</option>
-                            <option value="estrelas-maior">Estrelas (Maior-Menor)</option>
-                            <option value="estrelas-menor">Estrelas (Menor-Maior)</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="listaJogadores"></div>
-            </div>
-
             <!-- Seção Separar Times -->
-            <div id="separar" class="content-section">
+            <div id="separar" class="content-section active">
                 <h2>⚽ Quem está presente?</h2>
                 <p style="color: #666; margin-bottom: 20px;">Marque os jogadores presentes:</p>
                 
                 <div class="filter-controls">
                     <div class="filter-row">
                         <label for="teamCount">Times:</label>
-                        <select id="teamCount" onchange="selectTeamCount(this.value)">
+                        <select id="teamCount">
                             <option value="2">2 Times</option>
                             <option value="3" selected>3 Times</option>
                             <option value="4">4 Times</option>
@@ -860,6 +806,65 @@
                     <!-- Times serão gerados dinamicamente aqui -->
                 </div>
             </div>
+
+            <!-- Seção Jogadores -->
+            <div id="jogadores" class="content-section">
+                <h2>👥 Gerenciar Jogadores</h2>
+                <p style="color: #666; margin-bottom: 15px;">Total: <span id="totalJogadores">0</span> jogadores cadastrados</p>
+                
+                <div class="filter-controls">
+                    <div class="filter-row">
+                        <label for="sortOrderJogadores">Ordenar por:</label>
+                        <select id="sortOrderJogadores" onchange="atualizarOrdenacaoJogadores()">
+                            <option value="alfabetica-az">Nome (A-Z)</option>
+                            <option value="alfabetica-za">Nome (Z-A)</option>
+                            <option value="estrelas-maior">Estrelas (Maior-Menor)</option>
+                            <option value="estrelas-menor">Estrelas (Menor-Maior)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="listaJogadores"></div>
+            </div>
+
+            <!-- Seção Cadastro -->
+            <div id="cadastro" class="content-section">
+                <div class="info-banner">
+                    <h4>🌐 Dados Compartilhados</h4>
+                    <p>Todos do grupo podem ver e editar os jogadores em tempo real!</p>
+                </div>
+                
+                <h2>➕ Cadastrar Novo Jogador</h2>
+                <div class="form-group">
+                    <label for="nomeJogador">Nome do Jogador:</label>
+                    <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador">
+                </div>
+                <div class="form-group">
+                    <label for="estrelas">Nível de Habilidade:</label>
+                    <select id="estrelas">
+                        <option value="1">⭐ 1 Estrela</option>
+                        <option value="2">⭐⭐ 2 Estrelas</option>
+                        <option value="3">⭐⭐⭐ 3 Estrelas</option>
+                        <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
+                        <option value="5">⭐⭐⭐⭐⭐ 5 Estrelas</option>
+                        <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
+                        <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
+                        <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
+                        <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
+                        <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipoJogador">Tipo de Jogador:</label>
+                    <select id="tipoJogador">
+                        <option value="mensalista">Mensalista</option>
+                        <option value="avulso">Avulso</option>
+                    </select>
+                </div>
+                <button class="btn btn-full" id="btnCadastrar" onclick="cadastrarJogador()">
+                    ➕ Cadastrar Jogador
+                </button>
+            </div>
         </div>
 
         <!-- Modal de Edição -->
@@ -885,6 +890,13 @@
                         <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="editTipoJogador">Tipo de Jogador:</label>
+                    <select id="editTipoJogador">
+                        <option value="mensalista">Mensalista</option>
+                        <option value="avulso">Avulso</option>
+                    </select>
+                </div>
                 <div class="modal-actions">
                     <button class="btn" id="btnSalvar" onclick="salvarEdicao()">
                         💾 Salvar
@@ -901,7 +913,7 @@
     </div>
 
     <script>
-        // Configuração do Firebase - CONFIGURADO PARA FUTEBOL-ESTRELAS
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAHTD1vEIh8ehAFR2M4APiE8Ky9HEAuPU",
             authDomain: "futebol-estrelas.firebaseapp.com",
@@ -918,7 +930,6 @@
         let jogadoresPresentes = [];
         let jogadorEditando = null;
         let isOnline = navigator.onLine;
-        let selectedTeamCount = 3; // Padrão: 3 times
 
         // Inicializar Firebase
         function initFirebase() {
@@ -926,14 +937,12 @@
                 app = firebase.initializeApp(firebaseConfig);
                 database = firebase.database();
                 
-                // Listener para mudanças nos jogadores
                 database.ref('jogadores').on('value', (snapshot) => {
                     jogadores = snapshot.val() || {};
                     updateUI();
                     updateSyncStatus('synced');
                 });
 
-                // Listener para status de conexão
                 database.ref('.info/connected').on('value', (snapshot) => {
                     isOnline = snapshot.val() === true;
                     updateSyncStatus(isOnline ? 'synced' : 'offline');
@@ -942,7 +951,6 @@
                 hideLoading();
             } catch (error) {
                 console.error('Erro ao conectar com Firebase:', error);
-                // Fallback para localStorage se Firebase falhar
                 showFirebaseError();
             }
         }
@@ -969,12 +977,10 @@
         }
 
         function useLocalMode() {
-            // Usar localStorage como fallback
             jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
             hideLoading();
             updateSyncStatus('offline');
             
-            // Remover banner de dados compartilhados
             const banner = document.querySelector('.info-banner');
             if (banner) {
                 banner.innerHTML = `
@@ -1020,7 +1026,6 @@
                 exibirJogadoresPresentes();
             }
             
-            // Atualizar contador total
             const total = Object.keys(jogadores).length;
             const totalElement = document.getElementById('totalJogadores');
             if (totalElement) {
@@ -1033,7 +1038,6 @@
                 updateSyncStatus('syncing');
                 database.ref('jogadores/' + jogador.id).set(jogador);
             } else {
-                // Fallback localStorage
                 const jogadoresLocal = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
                 jogadoresLocal[jogador.id] = jogador;
                 localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
@@ -1047,7 +1051,6 @@
                 updateSyncStatus('syncing');
                 database.ref('jogadores/' + id).remove();
             } else {
-                // Fallback localStorage
                 const jogadoresLocal = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
                 delete jogadoresLocal[id];
                 localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
@@ -1056,24 +1059,15 @@
             }
         }
 
-        // Função para selecionar número de times
-        window.selectTeamCount = function(count) {
-            selectedTeamCount = count === 'auto' ? 'auto' : parseInt(count);
-        };
-
-        // Funções globais do menu
+        // Funções do menu
         window.toggleSidebar = function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            sidebar.classList.add('open');
-            overlay.classList.add('show');
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('show');
         };
 
         window.closeSidebar = function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
         };
 
         window.showSection = function(sectionName) {
@@ -1095,6 +1089,7 @@
         window.cadastrarJogador = function() {
             const nome = document.getElementById('nomeJogador').value.trim();
             const estrelas = parseInt(document.getElementById('estrelas').value);
+            const tipo = document.getElementById('tipoJogador').value;
             const btnCadastrar = document.getElementById('btnCadastrar');
             
             if (!nome) {
@@ -1102,7 +1097,6 @@
                 return;
             }
             
-            // Verificar se jogador já existe
             const jogadorExistente = Object.values(jogadores).find(j => 
                 j.nome.toLowerCase() === nome.toLowerCase()
             );
@@ -1119,6 +1113,7 @@
                 id: Date.now().toString(),
                 nome: nome,
                 estrelas: estrelas,
+                tipo: tipo,
                 criadoEm: new Date().toISOString()
             };
             
@@ -1126,6 +1121,7 @@
             
             document.getElementById('nomeJogador').value = '';
             document.getElementById('estrelas').value = '1';
+            document.getElementById('tipoJogador').value = 'mensalista';
             
             setTimeout(() => {
                 btnCadastrar.disabled = false;
@@ -1136,6 +1132,12 @@
 
         function criarEstrelas(quantidade) {
             return '⭐'.repeat(Math.min(quantidade, 10));
+        }
+
+        function formatarNomeComTipo(jogador) {
+            const tipo = jogador.tipo || 'mensalista';
+            const tipoSigla = tipo === 'mensalista' ? '(M)' : '(A)';
+            return `${jogador.nome} ${tipoSigla}`;
         }
 
         function ordenarJogadores(lista, tipoOrdem) {
@@ -1179,7 +1181,7 @@
                 <div class="list-item">
                     <div class="item-content">
                         <div class="player-info">
-                            <div class="player-name">${jogador.nome}</div>
+                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
                             <div class="player-stars">
                                 <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
                                 <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
@@ -1222,7 +1224,7 @@
                                    onchange="togglePresenca('${jogador.id}')" onclick="event.stopPropagation()">
                         </div>
                         <div class="player-info">
-                            <div class="player-name">${jogador.nome}</div>
+                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
                             <div class="player-stars">
                                 <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
                                 <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
@@ -1244,9 +1246,7 @@
 
         function atualizarContador() {
             const total = jogadoresPresentes.length;
-            const contadorElement = document.getElementById('totalSelecionados');
-            
-            contadorElement.textContent = `${total} selecionados`;
+            document.getElementById('totalSelecionados').textContent = `${total} selecionados`;
         }
 
         window.togglePresenca = function(id) {
@@ -1271,6 +1271,7 @@
             
             document.getElementById('editNome').value = jogadorEditando.nome;
             document.getElementById('editEstrelas').value = jogadorEditando.estrelas;
+            document.getElementById('editTipoJogador').value = jogadorEditando.tipo || 'mensalista';
             document.getElementById('editModal').style.display = 'flex';
         };
 
@@ -1278,6 +1279,7 @@
             if (!jogadorEditando) return;
             
             const novasEstrelas = parseInt(document.getElementById('editEstrelas').value);
+            const novoTipo = document.getElementById('editTipoJogador').value;
             const btnSalvar = document.getElementById('btnSalvar');
             
             btnSalvar.disabled = true;
@@ -1286,6 +1288,7 @@
             const jogadorAtualizado = {
                 ...jogadorEditando,
                 estrelas: novasEstrelas,
+                tipo: novoTipo,
                 atualizadoEm: new Date().toISOString()
             };
             
@@ -1295,7 +1298,7 @@
                 btnSalvar.disabled = false;
                 btnSalvar.innerHTML = '💾 Salvar';
                 fecharModal();
-                alert(`${jogadorEditando.nome} agora tem ${novasEstrelas} ${novasEstrelas === 1 ? 'estrela' : 'estrelas'}!`);
+                alert(`${jogadorEditando.nome} atualizado com sucesso!`);
             }, 1000);
         };
 
@@ -1307,7 +1310,6 @@
                 btnRemover.disabled = true;
                 btnRemover.textContent = '⏳ Removendo...';
                 
-                // Remover da lista de presentes se estiver lá
                 jogadoresPresentes = jogadoresPresentes.filter(jId => jId !== jogadorEditando.id);
                 
                 removerJogadorDB(jogadorEditando.id);
@@ -1333,7 +1335,7 @@
             exibirJogadoresPresentes();
         };
 
-        // Algoritmo melhorado de separação de times
+        // Algoritmo de separação de times
         window.separarTimes = function() {
             if (jogadoresPresentes.length < 2) {
                 alert('Marque pelo menos 2 jogadores para formar os times!');
@@ -1341,12 +1343,6 @@
             }
             
             const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            
-            if (jogadoresDoJogo.length === 0) {
-                alert('Erro: Nenhum jogador válido encontrado!');
-                return;
-            }
-            
             const totalJogadores = jogadoresDoJogo.length;
             
             // Determinar número de times
@@ -1366,56 +1362,71 @@
             const jogadores8Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 8);
             const outrosJogadores = jogadoresDoJogo.filter(j => j.estrelas < 8);
             
-            // Ordenar outros jogadores por estrelas (maior para menor)
             outrosJogadores.sort((a, b) => b.estrelas - a.estrelas);
             
             // Criar times vazios
             const times = Array.from({ length: numTimes }, () => []);
             
-            // Distribuir jogadores 10 estrelas primeiro (um por time, máximo)
+            // Distribuir jogadores 10 estrelas (máximo 1 por time)
             jogadores10Estrelas.forEach((jogador, index) => {
                 if (index < numTimes) {
                     times[index].push(jogador);
                 }
             });
             
-            // Distribuir jogadores 9 estrelas
-            jogadores9Estrelas.forEach((jogador, index) => {
-                const timeIndex = index % numTimes;
-                times[timeIndex].push(jogador);
-            });
-            
-            // Distribuir jogadores 8 estrelas
-            jogadores8Estrelas.forEach((jogador, index) => {
-                const timeIndex = index % numTimes;
-                times[timeIndex].push(jogador);
-            });
-            
-            // Distribuir outros jogadores usando algoritmo de balanceamento
-            for (const jogador of outrosJogadores) {
-                // Encontrar o time com menor pontuação total
+            // Se sobrar jogadores 10 estrelas, distribuir nos times com menor pontuação
+            for (let i = numTimes; i < jogadores10Estrelas.length; i++) {
                 const timeMenorPontuacao = times.reduce((menor, time, index) => {
                     const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
                     const pontuacaoMenor = times[menor].reduce((sum, j) => sum + j.estrelas, 0);
                     return pontuacaoAtual < pontuacaoMenor ? index : menor;
                 }, 0);
-                
-                times[timeMenorPontuacao].push(jogador);
+                times[timeMenorPontuacao].push(jogadores10Estrelas[i]);
             }
             
-            // Adicionar jogadores extras se necessário para completar times
-            const jogadoresPorTime = Math.ceil(totalJogadores / numTimes);
-            const totalNecessario = jogadoresPorTime * numTimes;
-            const jogadoresExtrasNecessarios = totalNecessario - totalJogadores;
+            // Distribuir jogadores 9 e 8 estrelas usando algoritmo serpentina
+            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
+            let timeAtual = 0;
+            let direcao = 1;
             
-            for (let i = 0; i < jogadoresExtrasNecessarios; i++) {
-                const timeIndex = i % numTimes;
-                times[timeIndex].push({
-                    id: `generico_${i}`,
-                    nome: `Jogador Extra ${i + 1}`,
-                    estrelas: 5,
-                    isGenerico: true
-                });
+            for (const jogador of jogadoresAltos) {
+                times[timeAtual].push(jogador);
+                
+                if (direcao === 1) {
+                    timeAtual++;
+                    if (timeAtual >= numTimes) {
+                        timeAtual = numTimes - 1;
+                        direcao = -1;
+                    }
+                } else {
+                    timeAtual--;
+                    if (timeAtual < 0) {
+                        timeAtual = 0;
+                        direcao = 1;
+                    }
+                }
+            }
+            
+            // Distribuir outros jogadores equilibrando quantidades
+            for (const jogador of outrosJogadores) {
+                const timeMenosJogadores = times.reduce((menor, time, index) => {
+                    return time.length < times[menor].length ? index : menor;
+                }, 0);
+                
+                const timesComMenorQuantidade = times
+                    .map((time, index) => ({ time, index, count: time.length }))
+                    .filter(t => t.count === times[timeMenosJogadores].length);
+                
+                if (timesComMenorQuantidade.length > 1) {
+                    const melhorTime = timesComMenorQuantidade.reduce((melhor, atual) => {
+                        const pontuacaoAtual = atual.time.reduce((sum, j) => sum + j.estrelas, 0);
+                        const pontuacaoMelhor = melhor.time.reduce((sum, j) => sum + j.estrelas, 0);
+                        return pontuacaoAtual < pontuacaoMelhor ? atual : melhor;
+                    });
+                    times[melhorTime.index].push(jogador);
+                } else {
+                    times[timeMenosJogadores].push(jogador);
+                }
             }
             
             exibirTimes(times);
@@ -1425,46 +1436,45 @@
             const container = document.getElementById('teamsContainer');
             const numTimes = times.length;
             
-            // Configurar layout do grid
             let gridClass = '';
             switch(numTimes) {
-                case 2:
-                    gridClass = 'two-teams';
-                    break;
-                case 3:
-                    gridClass = 'three-teams';
-                    break;
-                case 4:
-                    gridClass = 'four-teams';
-                    break;
+                case 2: gridClass = 'two-teams'; break;
+                case 3: gridClass = 'three-teams'; break;
+                case 4: gridClass = 'four-teams'; break;
             }
             
             container.className = `teams-container ${gridClass}`;
             container.style.display = 'grid';
             
-            // Calcular estatísticas
             const estatisticasTimes = times.map(time => {
                 const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
                 const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
-                return { totalEstrelas, media: parseFloat(media), jogadores: time.length };
+                const mensalistas = time.filter(j => (j.tipo || 'mensalista') === 'mensalista').length;
+                const avulsos = time.filter(j => j.tipo === 'avulso').length;
+                return { 
+                    totalEstrelas, 
+                    media: parseFloat(media), 
+                    jogadores: time.length,
+                    mensalistas,
+                    avulsos
+                };
             });
             
-            // Nomes e cores dos times
             const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
             
-            // Gerar HTML dos times
             container.innerHTML = times.map((time, index) => `
                 <div class="team team-${index}">
                     <h3>${nomesEquipes[index]}</h3>
                     <div class="team-stats">
                         <strong>Total: ${estatisticasTimes[index].totalEstrelas} ⭐</strong><br>
                         <strong>Média: ${estatisticasTimes[index].media}</strong><br>
-                        <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong>
+                        <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong><br>
+                        <strong>Mensalistas: ${estatisticasTimes[index].mensalistas} | Avulsos: ${estatisticasTimes[index].avulsos}</strong>
                     </div>
                     <div>
                         ${time.map(jogador => `
-                            <div class="team-player" style="${jogador.isGenerico ? 'opacity: 0.7; font-style: italic;' : ''}">
-                                <div class="team-player-name">${jogador.nome}${jogador.isGenerico ? ' 👤' : ''}</div>
+                            <div class="team-player">
+                                <div class="team-player-name">${formatarNomeComTipo(jogador)}</div>
                                 <div class="team-player-stars">${criarEstrelas(jogador.estrelas)}</div>
                             </div>
                         `).join('')}
@@ -1472,23 +1482,25 @@
                 </div>
             `).join('');
             
-            // Calcular qualidade do balanceamento
             const medias = estatisticasTimes.map(est => est.media);
             const mediaGeral = medias.reduce((sum, m) => sum + m, 0) / medias.length;
             const maiorDiferenca = Math.max(...medias) - Math.min(...medias);
+            
+            const quantidades = estatisticasTimes.map(est => est.jogadores);
+            const diferencaQuantidade = Math.max(...quantidades) - Math.min(...quantidades);
             
             const qualidadeBalance = maiorDiferenca <= 0.5 ? 'Excelente' : 
                                    maiorDiferenca <= 1.0 ? 'Muito Bom' :
                                    maiorDiferenca <= 1.5 ? 'Bom' : 
                                    maiorDiferenca <= 2.0 ? 'Regular' : 'Pode melhorar';
             
-            // Exibir informações de balanceamento
             const balanceInfo = document.getElementById('balanceInfo');
             balanceInfo.innerHTML = `
                 <h3>📊 Análise da Distribuição</h3>
                 <p><strong>Times formados:</strong> ${numTimes} times</p>
                 <p><strong>Média geral:</strong> ${mediaGeral.toFixed(1)} estrelas</p>
                 <p><strong>Maior diferença:</strong> ${maiorDiferenca.toFixed(1)} estrelas</p>
+                <p><strong>Diferença de quantidade:</strong> ${diferencaQuantidade} jogador${diferencaQuantidade !== 1 ? 'es' : ''}</p>
                 <p><strong>Qualidade do balanceamento:</strong> ${qualidadeBalance}</p>
                 <p style="font-size: 13px; margin-top: 10px; color: #666;">
                     ${maiorDiferenca <= 0.5 ? '🟢 Times perfeitamente balanceados!' : 
@@ -1500,12 +1512,7 @@
             `;
             
             balanceInfo.style.display = 'block';
-            
-            // Scroll suave para os resultados
-            balanceInfo.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
+            balanceInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // Event listeners
@@ -1525,7 +1532,6 @@
             }
         });
 
-        // Monitor conexão
         window.addEventListener('online', function() {
             isOnline = true;
             updateSyncStatus('synced');

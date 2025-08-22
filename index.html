@@ -109,8 +109,8 @@
         padding: 12px;
         border-radius: 8px;
         transition: background 0.2s;
-        min-width: 44px;
-        min-height: 44px;
+        min-width: 48px;
+        min-height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -169,8 +169,8 @@
         font-size: 24px;
         cursor: pointer;
         padding: 8px;
-        min-width: 44px;
-        min-height: 44px;
+        min-width: 48px;
+        min-height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -320,8 +320,6 @@
         margin: 8px 0;
     }
 
-
-
     .filter-controls {
         background: #f8f9fa;
         border-radius: 12px;
@@ -347,7 +345,7 @@
         color: #333;
         margin-bottom: 0;
         white-space: nowrap;
-        min-width: 80px;
+        min-width: 60px;
     }
 
     .filter-controls select {
@@ -356,20 +354,20 @@
         font-size: 14px;
         border-radius: 8px;
         border: 1px solid #ddd;
-        min-height: 44px;
+        min-height: 48px;
     }
 
     .selected-counter {
-        background: #4CAF50;
+        background: #81c784;
         color: white;
-        padding: 12px 18px;
-        border-radius: 20px;
-        font-size: 14px;
+        padding: 10px 16px;
+        border-radius: 16px;
+        font-size: 13px;
         font-weight: 600;
         white-space: nowrap;
         min-width: 80px;
         text-align: center;
-        min-height: 44px;
+        min-height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -377,9 +375,9 @@
 
     .list-item {
         background: white;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        margin-bottom: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 8px;
         transition: all 0.2s ease;
         cursor: pointer;
         position: relative;
@@ -388,19 +386,19 @@
     }
 
     .list-item:active {
-        transform: scale(0.98);
+        transform: scale(0.99);
     }
 
     .list-item.checked {
-        border-color: #4CAF50;
-        background: #f8fff8;
+        border-color: #81c784;
+        background: #f1f8e9;
     }
 
     .list-item .item-content {
-        padding: 18px;
+        padding: 16px;
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 12px;
     }
 
     .list-item .checkbox-wrapper {
@@ -408,10 +406,19 @@
     }
 
     .list-item input[type="checkbox"] {
-        width: 24px;
-        height: 24px;
+        width: 18px;
+        height: 18px;
         cursor: pointer;
-        accent-color: #4CAF50;
+        -webkit-appearance: auto;
+        appearance: auto;
+        margin: 0;
+        transform: none;
+    }
+
+    /* Forçar aparência nativa do checkbox em todos os browsers */
+    .list-item input[type="checkbox"]:checked {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
     }
 
     .list-item .player-info {
@@ -420,10 +427,10 @@
     }
 
     .list-item .player-name {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: #333;
-        margin-bottom: 6px;
+        color: #444;
+        margin-bottom: 4px;
         line-height: 1.2;
     }
 
@@ -434,31 +441,31 @@
     .list-item .player-stars {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
     }
 
     .list-item .stars {
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1;
     }
 
     .list-item .star-count {
-        font-size: 13px;
-        color: #666;
+        font-size: 12px;
+        color: #777;
         font-weight: 500;
     }
 
     .list-item.checked .star-count {
-        color: #2E7D32;
+        color: #388e3c;
     }
 
     .list-item .edit-btn {
-        background: #2196F3;
+        background: #90a4ae;
         color: white;
         border: none;
-        padding: 12px 16px;
-        border-radius: 8px;
+        padding: 10px 14px;
+        border-radius: 6px;
         font-size: 12px;
         font-weight: 600;
         cursor: pointer;
@@ -473,7 +480,7 @@
 
     .list-item .edit-btn:active {
         transform: scale(0.95);
-        background: #1976D2;
+        background: #78909c;
     }
 
     .teams-container {
@@ -694,13 +701,128 @@
 
     /* Melhorar acessibilidade touch */
     @media (pointer: coarse) {
-        .btn, .list-item, .edit-btn, input, select, .menu-item, .team-count-btn {
+        .btn, .list-item, .edit-btn, input, select, .menu-item {
             min-height: 48px;
         }
         
         .list-item .item-content {
             padding: 20px;
         }
+    }
+
+    /* Abas financeiras */
+    .aba-financeiro {
+        min-height: 200px;
+    }
+
+    .sessao-item {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 15px;
+    }
+
+    .sessao-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .sessao-data {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .sessao-valor {
+        background: #4CAF50;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .sessao-avulsos {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    .pendencia-item {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pendencia-nome {
+        font-weight: 600;
+    }
+
+    .pendencia-valor {
+        background: #f44336;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .pagamento-item {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 12px;
+    }
+
+    .pagamento-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .status-pago {
+        background: #4CAF50;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+    }
+
+    .status-pendente {
+        background: #f44336;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+    }
+
+    .btn-marcar-pago {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    .btn-marcar-pendente {
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        margin-left: 5px;
     }
 
     /* Landscape mobile optimization */
@@ -726,8 +848,8 @@
     </div>
 
 ```
-<!-- Sync Status -->
-<div class="sync-status" id="syncStatus">🟢 Sincronizado</div>
+<!-- Sync Status - Removido da tela principal -->
+<div class="sync-status" id="syncStatus" style="display: none;">🟢 Sincronizado</div>
 
 <div class="container" id="mainApp" style="display: none;">
     <div class="header">
@@ -736,7 +858,7 @@
             <h1>⚽ Separador de Times</h1>
             <p>Compartilhado com o grupo</p>
         </div>
-        <div style="width: 44px;"></div>
+        <div style="width: 48px;"></div>
     </div>
 
     <!-- Sidebar -->
@@ -749,18 +871,27 @@
             <button class="close-btn" onclick="closeSidebar()">✕</button>
         </div>
         <div class="sidebar-menu">
-            <button class="menu-item active" onclick="showSection('cadastro')">
-                <span class="menu-icon">➕</span>
-                <span>Cadastrar Jogador</span>
+            <button class="menu-item active" onclick="showSection('separar')">
+                <span class="menu-icon">⚽</span>
+                <span>Separar Times</span>
+            </button>
+            <button class="menu-item" onclick="showSection('financeiro')">
+                <span class="menu-icon">💰</span>
+                <span>Controle Financeiro</span>
             </button>
             <button class="menu-item" onclick="showSection('jogadores')">
                 <span class="menu-icon">👥</span>
                 <span>Gerenciar Jogadores</span>
             </button>
-            <button class="menu-item" onclick="showSection('separar')">
-                <span class="menu-icon">⚽</span>
-                <span>Separar Times</span>
+            <button class="menu-item" onclick="showSection('cadastro')">
+                <span class="menu-icon">➕</span>
+                <span>Cadastrar Jogador</span>
             </button>
+        </div>
+        <div style="padding: 15px; border-top: 1px solid #e0e0e0; margin-top: auto;">
+            <div id="sidebarSyncStatus" style="font-size: 12px; color: #666; display: flex; align-items: center; gap: 8px;">
+                🟢 Sincronizado
+            </div>
         </div>
     </div>
 
@@ -769,8 +900,103 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <!-- Seção Separar Times -->
+        <div id="separar" class="content-section active">
+            <h2>⚽ Quem está presente?</h2>
+            <p style="color: #666; margin-bottom: 20px;">Marque os jogadores presentes:</p>
+            
+            <div class="filter-controls">
+                <div class="filter-row">
+                    <label for="teamCount">Times:</label>
+                    <select id="teamCount">
+                        <option value="2">2 Times</option>
+                        <option value="3" selected>3 Times</option>
+                        <option value="4">4 Times</option>
+                        <option value="auto">Automático</option>
+                    </select>
+                    <label for="sortOrder">Ordenar:</label>
+                    <select id="sortOrder" onchange="atualizarOrdenacao()">
+                        <option value="alfabetica-az">A-Z</option>
+                        <option value="alfabetica-za">Z-A</option>
+                        <option value="estrelas-maior">⭐ Maior</option>
+                        <option value="estrelas-menor">⭐ Menor</option>
+                    </select>
+                    <div class="selected-counter">
+                        <span id="totalSelecionados">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="jogadoresPresentes"></div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="btn btn-full" onclick="separarTimes()">
+                    🎯 Separar Times
+                </button>
+                <button class="btn btn-danger btn-full" onclick="limparTodosCheckbox()">
+                    🔄 Desmarcar Todos
+                </button>
+            </div>
+
+            <div class="balance-info" id="balanceInfo" style="display: none;"></div>
+
+            <div class="teams-container" id="teamsContainer" style="display: none;">
+                <!-- Times serão gerados dinamicamente aqui -->
+            </div>
+        </div>
+
+        <!-- Seção Controle Financeiro -->
+        <div id="financeiro" class="content-section">
+            <h2>💰 Controle Financeiro</h2>
+            <p style="color: #666; margin-bottom: 20px;">Gerencie pagamentos dos jogadores avulsos:</p>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #e0e0e0;">
+                <button class="btn" id="tabSessoes" onclick="mostrarAbaFinanceiro('sessoes')" style="background: #4CAF50; margin: 0; border-radius: 0; border-bottom: 3px solid #4CAF50;">
+                    Sessões de Jogo
+                </button>
+                <button class="btn" id="tabPendencias" onclick="mostrarAbaFinanceiro('pendencias')" style="background: #666; margin: 0; border-radius: 0;">
+                    Pendências
+                </button>
+                <button class="btn" id="tabPagamentos" onclick="mostrarAbaFinanceiro('pagamentos')" style="background: #666; margin: 0; border-radius: 0;">
+                    Controle de Pagamentos
+                </button>
+            </div>
+
+            <div id="abaFinanceiroSessoes" class="aba-financeiro">
+                <div id="listaSessoes"></div>
+            </div>
+
+            <div id="abaFinanceiroPendencias" class="aba-financeiro" style="display: none;">
+                <div id="resumoPendencias"></div>
+            </div>
+
+            <div id="abaFinanceiroPagamentos" class="aba-financeiro" style="display: none;">
+                <div id="controlePagamentos"></div>
+            </div>
+        </div>
+
+        <!-- Seção Jogadores -->
+        <div id="jogadores" class="content-section">
+            <h2>👥 Gerenciar Jogadores</h2>
+            <p style="color: #666; margin-bottom: 15px;">Total: <span id="totalJogadores">0</span> jogadores cadastrados</p>
+            
+            <div class="filter-controls">
+                <div class="filter-row">
+                    <label for="sortOrderJogadores">Ordenar por:</label>
+                    <select id="sortOrderJogadores" onchange="atualizarOrdenacaoJogadores()">
+                        <option value="alfabetica-az">Nome (A-Z)</option>
+                        <option value="alfabetica-za">Nome (Z-A)</option>
+                        <option value="estrelas-maior">Estrelas (Maior-Menor)</option>
+                        <option value="estrelas-menor">Estrelas (Menor-Maior)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="listaJogadores"></div>
+        </div>
+
         <!-- Seção Cadastro -->
-        <div id="cadastro" class="content-section active">
+        <div id="cadastro" class="content-section">
             <div class="info-banner">
                 <h4>🌐 Dados Compartilhados</h4>
                 <p>Todos do grupo podem ver e editar os jogadores em tempo real!</p>
@@ -807,70 +1033,37 @@
                 ➕ Cadastrar Jogador
             </button>
         </div>
+    </div>
 
-        <!-- Seção Jogadores -->
-        <div id="jogadores" class="content-section">
-            <h2>👥 Gerenciar Jogadores</h2>
-            <p style="color: #666; margin-bottom: 15px;">Total: <span id="totalJogadores">0</span> jogadores cadastrados</p>
-            
-            <div class="filter-controls">
-                <div class="filter-row">
-                    <label for="sortOrderJogadores">Ordenar por:</label>
-                    <select id="sortOrderJogadores" onchange="atualizarOrdenacaoJogadores()">
-                        <option value="alfabetica-az">Nome (A-Z)</option>
-                        <option value="alfabetica-za">Nome (Z-A)</option>
-                        <option value="estrelas-maior">Estrelas (Maior-Menor)</option>
-                        <option value="estrelas-menor">Estrelas (Menor-Maior)</option>
-                    </select>
+    <!-- Modal de Registrar Sessão -->
+    <div id="sessaoModal" class="edit-modal">
+        <div class="edit-modal-content">
+            <h3>💰 Registrar Sessão de Jogo</h3>
+            <div class="form-group">
+                <label for="dataSessao">Data:</label>
+                <input type="date" id="dataSessao" readonly style="background: #f5f5f5;">
+            </div>
+            <div class="form-group">
+                <label for="valorDiaria">Valor da Diária (R$):</label>
+                <input type="number" id="valorDiaria" value="15.00" step="0.01" placeholder="15.00">
+            </div>
+            <div class="form-group">
+                <label>Avulsos Presentes:</label>
+                <div id="avulsosPresentes" style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                    <!-- Lista será preenchida dinamicamente -->
                 </div>
             </div>
-            
-            <div id="listaJogadores"></div>
-        </div>
-
-        <!-- Seção Separar Times -->
-        <div id="separar" class="content-section">
-            <h2>⚽ Quem está presente?</h2>
-            <p style="color: #666; margin-bottom: 20px;">Marque os jogadores presentes:</p>
-            
-            <div class="filter-controls">
-                <div class="filter-row">
-                    <label for="teamCount">Times:</label>
-                    <select id="teamCount" onchange="selectTeamCount(this.value)">
-                        <option value="2">2 Times</option>
-                        <option value="3" selected>3 Times</option>
-                        <option value="4">4 Times</option>
-                        <option value="auto">Automático</option>
-                    </select>
-                    <label for="sortOrder">Ordenar:</label>
-                    <select id="sortOrder" onchange="atualizarOrdenacao()">
-                        <option value="alfabetica-az">A-Z</option>
-                        <option value="alfabetica-za">Z-A</option>
-                        <option value="estrelas-maior">⭐ Maior</option>
-                        <option value="estrelas-menor">⭐ Menor</option>
-                    </select>
-                    <div class="selected-counter">
-                        <span id="totalSelecionados">0</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="jogadoresPresentes"></div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <button class="btn btn-full" onclick="separarTimes()">
-                    🎯 Separar Times
+            <div class="modal-actions">
+                <button class="btn" onclick="salvarSessao()">
+                    💾 Registrar Sessão
                 </button>
-                <button class="btn btn-danger btn-full" onclick="limparTodosCheckbox()">
-                    🔄 Desmarcar Todos
+                <button class="btn" onclick="pularRegistroSessao()" style="background: #666;">
+                    ⏭️ Pular Registro
                 </button>
             </div>
-
-            <div class="balance-info" id="balanceInfo" style="display: none;"></div>
-
-            <div class="teams-container" id="teamsContainer" style="display: none;">
-                <!-- Times serão gerados dinamicamente aqui -->
-            </div>
+            <button class="btn btn-full" onclick="fecharSessaoModal()" style="margin-top: 10px; background: #666;">
+                ❌ Cancelar
+            </button>
         </div>
     </div>
 
@@ -920,7 +1113,7 @@
 </div>
 
 <script>
-    // Configuração do Firebase - CONFIGURADO PARA FUTEBOL-ESTRELAS
+    // Configuração do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAHTD1vEIh8ehAFR2M4APiE8Ky9HEAuPU",
         authDomain: "futebol-estrelas.firebaseapp.com",
@@ -937,7 +1130,8 @@
     let jogadoresPresentes = [];
     let jogadorEditando = null;
     let isOnline = navigator.onLine;
-    let selectedTeamCount = 3; // Padrão: 3 times
+    let sessoes = {};
+    let timesFormados = null; // Para armazenar times antes do registro da sessão
 
     // Inicializar Firebase
     function initFirebase() {
@@ -945,14 +1139,17 @@
             app = firebase.initializeApp(firebaseConfig);
             database = firebase.database();
             
-            // Listener para mudanças nos jogadores
             database.ref('jogadores').on('value', (snapshot) => {
                 jogadores = snapshot.val() || {};
                 updateUI();
                 updateSyncStatus('synced');
             });
 
-            // Listener para status de conexão
+            database.ref('sessoes').on('value', (snapshot) => {
+                sessoes = snapshot.val() || {};
+                updateFinanceiroUI();
+            });
+
             database.ref('.info/connected').on('value', (snapshot) => {
                 isOnline = snapshot.val() === true;
                 updateSyncStatus(isOnline ? 'synced' : 'offline');
@@ -961,7 +1158,6 @@
             hideLoading();
         } catch (error) {
             console.error('Erro ao conectar com Firebase:', error);
-            // Fallback para localStorage se Firebase falhar
             showFirebaseError();
         }
     }
@@ -988,12 +1184,10 @@
     }
 
     function useLocalMode() {
-        // Usar localStorage como fallback
         jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
         hideLoading();
         updateSyncStatus('offline');
         
-        // Remover banner de dados compartilhados
         const banner = document.querySelector('.info-banner');
         if (banner) {
             banner.innerHTML = `
@@ -1012,20 +1206,17 @@
     }
 
     function updateSyncStatus(status) {
-        const syncStatus = document.getElementById('syncStatus');
+        const syncStatus = document.getElementById('sidebarSyncStatus');
         
         switch(status) {
             case 'synced':
-                syncStatus.textContent = '🟢 Sincronizado';
-                syncStatus.className = 'sync-status';
+                syncStatus.innerHTML = '🟢 Sincronizado';
                 break;
             case 'syncing':
-                syncStatus.textContent = '🟡 Sincronizando...';
-                syncStatus.className = 'sync-status syncing';
+                syncStatus.innerHTML = '🟡 Sincronizando...';
                 break;
             case 'offline':
-                syncStatus.textContent = '🔴 Offline';
-                syncStatus.className = 'sync-status offline';
+                syncStatus.innerHTML = '🔴 Offline';
                 break;
         }
     }
@@ -1037,13 +1228,31 @@
             exibirJogadores();
         } else if (currentSection === 'separar') {
             exibirJogadoresPresentes();
+        } else if (currentSection === 'financeiro') {
+            updateFinanceiroUI();
         }
         
-        // Atualizar contador total
         const total = Object.keys(jogadores).length;
         const totalElement = document.getElementById('totalJogadores');
         if (totalElement) {
             totalElement.textContent = total;
+        }
+    }
+
+    function updateFinanceiroUI() {
+        const currentSection = document.querySelector('.content-section.active')?.id;
+        if (currentSection === 'financeiro') {
+            const abaAtiva = document.querySelector('.aba-financeiro[style*="block"], .aba-financeiro:not([style*="none"])');
+            if (abaAtiva) {
+                const abaId = abaAtiva.id;
+                if (abaId === 'abaFinanceiroSessoes') {
+                    exibirSessoes();
+                } else if (abaId === 'abaFinanceiroPendencias') {
+                    exibirPendencias();
+                } else if (abaId === 'abaFinanceiroPagamentos') {
+                    exibirControlePagamentos();
+                }
+            }
         }
     }
 
@@ -1052,7 +1261,6 @@
             updateSyncStatus('syncing');
             database.ref('jogadores/' + jogador.id).set(jogador);
         } else {
-            // Fallback localStorage
             const jogadoresLocal = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
             jogadoresLocal[jogador.id] = jogador;
             localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
@@ -1066,7 +1274,6 @@
             updateSyncStatus('syncing');
             database.ref('jogadores/' + id).remove();
         } else {
-            // Fallback localStorage
             const jogadoresLocal = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
             delete jogadoresLocal[id];
             localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
@@ -1075,24 +1282,15 @@
         }
     }
 
-    // Função para selecionar número de times
-    window.selectTeamCount = function(count) {
-        selectedTeamCount = count === 'auto' ? 'auto' : parseInt(count);
-    };
-
-    // Funções globais do menu
+    // Funções do menu
     window.toggleSidebar = function() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        sidebar.classList.add('open');
-        overlay.classList.add('show');
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('overlay').classList.add('show');
     };
 
     window.closeSidebar = function() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('show');
     };
 
     window.showSection = function(sectionName) {
@@ -1108,6 +1306,8 @@
             exibirJogadores();
         } else if (sectionName === 'separar') {
             exibirJogadoresPresentes();
+        } else if (sectionName === 'financeiro') {
+            mostrarAbaFinanceiro('sessoes');
         }
     };
 
@@ -1122,7 +1322,6 @@
             return;
         }
         
-        // Verificar se jogador já existe
         const jogadorExistente = Object.values(jogadores).find(j => 
             j.nome.toLowerCase() === nome.toLowerCase()
         );
@@ -1158,6 +1357,12 @@
 
     function criarEstrelas(quantidade) {
         return '⭐'.repeat(Math.min(quantidade, 10));
+    }
+
+    function formatarNomeComTipo(jogador) {
+        const tipo = jogador.tipo || 'mensalista';
+        const tipoSigla = tipo === 'mensalista' ? '(M)' : '(A)';
+        return `${jogador.nome} ${tipoSigla}`;
     }
 
     function ordenarJogadores(lista, tipoOrdem) {
@@ -1201,7 +1406,7 @@
             <div class="list-item">
                 <div class="item-content">
                     <div class="player-info">
-                        <div class="player-name">${jogador.nome}</div>
+                        <div class="player-name">${formatarNomeComTipo(jogador)}</div>
                         <div class="player-stars">
                             <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
                             <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
@@ -1240,11 +1445,13 @@
                  onclick="togglePresenca('${jogador.id}')">
                 <div class="item-content">
                     <div class="checkbox-wrapper">
-                        <input type="checkbox" ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
-                               onchange="togglePresenca('${jogador.id}')" onclick="event.stopPropagation()">
+                        <input type="checkbox" 
+                               ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
+                               onchange="event.stopPropagation(); togglePresenca('${jogador.id}')" 
+                               onclick="event.stopPropagation()">
                     </div>
                     <div class="player-info">
-                        <div class="player-name">${jogador.nome}</div>
+                        <div class="player-name">${formatarNomeComTipo(jogador)}</div>
                         <div class="player-stars">
                             <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
                             <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
@@ -1266,9 +1473,7 @@
 
     function atualizarContador() {
         const total = jogadoresPresentes.length;
-        const contadorElement = document.getElementById('totalSelecionados');
-        
-        contadorElement.textContent = `${total} selecionados`;
+        document.getElementById('totalSelecionados').textContent = `${total} selecionados`;
     }
 
     window.togglePresenca = function(id) {
@@ -1278,6 +1483,12 @@
             jogadoresPresentes.splice(index, 1);
         } else {
             jogadoresPresentes.push(id);
+        }
+        
+        // Força atualização imediata do checkbox específico
+        const checkbox = document.querySelector(`input[onchange*="${id}"]`);
+        if (checkbox) {
+            checkbox.checked = jogadoresPresentes.includes(id);
         }
         
         exibirJogadoresPresentes();
@@ -1293,6 +1504,7 @@
         
         document.getElementById('editNome').value = jogadorEditando.nome;
         document.getElementById('editEstrelas').value = jogadorEditando.estrelas;
+        document.getElementById('editTipoJogador').value = jogadorEditando.tipo || 'mensalista';
         document.getElementById('editModal').style.display = 'flex';
     };
 
@@ -1300,6 +1512,7 @@
         if (!jogadorEditando) return;
         
         const novasEstrelas = parseInt(document.getElementById('editEstrelas').value);
+        const novoTipo = document.getElementById('editTipoJogador').value;
         const btnSalvar = document.getElementById('btnSalvar');
         
         btnSalvar.disabled = true;
@@ -1308,6 +1521,7 @@
         const jogadorAtualizado = {
             ...jogadorEditando,
             estrelas: novasEstrelas,
+            tipo: novoTipo,
             atualizadoEm: new Date().toISOString()
         };
         
@@ -1317,7 +1531,7 @@
             btnSalvar.disabled = false;
             btnSalvar.innerHTML = '💾 Salvar';
             fecharModal();
-            alert(`${jogadorEditando.nome} agora tem ${novasEstrelas} ${novasEstrelas === 1 ? 'estrela' : 'estrelas'}!`);
+            alert(`${jogadorEditando.nome} atualizado com sucesso!`);
         }, 1000);
     };
 
@@ -1329,7 +1543,6 @@
             btnRemover.disabled = true;
             btnRemover.textContent = '⏳ Removendo...';
             
-            // Remover da lista de presentes se estiver lá
             jogadoresPresentes = jogadoresPresentes.filter(jId => jId !== jogadorEditando.id);
             
             removerJogadorDB(jogadorEditando.id);
@@ -1355,7 +1568,7 @@
         exibirJogadoresPresentes();
     };
 
-    // Algoritmo melhorado de separação de times
+    // Algoritmo de separação de times
     window.separarTimes = function() {
         if (jogadoresPresentes.length < 2) {
             alert('Marque pelo menos 2 jogadores para formar os times!');
@@ -1363,130 +1576,160 @@
         }
         
         const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-        
-        if (jogadoresDoJogo.length === 0) {
-            alert('Erro: Nenhum jogador válido encontrado!');
-            return;
-        }
-        
-        const totalJogadores = jogadoresDoJogo.length;
+        const totalJogadoresReais = jogadoresDoJogo.length;
         
         // Determinar número de times
         let numTimes;
         const selectedValue = document.getElementById('teamCount').value;
         if (selectedValue === 'auto') {
-            if (totalJogadores <= 8) numTimes = 2;
-            else if (totalJogadores <= 12) numTimes = 3;
+            if (totalJogadoresReais <= 8) numTimes = 2;
+            else if (totalJogadoresReais <= 12) numTimes = 3;
             else numTimes = 4;
         } else {
             numTimes = parseInt(selectedValue);
         }
         
-        // Separar jogadores por nível
-        const jogadores10Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 10);
-        const jogadores9Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 9);
-        const jogadores8Estrelas = jogadoresDoJogo.filter(j => j.estrelas === 8);
-        const outrosJogadores = jogadoresDoJogo.filter(j => j.estrelas < 8);
+        // Calcular quantos jogadores genéricos são necessários
+        const jogadoresNecessarios = numTimes * 5;
+        const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
         
-        // Ordenar outros jogadores por estrelas (maior para menor)
+        // Adicionar jogadores genéricos ANTES do balanceamento
+        const todosJogadores = [...jogadoresDoJogo];
+        for (let i = 0; i < genericosNecessarios; i++) {
+            todosJogadores.push({
+                id: `generico_${i}`,
+                nome: `Jogador Extra ${i + 1}`,
+                estrelas: 5,
+                tipo: 'mensalista',
+                isGenerico: true
+            });
+        }
+        
+        // Agora rodar o algoritmo com TODOS os jogadores (reais + genéricos)
+        const totalJogadores = todosJogadores.length;
+        
+        // Separar jogadores por nível (incluindo genéricos)
+        const jogadores10Estrelas = todosJogadores.filter(j => j.estrelas === 10);
+        const jogadores9Estrelas = todosJogadores.filter(j => j.estrelas === 9);
+        const jogadores8Estrelas = todosJogadores.filter(j => j.estrelas === 8);
+        const outrosJogadores = todosJogadores.filter(j => j.estrelas < 8);
+        
         outrosJogadores.sort((a, b) => b.estrelas - a.estrelas);
         
         // Criar times vazios
         const times = Array.from({ length: numTimes }, () => []);
         
-        // Distribuir jogadores 10 estrelas primeiro (um por time, máximo)
+        // Distribuir jogadores 10 estrelas (máximo 1 por time)
         jogadores10Estrelas.forEach((jogador, index) => {
             if (index < numTimes) {
                 times[index].push(jogador);
             }
         });
         
-        // Distribuir jogadores 9 estrelas
-        jogadores9Estrelas.forEach((jogador, index) => {
-            const timeIndex = index % numTimes;
-            times[timeIndex].push(jogador);
-        });
-        
-        // Distribuir jogadores 8 estrelas
-        jogadores8Estrelas.forEach((jogador, index) => {
-            const timeIndex = index % numTimes;
-            times[timeIndex].push(jogador);
-        });
-        
-        // Distribuir outros jogadores usando algoritmo de balanceamento
-        for (const jogador of outrosJogadores) {
-            // Encontrar o time com menor pontuação total
+        // Se sobrar jogadores 10 estrelas, distribuir nos times com menor pontuação
+        for (let i = numTimes; i < jogadores10Estrelas.length; i++) {
             const timeMenorPontuacao = times.reduce((menor, time, index) => {
                 const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
                 const pontuacaoMenor = times[menor].reduce((sum, j) => sum + j.estrelas, 0);
                 return pontuacaoAtual < pontuacaoMenor ? index : menor;
             }, 0);
+            times[timeMenorPontuacao].push(jogadores10Estrelas[i]);
+        }
+        
+        // Distribuir jogadores 9 e 8 estrelas usando algoritmo serpentina
+        const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
+        let timeAtual = 0;
+        let direcao = 1;
+        
+        for (const jogador of jogadoresAltos) {
+            times[timeAtual].push(jogador);
             
-            times[timeMenorPontuacao].push(jogador);
+            if (direcao === 1) {
+                timeAtual++;
+                if (timeAtual >= numTimes) {
+                    timeAtual = numTimes - 1;
+                    direcao = -1;
+                }
+            } else {
+                timeAtual--;
+                if (timeAtual < 0) {
+                    timeAtual = 0;
+                    direcao = 1;
+                }
+            }
         }
         
-        // Adicionar jogadores extras se necessário para completar times
-        const jogadoresPorTime = Math.ceil(totalJogadores / numTimes);
-        const totalNecessario = jogadoresPorTime * numTimes;
-        const jogadoresExtrasNecessarios = totalNecessario - totalJogadores;
-        
-        for (let i = 0; i < jogadoresExtrasNecessarios; i++) {
-            const timeIndex = i % numTimes;
-            times[timeIndex].push({
-                id: `generico_${i}`,
-                nome: `Jogador Extra ${i + 1}`,
-                estrelas: 5,
-                isGenerico: true
-            });
+        // Distribuir outros jogadores (incluindo genéricos) equilibrando quantidades
+        for (const jogador of outrosJogadores) {
+            const timeMenosJogadores = times.reduce((menor, time, index) => {
+                return time.length < times[menor].length ? index : menor;
+            }, 0);
+            
+            const timesComMenorQuantidade = times
+                .map((time, index) => ({ time, index, count: time.length }))
+                .filter(t => t.count === times[timeMenosJogadores].length);
+            
+            if (timesComMenorQuantidade.length > 1) {
+                const melhorTime = timesComMenorQuantidade.reduce((melhor, atual) => {
+                    const pontuacaoAtual = atual.time.reduce((sum, j) => sum + j.estrelas, 0);
+                    const pontuacaoMelhor = melhor.time.reduce((sum, j) => sum + j.estrelas, 0);
+                    return pontuacaoAtual < pontuacaoMelhor ? atual : melhor;
+                });
+                times[melhorTime.index].push(jogador);
+            } else {
+                times[timeMenosJogadores].push(jogador);
+            }
         }
         
-        exibirTimes(times);
+        exibirTimes(times, genericosNecessarios);
     };
 
-    function exibirTimes(times) {
+    function exibirTimes(times, genericosAdicionados = 0) {
         const container = document.getElementById('teamsContainer');
         const numTimes = times.length;
         
-        // Configurar layout do grid
         let gridClass = '';
         switch(numTimes) {
-            case 2:
-                gridClass = 'two-teams';
-                break;
-            case 3:
-                gridClass = 'three-teams';
-                break;
-            case 4:
-                gridClass = 'four-teams';
-                break;
+            case 2: gridClass = 'two-teams'; break;
+            case 3: gridClass = 'three-teams'; break;
+            case 4: gridClass = 'four-teams'; break;
         }
         
         container.className = `teams-container ${gridClass}`;
         container.style.display = 'grid';
         
-        // Calcular estatísticas
         const estatisticasTimes = times.map(time => {
             const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
             const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
-            return { totalEstrelas, media: parseFloat(media), jogadores: time.length };
+            const mensalistas = time.filter(j => !j.isGenerico && (j.tipo || 'mensalista') === 'mensalista').length;
+            const avulsos = time.filter(j => !j.isGenerico && j.tipo === 'avulso').length;
+            const genericos = time.filter(j => j.isGenerico).length;
+            return { 
+                totalEstrelas, 
+                media: parseFloat(media), 
+                jogadores: time.length,
+                mensalistas,
+                avulsos,
+                genericos
+            };
         });
         
-        // Nomes e cores dos times
         const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
         
-        // Gerar HTML dos times
         container.innerHTML = times.map((time, index) => `
             <div class="team team-${index}">
                 <h3>${nomesEquipes[index]}</h3>
                 <div class="team-stats">
                     <strong>Total: ${estatisticasTimes[index].totalEstrelas} ⭐</strong><br>
                     <strong>Média: ${estatisticasTimes[index].media}</strong><br>
-                    <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong>
+                    <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong><br>
+                    <strong>Mensalistas: ${estatisticasTimes[index].mensalistas} | Avulsos: ${estatisticasTimes[index].avulsos}</strong><br>
+                    ${estatisticasTimes[index].genericos > 0 ? `<strong>Genéricos: ${estatisticasTimes[index].genericos}</strong>` : ''}
                 </div>
                 <div>
                     ${time.map(jogador => `
                         <div class="team-player" style="${jogador.isGenerico ? 'opacity: 0.7; font-style: italic;' : ''}">
-                            <div class="team-player-name">${jogador.nome}${jogador.isGenerico ? ' 👤' : ''}</div>
+                            <div class="team-player-name">${jogador.isGenerico ? jogador.nome + ' 👤' : formatarNomeComTipo(jogador)}</div>
                             <div class="team-player-stars">${criarEstrelas(jogador.estrelas)}</div>
                         </div>
                     `).join('')}
@@ -1494,23 +1737,26 @@
             </div>
         `).join('');
         
-        // Calcular qualidade do balanceamento
         const medias = estatisticasTimes.map(est => est.media);
         const mediaGeral = medias.reduce((sum, m) => sum + m, 0) / medias.length;
         const maiorDiferenca = Math.max(...medias) - Math.min(...medias);
+        
+        const quantidades = estatisticasTimes.map(est => est.jogadores);
+        const diferencaQuantidade = Math.max(...quantidades) - Math.min(...quantidades);
         
         const qualidadeBalance = maiorDiferenca <= 0.5 ? 'Excelente' : 
                                maiorDiferenca <= 1.0 ? 'Muito Bom' :
                                maiorDiferenca <= 1.5 ? 'Bom' : 
                                maiorDiferenca <= 2.0 ? 'Regular' : 'Pode melhorar';
         
-        // Exibir informações de balanceamento
         const balanceInfo = document.getElementById('balanceInfo');
         balanceInfo.innerHTML = `
             <h3>📊 Análise da Distribuição</h3>
-            <p><strong>Times formados:</strong> ${numTimes} times</p>
+            <p><strong>Times formados:</strong> ${numTimes} times de 5 jogadores cada</p>
+            ${genericosAdicionados > 0 ? `<p><strong>Jogadores genéricos adicionados:</strong> ${genericosAdicionados}</p>` : ''}
             <p><strong>Média geral:</strong> ${mediaGeral.toFixed(1)} estrelas</p>
             <p><strong>Maior diferença:</strong> ${maiorDiferenca.toFixed(1)} estrelas</p>
+            <p><strong>Diferença de quantidade:</strong> ${diferencaQuantidade} jogador${diferencaQuantidade !== 1 ? 'es' : ''}</p>
             <p><strong>Qualidade do balanceamento:</strong> ${qualidadeBalance}</p>
             <p style="font-size: 13px; margin-top: 10px; color: #666;">
                 ${maiorDiferenca <= 0.5 ? '🟢 Times perfeitamente balanceados!' : 
@@ -1519,16 +1765,261 @@
                   maiorDiferenca <= 2.0 ? '🟡 Times razoavelmente balanceados' :
                   '🔴 Considere redistribuir alguns jogadores'}
             </p>
+            ${genericosAdicionados > 0 ? `<p style="font-size: 12px; margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404;"><strong>💡 Dica:</strong> Os jogadores genéricos (5⭐) podem ser substituídos por qualquer pessoa disponível na hora do jogo.</p>` : ''}
         `;
         
         balanceInfo.style.display = 'block';
-        
-        // Scroll suave para os resultados
-        balanceInfo.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
+        balanceInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    // Funções do controle financeiro
+    window.abrirModalSessao = function(avulsosPresentes) {
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataSessao').value = hoje;
+        document.getElementById('valorDiaria').value = '15.00';
+        
+        const container = document.getElementById('avulsosPresentes');
+        container.innerHTML = avulsosPresentes.map(jogador => `
+            <div style="padding: 8px; border-bottom: 1px solid #e0e0e0;">
+                <strong>${jogador.nome}</strong> - R$ <span id="valor_${jogador.id}">15.00</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('sessaoModal').style.display = 'flex';
+    };
+
+    window.fecharSessaoModal = function() {
+        document.getElementById('sessaoModal').style.display = 'none';
+        timesFormados = null;
+    };
+
+    window.pularRegistroSessao = function() {
+        fecharSessaoModal();
+    };
+
+    window.salvarSessao = function() {
+        const data = document.getElementById('dataSessao').value;
+        const valor = parseFloat(document.getElementById('valorDiaria').value);
+        
+        if (!data || !valor || valor <= 0) {
+            alert('Por favor, preencha todos os campos corretamente!');
+            return;
+        }
+        
+        const avulsosPresentes = jogadoresPresentes
+            .map(id => jogadores[id])
+            .filter(j => j && j.tipo === 'avulso');
+        
+        const novaSessao = {
+            id: Date.now().toString(),
+            data: data,
+            valorDiaria: valor,
+            avulsosPresentes: avulsosPresentes.map(j => j.id),
+            times: timesFormados,
+            pagamentos: {}
+        };
+        
+        // Inicializar pagamentos como pendentes
+        avulsosPresentes.forEach(jogador => {
+            novaSessao.pagamentos[jogador.id] = 'pendente';
+        });
+        
+        salvarSessaoDB(novaSessao);
+        fecharSessaoModal();
+        
+        alert(`Sessão registrada! ${avulsosPresentes.length} avulsos - Total: R$ ${(valor * avulsosPresentes.length).toFixed(2)}`);
+    };
+
+    function salvarSessaoDB(sessao) {
+        if (database) {
+            updateSyncStatus('syncing');
+            database.ref('sessoes/' + sessao.id).set(sessao);
+        } else {
+            const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+            sessoesLocal[sessao.id] = sessao;
+            localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+            sessoes = sessoesLocal;
+            updateFinanceiroUI();
+        }
+    }
+
+    window.mostrarAbaFinanceiro = function(aba) {
+        // Atualizar botões
+        document.getElementById('tabSessoes').style.background = '#666';
+        document.getElementById('tabSessoes').style.borderBottom = 'none';
+        document.getElementById('tabPendencias').style.background = '#666';
+        document.getElementById('tabPendencias').style.borderBottom = 'none';
+        document.getElementById('tabPagamentos').style.background = '#666';
+        document.getElementById('tabPagamentos').style.borderBottom = 'none';
+        
+        // Esconder todas as abas
+        document.getElementById('abaFinanceiroSessoes').style.display = 'none';
+        document.getElementById('abaFinanceiroPendencias').style.display = 'none';
+        document.getElementById('abaFinanceiroPagamentos').style.display = 'none';
+        
+        // Mostrar aba selecionada
+        if (aba === 'sessoes') {
+            document.getElementById('tabSessoes').style.background = '#4CAF50';
+            document.getElementById('tabSessoes').style.borderBottom = '3px solid #4CAF50';
+            document.getElementById('abaFinanceiroSessoes').style.display = 'block';
+            exibirSessoes();
+        } else if (aba === 'pendencias') {
+            document.getElementById('tabPendencias').style.background = '#4CAF50';
+            document.getElementById('tabPendencias').style.borderBottom = '3px solid #4CAF50';
+            document.getElementById('abaFinanceiroPendencias').style.display = 'block';
+            exibirPendencias();
+        } else if (aba === 'pagamentos') {
+            document.getElementById('tabPagamentos').style.background = '#4CAF50';
+            document.getElementById('tabPagamentos').style.borderBottom = '3px solid #4CAF50';
+            document.getElementById('abaFinanceiroPagamentos').style.display = 'block';
+            exibirControlePagamentos();
+        }
+    };
+
+    function exibirSessoes() {
+        const container = document.getElementById('listaSessoes');
+        const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
+        
+        if (sessoesArray.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="emoji">📋</span>
+                    Nenhuma sessão registrada ainda.<br>
+                    Separe times com avulsos para registrar sessões.
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = sessoesArray.map(sessao => {
+            const avulsos = sessao.avulsosPresentes.map(id => jogadores[id]).filter(j => j);
+            const total = sessao.valorDiaria * avulsos.length;
+            
+            return `
+                <div class="sessao-item">
+                    <div class="sessao-header">
+                        <div class="sessao-data">${new Date(sessao.data).toLocaleDateString('pt-BR')}</div>
+                        <div class="sessao-valor">R$ ${total.toFixed(2)}</div>
+                    </div>
+                    <div class="sessao-avulsos">
+                        <strong>Avulsos:</strong> ${avulsos.map(j => j.nome).join(', ')}
+                    </div>
+                    <div style="font-size: 12px; color: #888;">
+                        Valor individual: R$ ${sessao.valorDiaria.toFixed(2)}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function exibirPendencias() {
+        const container = document.getElementById('resumoPendencias');
+        const pendencias = {};
+        
+        // Calcular pendências por jogador
+        Object.values(sessoes).forEach(sessao => {
+            sessao.avulsosPresentes.forEach(jogadorId => {
+                if (sessao.pagamentos[jogadorId] === 'pendente') {
+                    if (!pendencias[jogadorId]) {
+                        pendencias[jogadorId] = {
+                            nome: jogadores[jogadorId]?.nome || 'Jogador removido',
+                            total: 0,
+                            jogos: 0
+                        };
+                    }
+                    pendencias[jogadorId].total += sessao.valorDiaria;
+                    pendencias[jogadorId].jogos += 1;
+                }
+            });
+        });
+        
+        const pendenciasArray = Object.values(pendencias);
+        
+        if (pendenciasArray.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="emoji">✅</span>
+                    Todos os pagamentos estão em dia!
+                </div>
+            `;
+            return;
+        }
+        
+        const totalGeral = pendenciasArray.reduce((sum, p) => sum + p.total, 0);
+        
+        container.innerHTML = `
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                <strong>Total a receber: R$ ${totalGeral.toFixed(2)}</strong>
+            </div>
+            ${pendenciasArray.map(pendencia => `
+                <div class="pendencia-item">
+                    <div>
+                        <div class="pendencia-nome">${pendencia.nome}</div>
+                        <div style="font-size: 12px; color: #666;">${pendencia.jogos} ${pendencia.jogos === 1 ? 'jogo' : 'jogos'}</div>
+                    </div>
+                    <div class="pendencia-valor">R$ ${pendencia.total.toFixed(2)}</div>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    function exibirControlePagamentos() {
+        const container = document.getElementById('controlePagamentos');
+        const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
+        
+        if (sessoesArray.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="emoji">📋</span>
+                    Nenhuma sessão para controlar.
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = sessoesArray.map(sessao => {
+            const avulsos = sessao.avulsosPresentes.map(id => jogadores[id]).filter(j => j);
+            
+            return `
+                <div class="pagamento-item">
+                    <div class="pagamento-header">
+                        <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                        <span style="font-size: 12px; color: #666;">R$ ${sessao.valorDiaria.toFixed(2)} cada</span>
+                    </div>
+                    ${avulsos.map(jogador => {
+                        const status = sessao.pagamentos[jogador.id] || 'pendente';
+                        return `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span>${jogador.nome}</span>
+                                <div>
+                                    <span class="status-${status}">${status === 'pago' ? 'PAGO' : 'PENDENTE'}</span>
+                                    ${status === 'pendente' ? 
+                                        `<button class="btn-marcar-pago" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pago')">Marcar como Pago</button>` :
+                                        `<button class="btn-marcar-pendente" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pendente')">Marcar como Pendente</button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.marcarPagamento = function(sessaoId, jogadorId, status) {
+        if (database) {
+            updateSyncStatus('syncing');
+            database.ref(`sessoes/${sessaoId}/pagamentos/${jogadorId}`).set(status);
+        } else {
+            const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+            if (sessoesLocal[sessaoId]) {
+                sessoesLocal[sessaoId].pagamentos[jogadorId] = status;
+                localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+                sessoes = sessoesLocal;
+                updateFinanceiroUI();
+            }
+        }
+    };
 
     // Event listeners
     document.addEventListener('click', function(event) {
@@ -1547,7 +2038,6 @@
         }
     });
 
-    // Monitor conexão
     window.addEventListener('online', function() {
         isOnline = true;
         updateSyncStatus('synced');

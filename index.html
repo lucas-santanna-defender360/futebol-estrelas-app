@@ -295,22 +295,20 @@
 
         .filter-controls {
             background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
             border: 1px solid #e0e0e0;
         }
 
         .filter-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 10px;
+            gap: 10px;
         }
 
         .filter-controls label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #333;
             margin-bottom: 0;
@@ -319,18 +317,21 @@
 
         .filter-controls select {
             flex: 1;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
         }
 
         .selected-counter {
             background: #4CAF50;
             color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
+            min-width: 60px;
             text-align: center;
         }
 
@@ -727,16 +728,16 @@
                 
                 <div class="filter-controls">
                     <div class="filter-row">
-                        <label for="sortOrder">Ordenar por:</label>
+                        <label for="sortOrder">Ordenar:</label>
                         <select id="sortOrder" onchange="atualizarOrdenacao()">
-                            <option value="alfabetica-az">Nome (A-Z)</option>
-                            <option value="alfabetica-za">Nome (Z-A)</option>
-                            <option value="estrelas-maior">Estrelas (Maior-Menor)</option>
-                            <option value="estrelas-menor">Estrelas (Menor-Maior)</option>
+                            <option value="alfabetica-az">A-Z</option>
+                            <option value="alfabetica-za">Z-A</option>
+                            <option value="estrelas-maior">⭐ Maior</option>
+                            <option value="estrelas-menor">⭐ Menor</option>
                         </select>
-                    </div>
-                    <div class="selected-counter">
-                        Selecionados: <span id="totalSelecionados">0</span> / 10
+                        <div class="selected-counter">
+                            <span id="totalSelecionados">0</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -754,24 +755,7 @@
                 <div class="balance-info" id="balanceInfo" style="display: none;"></div>
 
                 <div class="teams-container" id="teamsContainer" style="display: none;">
-                    <div class="team team-a">
-                        <h3>🔵 Time A</h3>
-                        <div class="team-stats">
-                            <strong>Estrelas: <span id="starsTeamA">0</span></strong><br>
-                            <strong>Média: <span id="avgTeamA">0</span></strong><br>
-                            <strong>Jogadores: <span id="playersTeamA">0</span></strong>
-                        </div>
-                        <div id="teamA"></div>
-                    </div>
-                    <div class="team team-b">
-                        <h3>🔴 Time B</h3>
-                        <div class="team-stats">
-                            <strong>Estrelas: <span id="starsTeamB">0</span></strong><br>
-                            <strong>Média: <span id="avgTeamB">0</span></strong><br>
-                            <strong>Jogadores: <span id="playersTeamB">0</span></strong>
-                        </div>
-                        <div id="teamB"></div>
-                    </div>
+                    <!-- Times serão gerados dinamicamente aqui -->
                 </div>
             </div>
         </div>
@@ -1154,17 +1138,25 @@
             const total = jogadoresPresentes.length;
             const contadorElement = document.getElementById('totalSelecionados');
             
-            contadorElement.textContent = total;
-            
-            // Mudar cor se exceder o limite
+            // Informação visual sobre quantos times serão formados
             const counterDiv = contadorElement.closest('.selected-counter');
-            if (total > 10) {
+            let info = '';
+            
+            if (total < 2) {
                 counterDiv.style.background = '#f44336'; // Vermelho
-            } else if (total >= 8) {
-                counterDiv.style.background = '#FF9800'; // Laranja
-            } else {
+                info = 'Mín. 2';
+            } else if (total <= 8) {
                 counterDiv.style.background = '#4CAF50'; // Verde
+                info = '2 times';
+            } else if (total <= 12) {
+                counterDiv.style.background = '#2196F3'; // Azul
+                info = '3 times';
+            } else {
+                counterDiv.style.background = '#FF9800'; // Laranja
+                info = '4 times';
             }
+            
+            contadorElement.innerHTML = `${total} <small>(${info})</small>`;
         }
 
         window.togglePresenca = function(id) {
@@ -1252,19 +1244,50 @@
         };
 
         window.separarTimes = function() {
+            console.log('Função separar times chamada'); // Debug
+            
             if (jogadoresPresentes.length < 2) {
                 alert('Marque pelo menos 2 jogadores para formar os times!');
                 return;
             }
             
+            console.log('Jogadores presentes:', jogadoresPresentes.length); // Debug
+            
             const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            console.log('Jogadores do jogo:', jogadoresDoJogo); // Debug
+            
+            if (jogadoresDoJogo.length === 0) {
+                alert('Erro: Nenhum jogador válido encontrado!');
+                return;
+            }
+            
             const totalJogadores = jogadoresDoJogo.length;
             
             // Calcular quantos times e jogadores por time
-            const { numTimes, jogadoresPorTime } = calcularDistribuicaoTimes(totalJogadores);
+            const { numTimes, jogadoresPorTime, totalComGenerico } = calcularDistribuicaoTimes(totalJogadores);
+            console.log('Distribuição:', { numTimes, jogadoresPorTime, totalComGenerico }); // Debug
             
-            // Ordenar jogadores por estrelas (melhor → pior)
-            const jogadoresOrdenados = [...jogadoresDoJogo].sort((a, b) => b.estrelas - a.estrelas);
+            // Adicionar jogadores genéricos se necessário
+            const jogadoresCompletos = [...jogadoresDoJogo];
+            const jogadoresGenericosNecessarios = totalComGenerico - totalJogadores;
+            
+            for (let i = 0; i < jogadoresGenericosNecessarios; i++) {
+                jogadoresCompletos.push({
+                    id: `generico_${i}`,
+                    nome: `Jogador Extra ${i + 1}`,
+                    estrelas: 5,
+                    isGenerico: true
+                });
+            }
+            
+            // Ordenar jogadores por estrelas (melhor → pior), jogadores reais primeiro
+            const jogadoresOrdenados = jogadoresCompletos.sort((a, b) => {
+                // Jogadores reais vêm antes dos genéricos
+                if (a.isGenerico && !b.isGenerico) return 1;
+                if (!a.isGenerico && b.isGenerico) return -1;
+                // Depois ordena por estrelas
+                return b.estrelas - a.estrelas;
+            });
             
             // Criar array de times
             const times = [];
@@ -1295,98 +1318,130 @@
                 }
             }
             
+            console.log('Times formados:', times); // Debug
             exibirMultiplosTimes(times, jogadoresPorTime);
         };
 
         function calcularDistribuicaoTimes(totalJogadores) {
-            let numTimes, jogadoresPorTime;
+            let numTimes, jogadoresPorTime, totalComGenerico;
             
-            if (totalJogadores <= 10) {
-                // Até 10 jogadores: 2 times
+            if (totalJogadores <= 8) {
+                // Até 8 jogadores: 2 times
                 numTimes = 2;
-                jogadoresPorTime = `${Math.ceil(totalJogadores/2)} vs ${Math.floor(totalJogadores/2)}`;
-            } else if (totalJogadores <= 15) {
-                // 11-15 jogadores: 3 times
+                const jogadoresPorTime = 4; // Sempre 4x4
+                totalComGenerico = 8;
+                const genericos = totalComGenerico - totalJogadores;
+                jogadoresPorTime = genericos > 0 ? `4x4 (+${genericos} genérico${genericos > 1 ? 's' : ''})` : '4x4';
+            } else if (totalJogadores <= 12) {
+                // 9-12 jogadores: 3 times
                 numTimes = 3;
-                const base = Math.floor(totalJogadores / 3);
-                const resto = totalJogadores % 3;
-                if (resto === 0) {
-                    jogadoresPorTime = `${base} cada`;
-                } else if (resto === 1) {
-                    jogadoresPorTime = `1 time com ${base + 1}, 2 times com ${base}`;
-                } else {
-                    jogadoresPorTime = `2 times com ${base + 1}, 1 time com ${base}`;
-                }
-            } else {
-                // 16+ jogadores: 4 times
+                totalComGenerico = 12;
+                const genericos = totalComGenerico - totalJogadores;
+                jogadoresPorTime = genericos > 0 ? `4x4x4 (+${genericos} genérico${genericos > 1 ? 's' : ''})` : '4x4x4';
+            } else if (totalJogadores <= 16) {
+                // 13-16 jogadores: 4 times
                 numTimes = 4;
-                const base = Math.floor(totalJogadores / 4);
-                const resto = totalJogadores % 4;
-                if (resto === 0) {
-                    jogadoresPorTime = `${base} cada`;
-                } else {
-                    jogadoresPorTime = `${resto} times com ${base + 1}, ${4 - resto} times com ${base}`;
-                }
+                totalComGenerico = 16;
+                const genericos = totalComGenerico - totalJogadores;
+                jogadoresPorTime = genericos > 0 ? `4x4x4x4 (+${genericos} genérico${genericos > 1 ? 's' : ''})` : '4x4x4x4';
+            } else {
+                // 17+ jogadores: 4 times de 5
+                numTimes = 4;
+                totalComGenerico = Math.ceil(totalJogadores / 4) * 4; // Arredondar para múltiplo de 4
+                const genericos = totalComGenerico - totalJogadores;
+                const jogPorTime = totalComGenerico / 4;
+                jogadoresPorTime = genericos > 0 ? `${jogPorTime}x${jogPorTime}x${jogPorTime}x${jogPorTime} (+${genericos} genérico${genericos > 1 ? 's' : ''})` : `${jogPorTime} cada`;
             }
             
-            return { numTimes, jogadoresPorTime };
+            return { numTimes, jogadoresPorTime, totalComGenerico };
         }
 
-        function exibirTimes(timeA, timeB) {
-            const starsA = timeA.reduce((sum, j) => sum + j.estrelas, 0);
-            const starsB = timeB.reduce((sum, j) => sum + j.estrelas, 0);
-            const mediaA = (starsA / timeA.length).toFixed(1);
-            const mediaB = (starsB / timeB.length).toFixed(1);
-            const diferenca = Math.abs(starsA - starsB);
-            const diferencaMedia = Math.abs(mediaA - mediaB);
+        function exibirMultiplosTimes(times, distribuicaoInfo) {
+            console.log('Exibindo times:', times); // Debug
             
-            document.getElementById('teamA').innerHTML = timeA.map(j => `
-                <div class="team-player">
-                    <div class="team-player-name">${j.nome}</div>
-                    <div class="team-player-stars">${criarEstrelas(j.estrelas)}</div>
-                </div>
-            `).join('');
+            const totalTimes = times.length;
             
-            document.getElementById('teamB').innerHTML = timeB.map(j => `
-                <div class="team-player">
-                    <div class="team-player-name">${j.nome}</div>
-                    <div class="team-player-stars">${criarEstrelas(j.estrelas)}</div>
-                </div>
-            `).join('');
-            
-            document.getElementById('starsTeamA').textContent = starsA;
-            document.getElementById('starsTeamB').textContent = starsB;
-            document.getElementById('avgTeamA').textContent = mediaA;
-            document.getElementById('avgTeamB').textContent = mediaB;
-            document.getElementById('playersTeamA').textContent = timeA.length;
-            document.getElementById('playersTeamB').textContent = timeB.length;
-            
-            const qualidadeBalance = diferencaMedia <= 0.5 ? 'Excelente' : 
-                                   diferencaMedia <= 1.0 ? 'Muito Bom' :
-                                   diferencaMedia <= 1.5 ? 'Bom' : 
-                                   diferencaMedia <= 2.0 ? 'Regular' : 'Pode melhorar';
-            
-            document.getElementById('balanceInfo').innerHTML = `
-                <h3>📊 Análise do Balanceamento</h3>
-                <p><strong>Diferença total:</strong> ${diferenca} estrelas</p>
-                <p><strong>Diferença de média:</strong> ${diferencaMedia.toFixed(1)} estrelas</p>
-                <p><strong>Qualidade:</strong> ${qualidadeBalance}</p>
-                <p style="font-size: 13px; margin-top: 10px; color: #666;">
-                    ${diferencaMedia <= 0.5 ? '🟢 Times perfeitamente balanceados!' : 
-                      diferencaMedia <= 1.0 ? '🟢 Times muito bem balanceados!' :
-                      diferencaMedia <= 1.5 ? '🟡 Times bem balanceados' : 
-                      diferencaMedia <= 2.0 ? '🟡 Times razoavelmente balanceados' :
-                      '🔴 Considere redistribuir alguns jogadores'}
-                </p>
-            `;
-            
-            document.getElementById('teamsContainer').style.display = 'grid';
-            document.getElementById('balanceInfo').style.display = 'block';
-            
-            document.getElementById('balanceInfo').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
+            // Calcular estatísticas de cada time
+            const estatisticasTimes = times.map(time => {
+                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
+                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
+                return { totalEstrelas, media, jogadores: time.length };
             });
+            
+            // Calcular diferenças para análise de balanceamento
+            const medias = estatisticasTimes.map(est => parseFloat(est.media));
+            const mediaGeral = medias.length > 0 ? (medias.reduce((sum, m) => sum + m, 0) / medias.length).toFixed(1) : 0;
+            const maiorDiferenca = medias.length > 0 ? Math.max(...medias) - Math.min(...medias) : 0;
+            
+            // Cores dos times
+            const coresTimes = ['#2196F3', '#FF5722', '#4CAF50', '#FF9800', '#9C27B0', '#00BCD4'];
+            const emojis = ['🔵', '🔴', '🟢', '🟡', '🟣', '🔷'];
+            
+            // Atualizar container dos times
+            const container = document.getElementById('teamsContainer');
+            if (!container) {
+                console.error('Container teamsContainer não encontrado!');
+                return;
+            }
+            
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = totalTimes <= 2 ? '1fr 1fr' : 
+                                                  totalTimes === 3 ? 'repeat(3, 1fr)' : 
+                                                  'repeat(2, 1fr)';
+            
+            container.innerHTML = times.map((time, index) => `
+                <div class="team" style="border-color: ${coresTimes[index]};">
+                    <h3 style="color: ${coresTimes[index]};">${emojis[index]} Time ${String.fromCharCode(65 + index)}</h3>
+                    <div class="team-stats">
+                        <strong>Estrelas: ${estatisticasTimes[index].totalEstrelas}</strong><br>
+                        <strong>Média: ${estatisticasTimes[index].media}</strong><br>
+                        <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong>
+                    </div>
+                    <div>
+                        ${time.map(jogador => `
+                            <div class="team-player" style="border-left-color: ${coresTimes[index]}; ${jogador.isGenerico ? 'opacity: 0.7; font-style: italic;' : ''}">
+                                <div class="team-player-name">${jogador.nome}${jogador.isGenerico ? ' 👤' : ''}</div>
+                                <div class="team-player-stars">${criarEstrelas(jogador.estrelas)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Análise de balanceamento
+            const qualidadeBalance = maiorDiferenca <= 0.5 ? 'Excelente' : 
+                                   maiorDiferenca <= 1.0 ? 'Muito Bom' :
+                                   maiorDiferenca <= 1.5 ? 'Bom' : 
+                                   maiorDiferenca <= 2.0 ? 'Regular' : 'Pode melhorar';
+            
+            const balanceInfoElement = document.getElementById('balanceInfo');
+            if (balanceInfoElement) {
+                balanceInfoElement.innerHTML = `
+                    <h3>📊 Análise da Distribuição</h3>
+                    <p><strong>Times formados:</strong> ${totalTimes} times</p>
+                    <p><strong>Distribuição:</strong> ${distribuicaoInfo}</p>
+                    <p><strong>Média geral:</strong> ${mediaGeral} estrelas</p>
+                    <p><strong>Maior diferença de médias:</strong> ${maiorDiferenca.toFixed(1)} estrelas</p>
+                    <p><strong>Qualidade do balanceamento:</strong> ${qualidadeBalance}</p>
+                    <p style="font-size: 13px; margin-top: 10px; color: #666;">
+                        ${maiorDiferenca <= 0.5 ? '🟢 Times perfeitamente balanceados!' : 
+                          maiorDiferenca <= 1.0 ? '🟢 Times muito bem balanceados!' :
+                          maiorDiferenca <= 1.5 ? '🟡 Times bem balanceados' : 
+                          maiorDiferenca <= 2.0 ? '🟡 Times razoavelmente balanceados' :
+                          '🔴 Considere redistribuir alguns jogadores'}
+                    </p>
+                `;
+                
+                balanceInfoElement.style.display = 'block';
+                
+                // Scroll suave para os resultados
+                balanceInfoElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+            
+            console.log('Times exibidos com sucesso!'); // Debug
         }
 
         // Event listeners

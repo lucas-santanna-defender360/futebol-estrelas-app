@@ -833,6 +833,36 @@
                 max-height: 95vh;
             }
         }
+
+        /* Modal Preview Teams */
+        .teams-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .preview-team {
+            background: white;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .preview-team h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .preview-players {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body>
@@ -1034,15 +1064,20 @@
         <div id="aprovacaoModal" class="edit-modal">
             <div class="edit-modal-content">
                 <h3>⚽ Confirmar Distribuição de Times</h3>
-                <p style="text-align: center; margin-bottom: 20px; color: #666;">
-                    A distribuição dos times está correta? Confirme para registrar a sessão de jogo.
+                <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+                    Verifique se a distribuição dos times está correta:
                 </p>
+                
+                <div class="teams-preview" id="teamsPreview">
+                    <!-- Preview dos times será gerado aqui -->
+                </div>
+                
                 <div class="modal-actions">
                     <button class="btn" onclick="confirmarDistribuicao()">
-                        ✅ Confirmar e Registrar
+                        ✅ Confirmar Times
                     </button>
                     <button class="btn btn-danger" onclick="refazerDistribuicao()">
-                        🔄 Refazer Distribuição
+                        🔄 Refazer
                     </button>
                 </div>
                 <button class="btn btn-full" onclick="cancelarAprovacao()" style="margin-top: 10px; background: #666;">
@@ -1064,7 +1099,7 @@
                     <input type="number" id="valorDiaria" value="15.00" step="0.01" placeholder="15.00">
                 </div>
                 <div class="form-group">
-                    <label>Jogadores Presentes:</label>
+                    <label>Todos os Jogadores Presentes:</label>
                     <div id="todosPresentes" style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
                         <!-- Lista será preenchida dinamicamente -->
                     </div>
@@ -1148,6 +1183,7 @@
         let isOnline = navigator.onLine;
         let sessoes = {};
         let timesFormados = null; // Para armazenar times antes do registro da sessão
+        let ultimaDistribuicao = null; // Para armazenar a última distribuição gerada
 
         // Inicializar Firebase
         function initFirebase() {
@@ -1201,6 +1237,7 @@
 
         function useLocalMode() {
             jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
+            sessoes = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
             hideLoading();
             updateSyncStatus('offline');
             
@@ -1295,6 +1332,19 @@
                 localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
                 jogadores = jogadoresLocal;
                 updateUI();
+            }
+        }
+
+        function salvarSessaoDB(sessao) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('sessoes/' + sessao.id).set(sessao);
+            } else {
+                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+                sessoesLocal[sessao.id] = sessao;
+                localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+                sessoes = sessoesLocal;
+                updateFinanceiroUI();
             }
         }
 
@@ -1581,10 +1631,12 @@
             jogadoresPresentes = [];
             document.getElementById('teamsContainer').style.display = 'none';
             document.getElementById('balanceInfo').style.display = 'none';
+            ultimaDistribuicao = null;
+            timesFormados = null;
             exibirJogadoresPresentes();
         };
 
-        // Algoritmo de separação de times
+        // Algoritmo de separação de times - VERSÃO CORRIGIDA
         window.separarTimes = function() {
             if (jogadoresPresentes.length < 2) {
                 alert('Marque pelo menos 2 jogadores para formar os times!');
@@ -1697,7 +1749,186 @@
                 }
             }
             
-            exibirTimes(times, genericosNecessarios);
+            // Armazenar distribuição e mostrar modal de aprovação
+            ultimaDistribuicao = {
+                times: times,
+                genericosNecessarios: genericosNecessarios
+            };
+            
+            mostrarModalAprovacao(times);
+        };
+
+        // Nova função para mostrar modal de aprovação
+        function mostrarModalAprovacao(times) {
+            const modal = document.getElementById('aprovacaoModal');
+            const preview = document.getElementById('teamsPreview');
+            const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
+            
+            preview.innerHTML = times.map((time, index) => {
+                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
+                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
+                
+                return `
+                    <div class="preview-team">
+                        <h4>${nomesEquipes[index]} - Média: ${media}★</h4>
+                        <div class="preview-players">
+                            ${time.map(jogador => `
+                                ${jogador.isGenerico ? 
+                                    `<em>${jogador.nome} (${jogador.estrelas}★)</em>` : 
+                                    `${formatarNomeComTipo(jogador)} (${jogador.estrelas}★)`
+                                }`
+                            ).join(' • ')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.style.display = 'flex';
+        }
+
+        // Funções do modal de aprovação
+        window.confirmarDistribuicao = function() {
+            if (!ultimaDistribuicao) return;
+            
+            // Fechar modal de aprovação
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            
+            // Exibir os times na tela
+            exibirTimes(ultimaDistribuicao.times, ultimaDistribuicao.genericosNecessarios);
+            
+            // Mostrar modal financeiro
+            mostrarModalFinanceiro();
+        };
+
+        window.refazerDistribuicao = function() {
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            ultimaDistribuicao = null;
+            // Rodar novamente o algoritmo
+            separarTimes();
+        };
+
+        window.cancelarAprovacao = function() {
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            ultimaDistribuicao = null;
+        };
+
+        // Nova função para mostrar modal financeiro
+        function mostrarModalFinanceiro() {
+            if (!ultimaDistribuicao) return;
+            
+            // Preparar dados da sessão
+            timesFormados = ultimaDistribuicao.times;
+            
+            // Configurar modal
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataSessao').value = hoje;
+            document.getElementById('valorDiaria').value = '15.00';
+            
+            // Mostrar TODOS os jogadores presentes
+            const todosPresentes = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const container = document.getElementById('todosPresentes');
+            
+            const mensalistas = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
+            
+            container.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h4 style="color: #4CAF50; margin-bottom: 8px; font-size: 14px;">
+                        👥 Mensalistas (${mensalistas.length})
+                    </h4>
+                    ${mensalistas.length > 0 ? 
+                        mensalistas.map(j => `
+                            <div style="padding: 4px 8px; background: #e8f5e8; border-radius: 4px; margin-bottom: 3px; font-size: 13px;">
+                                ${j.nome} (${j.estrelas}★)
+                            </div>
+                        `).join('') : 
+                        '<p style="color: #666; font-size: 12px; font-style: italic;">Nenhum mensalista presente</p>'
+                    }
+                </div>
+                
+                <div>
+                    <h4 style="color: #ff9800; margin-bottom: 8px; font-size: 14px;">
+                        💰 Avulsos (${avulsos.length}) - Cobrança: R$ ${(parseFloat(document.getElementById('valorDiaria').value || 15) * avulsos.length).toFixed(2)}
+                    </h4>
+                    ${avulsos.length > 0 ? 
+                        avulsos.map(j => `
+                            <div style="padding: 4px 8px; background: #fff3e0; border-radius: 4px; margin-bottom: 3px; font-size: 13px;">
+                                ${j.nome} (${j.estrelas}★) - R$ <span class="valor-individual">${document.getElementById('valorDiaria').value || '15.00'}</span>
+                            </div>
+                        `).join('') : 
+                        '<p style="color: #666; font-size: 12px; font-style: italic;">Nenhum avulso presente</p>'
+                    }
+                </div>
+            `;
+            
+            document.getElementById('sessaoModal').style.display = 'flex';
+        }
+
+        // Atualizar valores quando mudar o valor da diária
+        document.getElementById('valorDiaria').addEventListener('input', function() {
+            const valor = this.value;
+            const valoresIndividuais = document.querySelectorAll('.valor-individual');
+            valoresIndividuais.forEach(el => el.textContent = valor);
+            
+            // Atualizar total
+            const avulsos = jogadoresPresentes.filter(id => {
+                const jogador = jogadores[id];
+                return jogador && jogador.tipo === 'avulso';
+            });
+            const total = (parseFloat(valor) * avulsos.length).toFixed(2);
+            const tituloAvulsos = document.querySelector('h4[style*="color: #ff9800"]');
+            if (tituloAvulsos) {
+                tituloAvulsos.innerHTML = `💰 Avulsos (${avulsos.length}) - Cobrança: R$ ${total}`;
+            }
+        });
+
+        window.fecharSessaoModal = function() {
+            document.getElementById('sessaoModal').style.display = 'none';
+            timesFormados = null;
+        };
+
+        window.pularRegistroSessao = function() {
+            fecharSessaoModal();
+        };
+
+        window.salvarSessao = function() {
+            const data = document.getElementById('dataSessao').value;
+            const valor = parseFloat(document.getElementById('valorDiaria').value);
+            
+            if (!data || !valor || valor <= 0) {
+                alert('Por favor, preencha todos os campos corretamente!');
+                return;
+            }
+            
+            // Pegar TODOS os jogadores presentes
+            const todosPresentes = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const avulsosPresentes = todosPresentes.filter(j => j.tipo === 'avulso');
+            const mensalistasPresentes = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            
+            const novaSessao = {
+                id: Date.now().toString(),
+                data: data,
+                valorDiaria: valor,
+                todosPresentes: jogadoresPresentes, // IDs de TODOS os presentes
+                times: timesFormados,
+                pagamentos: {}
+            };
+            
+            // Inicializar status de pagamento apenas para avulsos
+            avulsosPresentes.forEach(jogador => {
+                novaSessao.pagamentos[jogador.id] = 'pendente';
+            });
+            
+            // Para mensalistas, registrar como "mensalista" (não precisam pagar)
+            mensalistasPresentes.forEach(jogador => {
+                novaSessao.pagamentos[jogador.id] = 'mensalista';
+            });
+            
+            salvarSessaoDB(novaSessao);
+            fecharSessaoModal();
+            
+            const totalArrecadar = valor * avulsosPresentes.length;
+            alert(`Sessão registrada com sucesso!\n\nTotal de jogadores: ${todosPresentes.length}\n- Mensalistas: ${mensalistasPresentes.length}\n- Avulsos: ${avulsosPresentes.length}\n\nTotal a arrecadar: R$ ${totalArrecadar.toFixed(2)}`);
         };
 
         function exibirTimes(times, genericosAdicionados = 0) {
@@ -1788,77 +2019,7 @@
             balanceInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Funções do controle financeiro
-        window.abrirModalSessao = function(avulsosPresentes) {
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('dataSessao').value = hoje;
-            document.getElementById('valorDiaria').value = '15.00';
-            
-            const container = document.getElementById('avulsosPresentes');
-            container.innerHTML = avulsosPresentes.map(jogador => `
-                <div style="padding: 8px; border-bottom: 1px solid #e0e0e0;">
-                    <strong>${jogador.nome}</strong> - R$ <span id="valor_${jogador.id}">15.00</span>
-                </div>
-            `).join('');
-            
-            document.getElementById('sessaoModal').style.display = 'flex';
-        };
-
-        window.fecharSessaoModal = function() {
-            document.getElementById('sessaoModal').style.display = 'none';
-            timesFormados = null;
-        };
-
-        window.pularRegistroSessao = function() {
-            fecharSessaoModal();
-        };
-
-        window.salvarSessao = function() {
-            const data = document.getElementById('dataSessao').value;
-            const valor = parseFloat(document.getElementById('valorDiaria').value);
-            
-            if (!data || !valor || valor <= 0) {
-                alert('Por favor, preencha todos os campos corretamente!');
-                return;
-            }
-            
-            const avulsosPresentes = jogadoresPresentes
-                .map(id => jogadores[id])
-                .filter(j => j && j.tipo === 'avulso');
-            
-            const novaSessao = {
-                id: Date.now().toString(),
-                data: data,
-                valorDiaria: valor,
-                avulsosPresentes: avulsosPresentes.map(j => j.id),
-                times: timesFormados,
-                pagamentos: {}
-            };
-            
-            // Inicializar pagamentos como pendentes
-            avulsosPresentes.forEach(jogador => {
-                novaSessao.pagamentos[jogador.id] = 'pendente';
-            });
-            
-            salvarSessaoDB(novaSessao);
-            fecharSessaoModal();
-            
-            alert(`Sessão registrada! ${avulsosPresentes.length} avulsos - Total: R$ ${(valor * avulsosPresentes.length).toFixed(2)}`);
-        };
-
-        function salvarSessaoDB(sessao) {
-            if (database) {
-                updateSyncStatus('syncing');
-                database.ref('sessoes/' + sessao.id).set(sessao);
-            } else {
-                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
-                sessoesLocal[sessao.id] = sessao;
-                localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
-                sessoes = sessoesLocal;
-                updateFinanceiroUI();
-            }
-        }
-
+        // Funções do controle financeiro - ATUALIZADAS
         window.mostrarAbaFinanceiro = function(aba) {
             // Atualizar botões
             document.getElementById('tabSessoes').style.background = '#666';
@@ -1901,26 +2062,36 @@
                     <div class="empty-state">
                         <span class="emoji">📋</span>
                         Nenhuma sessão registrada ainda.<br>
-                        Separe times com avulsos para registrar sessões.
+                        Separe times para registrar sessões automaticamente.
                     </div>
                 `;
                 return;
             }
             
             container.innerHTML = sessoesArray.map(sessao => {
-                const avulsos = sessao.avulsosPresentes.map(id => jogadores[id]).filter(j => j);
-                const total = sessao.valorDiaria * avulsos.length;
+                // Pegar TODOS os presentes e separar por tipo
+                const todosPresentes = sessao.todosPresentes.map(id => jogadores[id]).filter(j => j);
+                const mensalistas = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+                const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
+                const totalArrecadado = sessao.valorDiaria * avulsos.length;
                 
                 return `
                     <div class="sessao-item">
                         <div class="sessao-header">
                             <div class="sessao-data">${new Date(sessao.data).toLocaleDateString('pt-BR')}</div>
-                            <div class="sessao-valor">R$ ${total.toFixed(2)}</div>
+                            <div class="sessao-valor">R$ ${totalArrecadado.toFixed(2)}</div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            <strong>Total de jogadores:</strong> ${todosPresentes.length} 
+                            (${mensalistas.length} mensalistas + ${avulsos.length} avulsos)
                         </div>
                         <div class="sessao-avulsos">
-                            <strong>Avulsos:</strong> ${avulsos.map(j => j.nome).join(', ')}
+                            <strong>Avulsos:</strong> ${avulsos.length > 0 ? avulsos.map(j => j.nome).join(', ') : 'Nenhum'}
                         </div>
-                        <div style="font-size: 12px; color: #888;">
+                        <div class="sessao-avulsos">
+                            <strong>Mensalistas:</strong> ${mensalistas.length > 0 ? mensalistas.map(j => j.nome).join(', ') : 'Nenhum'}
+                        </div>
+                        <div style="font-size: 12px; color: #888; margin-top: 8px;">
                             Valor individual: R$ ${sessao.valorDiaria.toFixed(2)}
                         </div>
                     </div>
@@ -1932,19 +2103,22 @@
             const container = document.getElementById('resumoPendencias');
             const pendencias = {};
             
-            // Calcular pendências por jogador
+            // Calcular pendências por jogador (apenas avulsos)
             Object.values(sessoes).forEach(sessao => {
-                sessao.avulsosPresentes.forEach(jogadorId => {
+                Object.keys(sessao.pagamentos).forEach(jogadorId => {
                     if (sessao.pagamentos[jogadorId] === 'pendente') {
-                        if (!pendencias[jogadorId]) {
-                            pendencias[jogadorId] = {
-                                nome: jogadores[jogadorId]?.nome || 'Jogador removido',
-                                total: 0,
-                                jogos: 0
-                            };
+                        const jogador = jogadores[jogadorId];
+                        if (jogador && jogador.tipo === 'avulso') {
+                            if (!pendencias[jogadorId]) {
+                                pendencias[jogadorId] = {
+                                    nome: jogador.nome,
+                                    total: 0,
+                                    jogos: 0
+                                };
+                            }
+                            pendencias[jogadorId].total += sessao.valorDiaria;
+                            pendencias[jogadorId].jogos += 1;
                         }
-                        pendencias[jogadorId].total += sessao.valorDiaria;
-                        pendencias[jogadorId].jogos += 1;
                     }
                 });
             });
@@ -1994,7 +2168,24 @@
             }
             
             container.innerHTML = sessoesArray.map(sessao => {
-                const avulsos = sessao.avulsosPresentes.map(id => jogadores[id]).filter(j => j);
+                // Filtrar apenas avulsos para o controle de pagamentos
+                const avulsos = sessao.todosPresentes
+                    .map(id => jogadores[id])
+                    .filter(j => j && j.tipo === 'avulso');
+                
+                if (avulsos.length === 0) {
+                    return `
+                        <div class="pagamento-item" style="opacity: 0.7;">
+                            <div class="pagamento-header">
+                                <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                                <span style="font-size: 12px; color: #666;">Apenas mensalistas</span>
+                            </div>
+                            <div style="font-size: 13px; color: #888; font-style: italic;">
+                                Nenhum avulso presente nesta sessão
+                            </div>
+                        </div>
+                    `;
+                }
                 
                 return `
                     <div class="pagamento-item">
@@ -2039,9 +2230,18 @@
 
         // Event listeners
         document.addEventListener('click', function(event) {
-            const modal = document.getElementById('editModal');
-            if (event.target === modal) {
+            const editModal = document.getElementById('editModal');
+            const aprovacaoModal = document.getElementById('aprovacaoModal');
+            const sessaoModal = document.getElementById('sessaoModal');
+            
+            if (event.target === editModal) {
                 fecharModal();
+            }
+            if (event.target === aprovacaoModal) {
+                cancelarAprovacao();
+            }
+            if (event.target === sessaoModal) {
+                fecharSessaoModal();
             }
         });
 
@@ -2051,6 +2251,10 @@
             if (event.key === 'Escape') {
                 closeSidebar();
                 fecharModal();
+                document.getElementById('aprovacaoModal').style.display = 'none';
+                document.getElementById('sessaoModal').style.display = 'none';
+                ultimaDistribuicao = null;
+                timesFormados = null;
             }
         });
 

@@ -1803,9 +1803,117 @@
         window.refazerDistribuicao = function() {
             document.getElementById('aprovacaoModal').style.display = 'none';
             ultimaDistribuicao = null;
-            // Rodar novamente o algoritmo
-            separarTimes();
+            // Gerar nova distribuição alternativa
+            gerarDistribuicaoAlternativa();
         };
+
+        function gerarDistribuicaoAlternativa() {
+            if (jogadoresPresentes.length < 2) {
+                alert('Marque pelo menos 2 jogadores para formar os times!');
+                return;
+            }
+            
+            const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const totalJogadoresReais = jogadoresDoJogo.length;
+            
+            // Determinar número de times
+            let numTimes;
+            const selectedValue = document.getElementById('teamCount').value;
+            if (selectedValue === 'auto') {
+                if (totalJogadoresReais <= 8) numTimes = 2;
+                else if (totalJogadoresReais <= 12) numTimes = 3;
+                else numTimes = 4;
+            } else {
+                numTimes = parseInt(selectedValue);
+            }
+            
+            // Calcular quantos jogadores genéricos são necessários
+            const jogadoresNecessarios = numTimes * 5;
+            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
+            
+            // Adicionar jogadores genéricos
+            const todosJogadores = [...jogadoresDoJogo];
+            for (let i = 0; i < genericosNecessarios; i++) {
+                todosJogadores.push({
+                    id: `generico_${i}`,
+                    nome: `Jogador Extra ${i + 1}`,
+                    estrelas: 5,
+                    tipo: 'mensalista',
+                    isGenerico: true
+                });
+            }
+            
+            // Algoritmo alternativo - embaralhar antes de distribuir
+            const jogadoresEmbaralhados = [...todosJogadores];
+            
+            // Embaralhar dentro de cada categoria para gerar resultado diferente
+            const jogadores10Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 10));
+            const jogadores9Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 9));
+            const jogadores8Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 8));
+            const outrosJogadores = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas < 8));
+            
+            // Criar times vazios
+            const times = Array.from({ length: numTimes }, () => []);
+            
+            // Distribuir jogadores 10 estrelas de forma alternada
+            jogadores10Estrelas.forEach((jogador, index) => {
+                const timeIndex = index % numTimes;
+                times[timeIndex].push(jogador);
+            });
+            
+            // Distribuir jogadores 9 e 8 estrelas usando serpentina invertida
+            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
+            let timeAtual = numTimes - 1; // Começar do final
+            let direcao = -1; // Direção inversa
+            
+            for (const jogador of jogadoresAltos) {
+                times[timeAtual].push(jogador);
+                
+                if (direcao === -1) {
+                    timeAtual--;
+                    if (timeAtual < 0) {
+                        timeAtual = 0;
+                        direcao = 1;
+                    }
+                } else {
+                    timeAtual++;
+                    if (timeAtual >= numTimes) {
+                        timeAtual = numTimes - 1;
+                        direcao = -1;
+                    }
+                }
+            }
+            
+            // Distribuir outros jogadores priorizando equilíbrio
+            for (const jogador of outrosJogadores) {
+                // Encontrar time com menor pontuação total
+                const timeMenorPontuacao = times.reduce((menorIndex, time, index) => {
+                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
+                    const pontuacaoMenor = times[menorIndex].reduce((sum, j) => sum + j.estrelas, 0);
+                    return pontuacaoAtual < pontuacaoMenor ? index : menorIndex;
+                }, 0);
+                
+                times[timeMenorPontuacao].push(jogador);
+            }
+            
+            // Armazenar distribuição e mostrar modal
+            ultimaDistribuicao = {
+                times: times,
+                genericosNecessarios: genericosNecessarios
+            };
+            
+            mostrarModalAprovacao(times);
+        }
+
+        // Função para embaralhar array (algoritmo Fisher-Yates)
+        function embaralharArray(array) {
+            const embaralhado = [...array];
+            for (let i = embaralhado.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [embaralhado[i], embaralhado[j]] = [embaralhado[j], embaralhado[i]];
+            }
+            return embaralhado;
+        }
 
         window.cancelarAprovacao = function() {
             document.getElementById('aprovacaoModal').style.display = 'none';

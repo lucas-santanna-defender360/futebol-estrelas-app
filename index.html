@@ -1,4 +1,928 @@
-<!DOCTYPE html>
+// Nova função para mostrar modal financeiro
+        function mostrarModalFinanceiro() {
+            if (!ultimaDistribuicao) return;
+            
+            // Preparar dados da sessão
+            timesFormados = ultimaDistribuicao.times;
+            
+            // Configurar modal
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataSessao').value = hoje;
+            document.getElementById('valorDiaria').value = '15.00';
+            
+            // Mostrar TODOS os jogadores presentes
+            const todosPresentes = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const container = document.getElementById('todosPresentes');
+            
+            const mensalistas = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
+            
+            container.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h4 style="color: #4CAF50; margin-bottom: 8px; font-size: 14px;">
+                        👥 Mensalistas (${mensalistas.length})
+                    </h4>
+                    ${mensalistas.length > 0 ? 
+                        mensalistas.map(j => `
+                            <div style="padding: 4px 8px; background: #e8f5e8; border-radius: 4px; margin-bottom: 3px; font-size: 13px;">
+                                ${j.nome} (${j.estrelas}★)
+                            </div>
+                        `).join('') : 
+                        '<p style="color: #666; font-size: 12px; font-style: italic;">Nenhum mensalista presente</p>'
+                    }
+                </div>
+                
+                <div>
+                    <h4 style="color: #ff9800; margin-bottom: 8px; font-size: 14px;">
+                        💰 Avulsos (${avulsos.length}) - Cobrança: R$ ${(parseFloat(document.getElementById('valorDiaria').value || 15) * avulsos.length).toFixed(2)}
+                    </h4>
+                    ${avulsos.length > 0 ? 
+                        avulsos.map(j => `
+                            <div style="padding: 4px 8px; background: #fff3e0; border-radius: 4px; margin-bottom: 3px; font-size: 13px;">
+                                ${j.nome} (${j.estrelas}★) - R$ <span class="valor-individual">${document.getElementById('valorDiaria').value || '15.00'}</span>
+                            </div>
+                        `).join('') : 
+                        '<p style="color: #666; font-size: 12px; font-style: italic;">Nenhum avulso presente</p>'
+                    }
+                </div>
+            `;
+            
+            document.getElementById('sessaoModal').style.display = 'flex';
+        }
+
+        // Atualizar valores quando mudar o valor da diária
+        document.getElementById('valorDiaria').addEventListener('input', function() {
+            const valor = this.value;
+            const valoresIndividuais = document.querySelectorAll('.valor-individual');
+            valoresIndividuais.forEach(el => el.textContent = valor);
+            
+            // Atualizar total
+            const avulsos = jogadoresPresentes.filter(id => {
+                const jogador = jogadores[id];
+                return jogador && jogador.tipo === 'avulso';
+            });
+            const total = (parseFloat(valor) * avulsos.length).toFixed(2);
+            const tituloAvulsos = document.querySelector('h4[style*="color: #ff9800"]');
+            if (tituloAvulsos) {
+                tituloAvulsos.innerHTML = `💰 Avulsos (${avulsos.length}) - Cobrança: R$ ${total}`;
+            }
+        });
+
+        window.fecharSessaoModal = function() {
+            document.getElementById('sessaoModal').style.display = 'none';
+            timesFormados = null;
+        };
+
+        window.pularRegistroSessao = function() {
+            fecharSessaoModal();
+        };
+
+        window.salvarSessao = function() {
+            const data = document.getElementById('dataSessao').value;
+            const valor = parseFloat(document.getElementById('valorDiaria').value);
+            
+            if (!data || !valor || valor <= 0) {
+                alert('Por favor, preencha todos os campos corretamente!');
+                return;
+            }
+            
+            // Pegar TODOS os jogadores presentes
+            const todosPresentes = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const avulsosPresentes = todosPresentes.filter(j => j.tipo === 'avulso');
+            const mensalistasPresentes = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            
+            const novaSessao = {
+                id: Date.now().toString(),
+                data: data,
+                valorDiaria: valor,
+                todosPresentes: jogadoresPresentes, // IDs de TODOS os presentes
+                times: timesFormados,
+                pagamentos: {}
+            };
+            
+            // Inicializar status de pagamento apenas para avulsos
+            avulsosPresentes.forEach(jogador => {
+                novaSessao.pagamentos[jogador.id] = 'pendente';
+            });
+            
+            // Para mensalistas, registrar como "mensalista" (não precisam pagar)
+            mensalistasPresentes.forEach(jogador => {
+                novaSessao.pagamentos[jogador.id] = 'mensalista';
+            });
+            
+            salvarSessaoDB(novaSessao);
+            fecharSessaoModal();
+            
+            const totalArrecadar = valor * avulsosPresentes.length;
+            alert(`Sessão registrada com sucesso!\n\nTotal de jogadores: ${todosPresentes.length}\n- Mensalistas: ${mensalistasPresentes.length}\n- Avulsos: ${avulsosPresentes.length}\n\nTotal a arrecadar: R$ ${totalArrecadar.toFixed(2)}`);
+        };
+
+        function exibirTimes(times, genericosAdicionados = 0) {
+            const container = document.getElementById('teamsContainer');
+            const numTimes = times.length;
+            
+            let gridClass = '';
+            switch(numTimes) {
+                case 2: gridClass = 'two-teams'; break;
+                case 3: gridClass = 'three-teams'; break;
+                case 4: gridClass = 'four-teams'; break;
+            }
+            
+            container.className = `teams-container ${gridClass}`;
+            container.style.display = 'grid';
+            
+            const estatisticasTimes = times.map(time => {
+                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
+                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
+                const mensalistas = time.filter(j => !j.isGenerico && (j.tipo || 'mensalista') === 'mensalista').length;
+                const avulsos = time.filter(j => !j.isGenerico && j.tipo === 'avulso').length;
+                const genericos = time.filter(j => j.isGenerico).length;
+                return { 
+                    totalEstrelas, 
+                    media: parseFloat(media), 
+                    jogadores: time.length,
+                    mensalistas,
+                    avulsos,
+                    genericos
+                };
+            });
+            
+            const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
+            
+            container.innerHTML = times.map((time, index) => `
+                <div class="team team-${index}">
+                    <h3>${nomesEquipes[index]}</h3>
+                    <div class="team-stats">
+                        <strong>Total: ${estatisticasTimes[index].totalEstrelas} ⭐</strong><br>
+                        <strong>Média: ${estatisticasTimes[index].media}</strong><br>
+                        <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong><br>
+                        <strong>Mensalistas: ${estatisticasTimes[index].mensalistas} | Avulsos: ${estatisticasTimes[index].avulsos}</strong><br>
+                        ${estatisticasTimes[index].genericos > 0 ? `<strong>Genéricos: ${estatisticasTimes[index].genericos}</strong>` : ''}
+                    </div>
+                    <div>
+                        ${time.map(jogador => `
+                            <div class="sessao-avulsos">
+                            <strong>Mensalistas:</strong> ${mensalistas.length > 0 ? mensalistas.map(j => j.nome).join(', ') : 'Nenhum'}
+                        </div>
+                        <div style="font-size: 12px; color: #888; margin-top: 8px;">
+                            Valor individual: R$ ${sessao.valorDiaria.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function exibirPendencias() {
+            const container = document.getElementById('resumoPendencias');
+            const pendencias = {};
+            
+            // Calcular pendências por jogador (apenas avulsos)
+            Object.values(sessoes).forEach(sessao => {
+                Object.keys(sessao.pagamentos).forEach(jogadorId => {
+                    if (sessao.pagamentos[jogadorId] === 'pendente') {
+                        const jogador = jogadores[jogadorId];
+                        if (jogador && jogador.tipo === 'avulso') {
+                            if (!pendencias[jogadorId]) {
+                                pendencias[jogadorId] = {
+                                    nome: jogador.nome,
+                                    total: 0,
+                                    jogos: 0
+                                };
+                            }
+                            pendencias[jogadorId].total += sessao.valorDiaria;
+                            pendencias[jogadorId].jogos += 1;
+                        }
+                    }
+                });
+            });
+            
+            const pendenciasArray = Object.values(pendencias);
+            
+            if (pendenciasArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">✅</span>
+                        Todos os pagamentos estão em dia!
+                    </div>
+                `;
+                return;
+            }
+            
+            const totalGeral = pendenciasArray.reduce((sum, p) => sum + p.total, 0);
+            
+            container.innerHTML = `
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                    <strong>Total a receber: R$ ${totalGeral.toFixed(2)}</strong>
+                </div>
+                ${pendenciasArray.map(pendencia => `
+                    <div class="pendencia-item">
+                        <div>
+                            <div class="pendencia-nome">${pendencia.nome}</div>
+                            <div style="font-size: 12px; color: #666;">${pendencia.jogos} ${pendencia.jogos === 1 ? 'jogo' : 'jogos'}</div>
+                        </div>
+                        <div class="pendencia-valor">R$ ${pendencia.total.toFixed(2)}</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function exibirControlePagamentos() {
+            const container = document.getElementById('controlePagamentos');
+            const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (sessoesArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📋</span>
+                        Nenhuma sessão para controlar.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = sessoesArray.map(sessao => {
+                // Filtrar apenas avulsos para o controle de pagamentos
+                const avulsos = sessao.todosPresentes
+                    .map(id => jogadores[id])
+                    .filter(j => j && j.tipo === 'avulso');
+                
+                if (avulsos.length === 0) {
+                    return `
+                        <div class="pagamento-item" style="opacity: 0.7;">
+                            <div class="pagamento-header">
+                                <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                                <span style="font-size: 12px; color: #666;">Apenas mensalistas</span>
+                            </div>
+                            <div style="font-size: 13px; color: #888; font-style: italic;">
+                                Nenhum avulso presente nesta sessão
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="pagamento-item">
+                        <div class="pagamento-header">
+                            <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                            <span style="font-size: 12px; color: #666;">R$ ${sessao.valorDiaria.toFixed(2)} cada</span>
+                        </div>
+                        ${avulsos.map(jogador => {
+                            const status = sessao.pagamentos[jogador.id] || 'pendente';
+                            return `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                                    <span>${jogador.nome}</span>
+                                    <div>
+                                        <span class="status-${status}">${status === 'pago' ? 'PAGO' : 'PENDENTE'}</span>
+                                        ${status === 'pendente' ? 
+                                            `<button class="btn-marcar-pago" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pago')">Marcar como Pago</button>` :
+                                            `<button class="btn-marcar-pendente" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pendente')">Marcar como Pendente</button>`
+                                        }
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.marcarPagamento = function(sessaoId, jogadorId, status) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref(`sessoes/${sessaoId}/pagamentos/${jogadorId}`).set(status);
+            } else {
+                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+                if (sessoesLocal[sessaoId]) {
+                    sessoesLocal[sessaoId].pagamentos[jogadorId] = status;
+                    localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+                    sessoes = sessoesLocal;
+                    updateFinanceiroUI();
+                }
+            }
+        };
+
+        // Event listeners
+        document.addEventListener('click', function(event) {
+            const editModal = document.getElementById('editModal');
+            const aprovacaoModal = document.getElementById('aprovacaoModal');
+            const sessaoModal = document.getElementById('sessaoModal');
+            
+            if (event.target === editModal) {
+                fecharModal();
+            }
+            if (event.target === aprovacaoModal) {
+                cancelarAprovacao();
+            }
+            if (event.target === sessaoModal) {
+                fecharSessaoModal();
+            }
+        });
+
+        document.addEventListener('touchstart', function() {}, true);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeSidebar();
+                fecharModal();
+                document.getElementById('aprovacaoModal').style.display = 'none';
+                document.getElementById('sessaoModal').style.display = 'none';
+                ultimaDistribuicao = null;
+                timesFormados = null;
+            }
+        });
+
+        window.addEventListener('online', function() {
+            isOnline = true;
+            updateSyncStatus('synced');
+        });
+
+        window.addEventListener('offline', function() {
+            isOnline = false;
+            updateSyncStatus('offline');
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            initFirebase();
+        });
+    </script>
+</body>
+</html>="team-player" style="${jogador.isGenerico ? 'opacity: 0.7; font-style: italic;' : ''}">
+                                <div class="team-player-name">${jogador.isGenerico ? jogador.nome + ' 👤' : formatarNomeComTipo(jogador)}</div>
+                                <div class="team-player-stars">${criarEstrelas(jogador.estrelas)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            const medias = estatisticasTimes.map(est => est.media);
+            const mediaGeral = medias.reduce((sum, m) => sum + m, 0) / medias.length;
+            const maiorDiferenca = Math.max(...medias) - Math.min(...medias);
+            
+            const quantidades = estatisticasTimes.map(est => est.jogadores);
+            const diferencaQuantidade = Math.max(...quantidades) - Math.min(...quantidades);
+            
+            const qualidadeBalance = maiorDiferenca <= 0.5 ? 'Excelente' : 
+                                   maiorDiferenca <= 1.0 ? 'Muito Bom' :
+                                   maiorDiferenca <= 1.5 ? 'Bom' : 
+                                   maiorDiferenca <= 2.0 ? 'Regular' : 'Pode melhorar';
+            
+            const balanceInfo = document.getElementById('balanceInfo');
+            balanceInfo.innerHTML = `
+                <h3>📊 Análise da Distribuição</h3>
+                <p><strong>Times formados:</strong> ${numTimes} times de 5 jogadores cada</p>
+                ${genericosAdicionados > 0 ? `<p><strong>Jogadores genéricos adicionados:</strong> ${genericosAdicionados}</p>` : ''}
+                <p><strong>Média geral:</strong> ${mediaGeral.toFixed(1)} estrelas</p>
+                <p><strong>Maior diferença:</strong> ${maiorDiferenca.toFixed(1)} estrelas</p>
+                <p><strong>Diferença de quantidade:</strong> ${diferencaQuantidade} jogador${diferencaQuantidade !== 1 ? 'es' : ''}</p>
+                <p><strong>Qualidade do balanceamento:</strong> ${qualidadeBalance}</p>
+                <p style="font-size: 13px; margin-top: 10px; color: #666;">
+                    ${maiorDiferenca <= 0.5 ? '🟢 Times perfeitamente balanceados!' : 
+                      maiorDiferenca <= 1.0 ? '🟢 Times muito bem balanceados!' :
+                      maiorDiferenca <= 1.5 ? '🟡 Times bem balanceados' : 
+                      maiorDiferenca <= 2.0 ? '🟡 Times razoavelmente balanceados' :
+                      '🔴 Considere redistribuir alguns jogadores'}
+                </p>
+                ${genericosAdicionados > 0 ? `<p style="font-size: 12px; margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404;"><strong>💡 Dica:</strong> Os jogadores genéricos (5⭐) podem ser substituídos por qualquer pessoa disponível na hora do jogo.</p>` : ''}
+            `;
+            
+            balanceInfo.style.display = 'block';
+            balanceInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Funções do controle financeiro - ATUALIZADAS
+        window.mostrarAbaFinanceiro = function(aba) {
+            // Atualizar botões
+            document.getElementById('tabSessoes').style.background = '#666';
+            document.getElementById('tabSessoes').style.borderBottom = 'none';
+            document.getElementById('tabPendencias').style.background = '#666';
+            document.getElementById('tabPendencias').style.borderBottom = 'none';
+            document.getElementById('tabPagamentos').style.background = '#666';
+            document.getElementById('tabPagamentos').style.borderBottom = 'none';
+            
+            // Esconder todas as abas
+            document.getElementById('abaFinanceiroSessoes').style.display = 'none';
+            document.getElementById('abaFinanceiroPendencias').style.display = 'none';
+            document.getElementById('abaFinanceiroPagamentos').style.display = 'none';
+            
+            // Mostrar aba selecionada
+            if (aba === 'sessoes') {
+                document.getElementById('tabSessoes').style.background = '#4CAF50';
+                document.getElementById('tabSessoes').style.borderBottom = '3px solid #4CAF50';
+                document.getElementById('abaFinanceiroSessoes').style.display = 'block';
+                exibirSessoes();
+            } else if (aba === 'pendencias') {
+                document.getElementById('tabPendencias').style.background = '#4CAF50';
+                document.getElementById('tabPendencias').style.borderBottom = '3px solid #4CAF50';
+                document.getElementById('abaFinanceiroPendencias').style.display = 'block';
+                exibirPendencias();
+            } else if (aba === 'pagamentos') {
+                document.getElementById('tabPagamentos').style.background = '#4CAF50';
+                document.getElementById('tabPagamentos').style.borderBottom = '3px solid #4CAF50';
+                document.getElementById('abaFinanceiroPagamentos').style.display = 'block';
+                exibirControlePagamentos();
+            }
+        };
+
+        function exibirSessoes() {
+            const container = document.getElementById('listaSessoes');
+            const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (sessoesArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📋</span>
+                        Nenhuma sessão registrada ainda.<br>
+                        Separe times para registrar sessões automaticamente.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = sessoesArray.map(sessao => {
+                // Pegar TODOS os presentes e separar por tipo
+                const todosPresentes = sessao.todosPresentes.map(id => jogadores[id]).filter(j => j);
+                const mensalistas = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+                const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
+                const totalArrecadado = sessao.valorDiaria * avulsos.length;
+                
+                return `
+                    <div class="sessao-item">
+                        <div class="sessao-header">
+                            <div class="sessao-data">${new Date(sessao.data).toLocaleDateString('pt-BR')}</div>
+                            <div class="sessao-valor">R$ ${totalArrecadado.toFixed(2)}</div>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            <strong>Total de jogadores:</strong> ${todosPresentes.length} 
+                            (${mensalistas.length} mensalistas + ${avulsos.length} avulsos)
+                        </div>
+                        <div class="sessao-avulsos">
+                            <strong>Avulsos:</strong> ${avulsos.length > 0 ? avulsos.map(j => j.nome).join(', ') : 'Nenhum'}
+                        </div>
+                        <div class        function exibirJogadores() {
+            const container = document.getElementById('listaJogadores');
+            if (Object.keys(jogadores).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">😅</span>
+                        Nenhum jogador cadastrado ainda.<br>
+                        Vá para "Cadastrar Jogador" para adicionar jogadores.
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortOrder = document.getElementById('sortOrderJogadores').value;
+            const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
+            
+            container.innerHTML = jogadoresOrdenados.map(jogador => `
+                <div class="list-item">
+                    <div class="item-content">
+                        <div class="player-info">
+                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
+                            <div class="player-stars">
+                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
+                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                            </div>
+                        </div>
+                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
+                            ✏️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.atualizarOrdenacaoJogadores = function() {
+            exibirJogadores();
+        };
+
+        function exibirJogadoresPresentes() {
+            const container = document.getElementById('jogadoresPresentes');
+            if (Object.keys(jogadores).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">😅</span>
+                        Nenhum jogador cadastrado ainda.<br>
+                        Cadastre jogadores primeiro para poder separá-los em times.
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortOrder = document.getElementById('sortOrder').value;
+            const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
+            
+            container.innerHTML = jogadoresOrdenados.map(jogador => `
+                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''}" 
+                     onclick="togglePresenca('${jogador.id}')">
+                    <div class="item-content">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" 
+                                   ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
+                                   onchange="event.stopPropagation(); togglePresenca('${jogador.id}')" 
+                                   onclick="event.stopPropagation()">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
+                            <div class="player-stars">
+                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
+                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                            </div>
+                        </div>
+                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
+                            ✏️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            atualizarContador();
+        }
+
+        window.atualizarOrdenacao = function() {
+            exibirJogadoresPresentes();
+        };
+
+        function atualizarContador() {
+            const total = jogadoresPresentes.length;
+            document.getElementById('totalSelecionados').textContent = `${total} selecionados`;
+        }
+
+        window.togglePresenca = function(id) {
+            const index = jogadoresPresentes.indexOf(id);
+            
+            if (index > -1) {
+                jogadoresPresentes.splice(index, 1);
+            } else {
+                jogadoresPresentes.push(id);
+            }
+            
+            const checkbox = document.querySelector(`input[onchange*="${id}"]`);
+            if (checkbox) {
+                checkbox.checked = jogadoresPresentes.includes(id);
+            }
+            
+            exibirJogadoresPresentes();
+        };
+
+        window.editarJogador = function(id, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            jogadorEditando = jogadores[id];
+            if (!jogadorEditando) return;
+            
+            document.getElementById('editNome').value = jogadorEditando.nome;
+            document.getElementById('editEstrelas').value = jogadorEditando.estrelas;
+            document.getElementById('editTipoJogador').value = jogadorEditando.tipo || 'mensalista';
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        window.salvarEdicao = function() {
+            if (!jogadorEditando) return;
+            
+            const novasEstrelas = parseInt(document.getElementById('editEstrelas').value);
+            const novoTipo = document.getElementById('editTipoJogador').value;
+            const btnSalvar = document.getElementById('btnSalvar');
+            
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = '⏳ Salvando...';
+            
+            const jogadorAtualizado = {
+                ...jogadorEditando,
+                estrelas: novasEstrelas,
+                tipo: novoTipo,
+                atualizadoEm: new Date().toISOString()
+            };
+            
+            salvarJogador(jogadorAtualizado);
+            
+            setTimeout(() => {
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = '💾 Salvar';
+                fecharModal();
+                alert(`${jogadorEditando.nome} atualizado com sucesso!`);
+            }, 1000);
+        };
+
+        window.removerJogador = function() {
+            if (!jogadorEditando) return;
+            
+            if (confirm(`Tem certeza que deseja remover ${jogadorEditando.nome}?`)) {
+                const btnRemover = document.getElementById('btnRemover');
+                btnRemover.disabled = true;
+                btnRemover.textContent = '⏳ Removendo...';
+                
+                jogadoresPresentes = jogadoresPresentes.filter(jId => jId !== jogadorEditando.id);
+                
+                removerJogadorDB(jogadorEditando.id);
+                
+                setTimeout(() => {
+                    btnRemover.disabled = false;
+                    btnRemover.innerHTML = '🗑️ Remover';
+                    fecharModal();
+                    alert(`${jogadorEditando.nome} foi removido!`);
+                }, 1000);
+            }
+        };
+
+        window.fecharModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+            jogadorEditando = null;
+        };
+
+        window.limparTodosCheckbox = function() {
+            jogadoresPresentes = [];
+            document.getElementById('teamsContainer').style.display = 'none';
+            document.getElementById('balanceInfo').style.display = 'none';
+            ultimaDistribuicao = null;
+            timesFormados = null;
+            exibirJogadoresPresentes();
+        };
+
+        // Algoritmo de separação de times - VERSÃO CORRIGIDA
+        window.separarTimes = function() {
+            if (jogadoresPresentes.length < 2) {
+                alert('Marque pelo menos 2 jogadores para formar os times!');
+                return;
+            }
+            
+            const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const totalJogadoresReais = jogadoresDoJogo.length;
+            
+            // Determinar número de times
+            let numTimes;
+            const selectedValue = document.getElementById('teamCount').value;
+            if (selectedValue === 'auto') {
+                if (totalJogadoresReais <= 8) numTimes = 2;
+                else if (totalJogadoresReais <= 12) numTimes = 3;
+                else numTimes = 4;
+            } else {
+                numTimes = parseInt(selectedValue);
+            }
+            
+            // Calcular quantos jogadores genéricos são necessários
+            const jogadoresNecessarios = numTimes * 5;
+            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
+            
+            // Adicionar jogadores genéricos ANTES do balanceamento
+            const todosJogadores = [...jogadoresDoJogo];
+            for (let i = 0; i < genericosNecessarios; i++) {
+                todosJogadores.push({
+                    id: `generico_${i}`,
+                    nome: `Jogador Extra ${i + 1}`,
+                    estrelas: 5,
+                    tipo: 'mensalista',
+                    isGenerico: true
+                });
+            }
+            
+            // Separar jogadores por nível (incluindo genéricos)
+            const jogadores10Estrelas = todosJogadores.filter(j => j.estrelas === 10);
+            const jogadores9Estrelas = todosJogadores.filter(j => j.estrelas === 9);
+            const jogadores8Estrelas = todosJogadores.filter(j => j.estrelas === 8);
+            const outrosJogadores = todosJogadores.filter(j => j.estrelas < 8);
+            
+            outrosJogadores.sort((a, b) => b.estrelas - a.estrelas);
+            
+            // Criar times vazios
+            const times = Array.from({ length: numTimes }, () => []);
+            
+            // Distribuir jogadores 10 estrelas (máximo 1 por time)
+            jogadores10Estrelas.forEach((jogador, index) => {
+                if (index < numTimes) {
+                    times[index].push(jogador);
+                }
+            });
+            
+            // Se sobrar jogadores 10 estrelas, distribuir nos times com menor pontuação
+            for (let i = numTimes; i < jogadores10Estrelas.length; i++) {
+                const timeMenorPontuacao = times.reduce((menor, time, index) => {
+                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
+                    const pontuacaoMenor = times[menor].reduce((sum, j) => sum + j.estrelas, 0);
+                    return pontuacaoAtual < pontuacaoMenor ? index : menor;
+                }, 0);
+                times[timeMenorPontuacao].push(jogadores10Estrelas[i]);
+            }
+            
+            // Distribuir jogadores 9 e 8 estrelas usando algoritmo serpentina
+            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
+            let timeAtual = 0;
+            let direcao = 1;
+            
+            for (const jogador of jogadoresAltos) {
+                times[timeAtual].push(jogador);
+                
+                if (direcao === 1) {
+                    timeAtual++;
+                    if (timeAtual >= numTimes) {
+                        timeAtual = numTimes - 1;
+                        direcao = -1;
+                    }
+                } else {
+                    timeAtual--;
+                    if (timeAtual < 0) {
+                        timeAtual = 0;
+                        direcao = 1;
+                    }
+                }
+            }
+            
+            // Distribuir outros jogadores (incluindo genéricos) equilibrando quantidades
+            for (const jogador of outrosJogadores) {
+                const timeMenosJogadores = times.reduce((menor, time, index) => {
+                    return time.length < times[menor].length ? index : menor;
+                }, 0);
+                
+                const timesComMenorQuantidade = times
+                    .map((time, index) => ({ time, index, count: time.length }))
+                    .filter(t => t.count === times[timeMenosJogadores].length);
+                
+                if (timesComMenorQuantidade.length > 1) {
+                    const melhorTime = timesComMenorQuantidade.reduce((melhor, atual) => {
+                        const pontuacaoAtual = atual.time.reduce((sum, j) => sum + j.estrelas, 0);
+                        const pontuacaoMelhor = melhor.time.reduce((sum, j) => sum + j.estrelas, 0);
+                        return pontuacaoAtual < pontuacaoMelhor ? atual : melhor;
+                    });
+                    times[melhorTime.index].push(jogador);
+                } else {
+                    times[timeMenosJogadores].push(jogador);
+                }
+            }
+            
+            // Armazenar distribuição e mostrar modal de aprovação
+            ultimaDistribuicao = {
+                times: times,
+                genericosNecessarios: genericosNecessarios
+            };
+            
+            mostrarModalAprovacao(times);
+        };
+
+        // Nova função para mostrar modal de aprovação
+        function mostrarModalAprovacao(times) {
+            const modal = document.getElementById('aprovacaoModal');
+            const preview = document.getElementById('teamsPreview');
+            const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
+            
+            preview.innerHTML = times.map((time, index) => {
+                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
+                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
+                
+                return `
+                    <div class="preview-team">
+                        <h4>${nomesEquipes[index]} - Média: ${media}★</h4>
+                        <div class="preview-players">
+                            ${time.map(jogador => `
+                                ${jogador.isGenerico ? 
+                                    `<em>${jogador.nome} (${jogador.estrelas}★)</em>` : 
+                                    `${formatarNomeComTipo(jogador)} (${jogador.estrelas}★)`
+                                }`
+                            ).join(' • ')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.style.display = 'flex';
+        }
+
+        // Funções do modal de aprovação
+        window.confirmarDistribuicao = function() {
+            if (!ultimaDistribuicao) return;
+            
+            // Fechar modal de aprovação
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            
+            // Exibir os times na tela
+            exibirTimes(ultimaDistribuicao.times, ultimaDistribuicao.genericosNecessarios);
+            
+            // Mostrar modal financeiro
+            mostrarModalFinanceiro();
+        };
+
+        window.refazerDistribuicao = function() {
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            ultimaDistribuicao = null;
+            // Gerar nova distribuição alternativa
+            gerarDistribuicaoAlternativa();
+        };
+
+        function gerarDistribuicaoAlternativa() {
+            if (jogadoresPresentes.length < 2) {
+                alert('Marque pelo menos 2 jogadores para formar os times!');
+                return;
+            }
+            
+            const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
+            const totalJogadoresReais = jogadoresDoJogo.length;
+            
+            // Determinar número de times
+            let numTimes;
+            const selectedValue = document.getElementById('teamCount').value;
+            if (selectedValue === 'auto') {
+                if (totalJogadoresReais <= 8) numTimes = 2;
+                else if (totalJogadoresReais <= 12) numTimes = 3;
+                else numTimes = 4;
+            } else {
+                numTimes = parseInt(selectedValue);
+            }
+            
+            // Calcular quantos jogadores genéricos são necessários
+            const jogadoresNecessarios = numTimes * 5;
+            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
+            
+            // Adicionar jogadores genéricos
+            const todosJogadores = [...jogadoresDoJogo];
+            for (let i = 0; i < genericosNecessarios; i++) {
+                todosJogadores.push({
+                    id: `generico_${i}`,
+                    nome: `Jogador Extra ${i + 1}`,
+                    estrelas: 5,
+                    tipo: 'mensalista',
+                    isGenerico: true
+                });
+            }
+            
+            // Algoritmo alternativo - embaralhar antes de distribuir
+            const jogadoresEmbaralhados = [...todosJogadores];
+            
+            // Embaralhar dentro de cada categoria para gerar resultado diferente
+            const jogadores10Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 10));
+            const jogadores9Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 9));
+            const jogadores8Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 8));
+            const outrosJogadores = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas < 8));
+            
+            // Criar times vazios
+            const times = Array.from({ length: numTimes }, () => []);
+            
+            // Distribuir jogadores 10 estrelas de forma alternada
+            jogadores10Estrelas.forEach((jogador, index) => {
+                const timeIndex = index % numTimes;
+                times[timeIndex].push(jogador);
+            });
+            
+            // Distribuir jogadores 9 e 8 estrelas usando serpentina invertida
+            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
+            let timeAtual = numTimes - 1; // Começar do final
+            let direcao = -1; // Direção inversa
+            
+            for (const jogador of jogadoresAltos) {
+                times[timeAtual].push(jogador);
+                
+                if (direcao === -1) {
+                    timeAtual--;
+                    if (timeAtual < 0) {
+                        timeAtual = 0;
+                        direcao = 1;
+                    }
+                } else {
+                    timeAtual++;
+                    if (timeAtual >= numTimes) {
+                        timeAtual = numTimes - 1;
+                        direcao = -1;
+                    }
+                }
+            }
+            
+            // Distribuir outros jogadores priorizando equilíbrio
+            for (const jogador of outrosJogadores) {
+                // Encontrar time com menor pontuação total
+                const timeMenorPontuacao = times.reduce((menorIndex, time, index) => {
+                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
+                    const pontuacaoMenor = times[menorIndex].reduce((sum, j) => sum + j.estrelas, 0);
+                    return pontuacaoAtual < pontuacaoMenor ? index : menorIndex;
+                }, 0);
+                
+                times[timeMenorPontuacao].push(jogador);
+            }
+            
+            // Armazenar distribuição e mostrar modal
+            ultimaDistribuicao = {
+                times: times,
+                genericosNecessarios: genericosNecessarios
+            };
+            
+            mostrarModalAprovacao(times);
+        }
+
+        // Função para embaralhar array (algoritmo Fisher-Yates)
+        function embaralharArray(array) {
+            const embaralhado = [...array];
+            for (let i = embaralhado.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [embaralhado[i], embaralhado[j]] = [embaralhado[j], embaralhado[i]];
+            }
+            return embaralhado;
+        }
+
+        window.cancelarAprovacao = function() {
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            ultimaDistribuicao = null;
+        };<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -983,1403 +1907,3 @@
                         Pendências
                     </button>
                     <button class="btn" id="tabPagamentos" onclick="mostrarAbaFinanceiro('pagamentos')" style="background: #666; margin: 0; border-radius: 0;">
-                        Controle de Pagamentos
-                    </button>
-                </div>
-
-                <div id="abaFinanceiroSessoes" class="aba-financeiro">
-                    <div id="listaSessoes"></div>
-                </div>
-
-                <div id="abaFinanceiroPendencias" class="aba-financeiro" style="display: none;">
-                    <div id="resumoPendencias"></div>
-                </div>
-
-                <div id="abaFinanceiroPagamentos" class="aba-financeiro" style="display: none;">
-                    <div id="controlePagamentos"></div>
-                </div>
-            </div>
-
-            <!-- Seção Jogadores -->
-            <div id="jogadores" class="content-section">
-                <h2>👥 Gerenciar Jogadores</h2>
-                <p style="color: #666; margin-bottom: 15px;">Total: <span id="totalJogadores">0</span> jogadores cadastrados</p>
-                
-                <div class="filter-controls">
-                    <div class="filter-row">
-                        <label for="sortOrderJogadores">Ordenar por:</label>
-                        <select id="sortOrderJogadores" onchange="atualizarOrdenacaoJogadores()">
-                            <option value="alfabetica-az">Nome (A-Z)</option>
-                            <option value="alfabetica-za">Nome (Z-A)</option>
-                            <option value="estrelas-maior">Estrelas (Maior-Menor)</option>
-                            <option value="estrelas-menor">Estrelas (Menor-Maior)</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="listaJogadores"></div>
-            </div>
-
-            <!-- Seção Cadastro -->
-            <div id="cadastro" class="content-section">
-                <div class="info-banner">
-                    <h4>🌐 Dados Compartilhados</h4>
-                    <p>Todos do grupo podem ver e editar os jogadores em tempo real!</p>
-                </div>
-                
-                <h2>➕ Cadastrar Novo Jogador</h2>
-                <div class="form-group">
-                    <label for="nomeJogador">Nome do Jogador:</label>
-                    <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador">
-                </div>
-                <div class="form-group">
-                    <label for="estrelas">Nível de Habilidade:</label>
-                    <select id="estrelas">
-                        <option value="1">⭐ 1 Estrela</option>
-                        <option value="2">⭐⭐ 2 Estrelas</option>
-                        <option value="3">⭐⭐⭐ 3 Estrelas</option>
-                        <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 Estrelas</option>
-                        <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
-                        <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
-                        <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
-                        <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
-                        <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="tipoJogador">Tipo de Jogador:</label>
-                    <select id="tipoJogador">
-                        <option value="mensalista">Mensalista</option>
-                        <option value="avulso">Avulso</option>
-                    </select>
-                </div>
-                <button class="btn btn-full" id="btnCadastrar" onclick="cadastrarJogador()">
-                    ➕ Cadastrar Jogador
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal de Aprovação de Times -->
-        <div id="aprovacaoModal" class="edit-modal">
-            <div class="edit-modal-content">
-                <h3>⚽ Confirmar Distribuição de Times</h3>
-                <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
-                    Verifique se a distribuição dos times está correta:
-                </p>
-                
-                <div class="teams-preview" id="teamsPreview">
-                    <!-- Preview dos times será gerado aqui -->
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="btn" onclick="confirmarDistribuicao()">
-                        ✅ Confirmar Times
-                    </button>
-                    <button class="btn btn-danger" onclick="refazerDistribuicao()">
-                        🔄 Refazer
-                    </button>
-                </div>
-                <button class="btn btn-full" onclick="cancelarAprovacao()" style="margin-top: 10px; background: #666;">
-                    ❌ Cancelar
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal de Registrar Sessão -->
-        <div id="sessaoModal" class="edit-modal">
-            <div class="edit-modal-content">
-                <h3>💰 Registrar Sessão de Jogo</h3>
-                <div class="form-group">
-                    <label for="dataSessao">Data:</label>
-                    <input type="date" id="dataSessao" readonly style="background: #f5f5f5;">
-                </div>
-                <div class="form-group">
-                    <label for="valorDiaria">Valor da Diária (R$):</label>
-                    <input type="number" id="valorDiaria" value="15.00" step="0.01" placeholder="15.00">
-                </div>
-                <div class="form-group">
-                    <label>Todos os Jogadores Presentes:</label>
-                    <div id="todosPresentes" style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
-                        <!-- Lista será preenchida dinamicamente -->
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn" onclick="salvarSessao()">
-                        💾 Registrar Sessão
-                    </button>
-                    <button class="btn" onclick="pularRegistroSessao()" style="background: #666;">
-                        ⏭️ Pular Registro
-                    </button>
-                </div>
-                <button class="btn btn-full" onclick="fecharSessaoModal()" style="margin-top: 10px; background: #666;">
-                    ❌ Cancelar
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal de Edição -->
-        <div id="editModal" class="edit-modal">
-            <div class="edit-modal-content">
-                <h3>✏️ Editar Jogador</h3>
-                <div class="form-group">
-                    <label for="editNome">Nome:</label>
-                    <input type="text" id="editNome" readonly style="background: #f5f5f5;">
-                </div>
-                <div class="form-group">
-                    <label for="editEstrelas">Nível de Habilidade:</label>
-                    <select id="editEstrelas">
-                        <option value="1">⭐ 1 Estrela</option>
-                        <option value="2">⭐⭐ 2 Estrelas</option>
-                        <option value="3">⭐⭐⭐ 3 Estrelas</option>
-                        <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 Estrelas</option>
-                        <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
-                        <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
-                        <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
-                        <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
-                        <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editTipoJogador">Tipo de Jogador:</label>
-                    <select id="editTipoJogador">
-                        <option value="mensalista">Mensalista</option>
-                        <option value="avulso">Avulso</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn" id="btnSalvar" onclick="salvarEdicao()">
-                        💾 Salvar
-                    </button>
-                    <button class="btn btn-danger" id="btnRemover" onclick="removerJogador()">
-                        🗑️ Remover
-                    </button>
-                </div>
-                <button class="btn btn-full" onclick="fecharModal()" style="margin-top: 10px; background: #666;">
-                    ❌ Cancelar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAHTD1vEIh8ehAFR2M4APiE8Ky9HEAuPU",
-            authDomain: "futebol-estrelas.firebaseapp.com",
-            databaseURL: "https://futebol-estrelas-default-rtdb.firebaseio.com",
-            projectId: "futebol-estrelas",
-            storageBucket: "futebol-estrelas.firebasestorage.app",
-            messagingSenderId: "96538381574",
-            appId: "1:96538381574:web:dee50b846e46a898aeaecf",
-            measurementId: "G-B16XPZN9R8"
-        };
-
-        let app, database;
-        let jogadores = {};
-        let jogadoresPresentes = [];
-        let jogadorEditando = null;
-        let isOnline = navigator.onLine;
-        let sessoes = {};
-        let timesFormados = null; // Para armazenar times antes do registro da sessão
-        let ultimaDistribuicao = null; // Para armazenar a última distribuição gerada
-
-        // Inicializar Firebase
-        function initFirebase() {
-            try {
-                app = firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
-                
-                database.ref('jogadores').on('value', (snapshot) => {
-                    jogadores = snapshot.val() || {};
-                    updateUI();
-                    updateSyncStatus('synced');
-                });
-
-                database.ref('sessoes').on('value', (snapshot) => {
-                    sessoes = snapshot.val() || {};
-                    updateFinanceiroUI();
-                });
-
-                database.ref('.info/connected').on('value', (snapshot) => {
-                    isOnline = snapshot.val() === true;
-                    updateSyncStatus(isOnline ? 'synced' : 'offline');
-                });
-
-                hideLoading();
-            } catch (error) {
-                console.error('Erro ao conectar com Firebase:', error);
-                showFirebaseError();
-            }
-        }
-
-        function showFirebaseError() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            loadingScreen.innerHTML = `
-                <div style="text-align: center; padding: 40px 20px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
-                    <h2>Configuração Necessária</h2>
-                    <p style="margin: 20px 0; line-height: 1.6;">
-                        Para usar o modo compartilhado, é necessário configurar o Firebase.<br><br>
-                        <strong>Como configurar:</strong><br>
-                        1. Acesse <a href="https://console.firebase.google.com" target="_blank" style="color: #4CAF50;">Firebase Console</a><br>
-                        2. Crie um novo projeto<br>
-                        3. Configure o Realtime Database<br>
-                        4. Substitua as configurações no código
-                    </p>
-                    <button onclick="useLocalMode()" style="background: #4CAF50; color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; margin-top: 20px;">
-                        📱 Usar Modo Local (sem compartilhamento)
-                    </button>
-                </div>
-            `;
-        }
-
-        function useLocalMode() {
-            jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
-            sessoes = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
-            hideLoading();
-            updateSyncStatus('offline');
-            
-            const banner = document.querySelector('.info-banner');
-            if (banner) {
-                banner.innerHTML = `
-                    <h4>📱 Modo Local</h4>
-                    <p>Dados salvos apenas neste dispositivo. Configure o Firebase para compartilhar!</p>
-                `;
-                banner.style.background = 'linear-gradient(135deg, #fff3e0, #ffe0b2)';
-                banner.style.borderColor = '#FF9800';
-            }
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            updateUI();
-        }
-
-        function updateSyncStatus(status) {
-            const syncStatus = document.getElementById('sidebarSyncStatus');
-            
-            switch(status) {
-                case 'synced':
-                    syncStatus.innerHTML = '🟢 Sincronizado';
-                    break;
-                case 'syncing':
-                    syncStatus.innerHTML = '🟡 Sincronizando...';
-                    break;
-                case 'offline':
-                    syncStatus.innerHTML = '🔴 Offline';
-                    break;
-            }
-        }
-
-        function updateUI() {
-            const currentSection = document.querySelector('.content-section.active')?.id;
-            
-            if (currentSection === 'jogadores') {
-                exibirJogadores();
-            } else if (currentSection === 'separar') {
-                exibirJogadoresPresentes();
-            } else if (currentSection === 'financeiro') {
-                updateFinanceiroUI();
-            }
-            
-            const total = Object.keys(jogadores).length;
-            const totalElement = document.getElementById('totalJogadores');
-            if (totalElement) {
-                totalElement.textContent = total;
-            }
-        }
-
-        function updateFinanceiroUI() {
-            const currentSection = document.querySelector('.content-section.active')?.id;
-            if (currentSection === 'financeiro') {
-                const abaAtiva = document.querySelector('.aba-financeiro[style*="block"], .aba-financeiro:not([style*="none"])');
-                if (abaAtiva) {
-                    const abaId = abaAtiva.id;
-                    if (abaId === 'abaFinanceiroSessoes') {
-                        exibirSessoes();
-                    } else if (abaId === 'abaFinanceiroPendencias') {
-                        exibirPendencias();
-                    } else if (abaId === 'abaFinanceiroPagamentos') {
-                        exibirControlePagamentos();
-                    }
-                }
-            }
-        }
-
-        function salvarJogador(jogador) {
-            if (database) {
-                updateSyncStatus('syncing');
-                database.ref('jogadores/' + jogador.id).set(jogador);
-            } else {
-                const jogadoresLocal = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
-                jogadoresLocal[jogador.id] = jogador;
-                localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
-                jogadores = jogadoresLocal;
-                updateUI();
-            }
-        }
-
-        function removerJogadorDB(id) {
-            if (database) {
-                updateSyncStatus('syncing');
-                database.ref('jogadores/' + id).remove();
-            } else {
-                const jogadoresLocal = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
-                delete jogadoresLocal[id];
-                localStorage.setItem('jogadoresFutebol', JSON.stringify(jogadoresLocal));
-                jogadores = jogadoresLocal;
-                updateUI();
-            }
-        }
-
-        function salvarSessaoDB(sessao) {
-            if (database) {
-                updateSyncStatus('syncing');
-                database.ref('sessoes/' + sessao.id).set(sessao);
-            } else {
-                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
-                sessoesLocal[sessao.id] = sessao;
-                localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
-                sessoes = sessoesLocal;
-                updateFinanceiroUI();
-            }
-        }
-
-        // Funções do menu
-        window.toggleSidebar = function() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('overlay').classList.add('show');
-        };
-
-        window.closeSidebar = function() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('overlay').classList.remove('show');
-        };
-
-        window.showSection = function(sectionName) {
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-            
-            event.target.closest('.menu-item').classList.add('active');
-            document.getElementById(sectionName).classList.add('active');
-            
-            closeSidebar();
-            
-            if (sectionName === 'jogadores') {
-                exibirJogadores();
-            } else if (sectionName === 'separar') {
-                exibirJogadoresPresentes();
-            } else if (sectionName === 'financeiro') {
-                mostrarAbaFinanceiro('sessoes');
-            }
-        };
-
-        window.cadastrarJogador = function() {
-            const nome = document.getElementById('nomeJogador').value.trim();
-            const estrelas = parseInt(document.getElementById('estrelas').value);
-            const tipo = document.getElementById('tipoJogador').value;
-            const btnCadastrar = document.getElementById('btnCadastrar');
-            
-            if (!nome) {
-                alert('Por favor, digite o nome do jogador!');
-                return;
-            }
-            
-            const jogadorExistente = Object.values(jogadores).find(j => 
-                j.nome.toLowerCase() === nome.toLowerCase()
-            );
-            
-            if (jogadorExistente) {
-                alert('Jogador já cadastrado!');
-                return;
-            }
-            
-            btnCadastrar.disabled = true;
-            btnCadastrar.textContent = '⏳ Cadastrando...';
-            
-            const novoJogador = {
-                id: Date.now().toString(),
-                nome: nome,
-                estrelas: estrelas,
-                tipo: tipo,
-                criadoEm: new Date().toISOString()
-            };
-            
-            salvarJogador(novoJogador);
-            
-            document.getElementById('nomeJogador').value = '';
-            document.getElementById('estrelas').value = '1';
-            document.getElementById('tipoJogador').value = 'mensalista';
-            
-            setTimeout(() => {
-                btnCadastrar.disabled = false;
-                btnCadastrar.innerHTML = '➕ Cadastrar Jogador';
-                alert(`Jogador ${nome} cadastrado com sucesso!`);
-            }, 1000);
-        };
-
-        function criarEstrelas(quantidade) {
-            return '⭐'.repeat(Math.min(quantidade, 10));
-        }
-
-        function formatarNomeComTipo(jogador) {
-            const tipo = jogador.tipo || 'mensalista';
-            const tipoSigla = tipo === 'mensalista' ? '(M)' : '(A)';
-            return `${jogador.nome} ${tipoSigla}`;
-        }
-
-        function ordenarJogadores(lista, tipoOrdem) {
-            let jogadoresArray = Object.values(lista);
-            
-            switch(tipoOrdem) {
-                case 'alfabetica-az':
-                    jogadoresArray.sort((a, b) => a.nome.localeCompare(b.nome));
-                    break;
-                case 'alfabetica-za':
-                    jogadoresArray.sort((a, b) => b.nome.localeCompare(a.nome));
-                    break;
-                case 'estrelas-maior':
-                    jogadoresArray.sort((a, b) => b.estrelas - a.estrelas);
-                    break;
-                case 'estrelas-menor':
-                    jogadoresArray.sort((a, b) => a.estrelas - b.estrelas);
-                    break;
-            }
-            
-            return jogadoresArray;
-        }
-
-        function exibirJogadores() {
-            const container = document.getElementById('listaJogadores');
-            if (Object.keys(jogadores).length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="emoji">😅</span>
-                        Nenhum jogador cadastrado ainda.<br>
-                        Vá para "Cadastrar Jogador" para adicionar jogadores.
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortOrder = document.getElementById('sortOrderJogadores').value;
-            const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
-            
-            container.innerHTML = jogadoresOrdenados.map(jogador => `
-                <div class="list-item">
-                    <div class="item-content">
-                        <div class="player-info">
-                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
-                            <div class="player-stars">
-                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
-                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
-                            </div>
-                        </div>
-                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
-                            ✏️
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.atualizarOrdenacaoJogadores = function() {
-            exibirJogadores();
-        };
-
-        function exibirJogadoresPresentes() {
-            const container = document.getElementById('jogadoresPresentes');
-            if (Object.keys(jogadores).length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="emoji">😅</span>
-                        Nenhum jogador cadastrado ainda.<br>
-                        Cadastre jogadores primeiro para poder separá-los em times.
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortOrder = document.getElementById('sortOrder').value;
-            const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
-            
-            container.innerHTML = jogadoresOrdenados.map(jogador => `
-                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''}" 
-                     onclick="togglePresenca('${jogador.id}')">
-                    <div class="item-content">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" 
-                                   ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
-                                   onchange="event.stopPropagation(); togglePresenca('${jogador.id}')" 
-                                   onclick="event.stopPropagation()">
-                        </div>
-                        <div class="player-info">
-                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
-                            <div class="player-stars">
-                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
-                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
-                            </div>
-                        </div>
-                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
-                            ✏️
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            atualizarContador();
-        }
-
-        window.atualizarOrdenacao = function() {
-            exibirJogadoresPresentes();
-        };
-
-        function atualizarContador() {
-            const total = jogadoresPresentes.length;
-            document.getElementById('totalSelecionados').textContent = `${total} selecionados`;
-        }
-
-        window.togglePresenca = function(id) {
-            const index = jogadoresPresentes.indexOf(id);
-            
-            if (index > -1) {
-                jogadoresPresentes.splice(index, 1);
-            } else {
-                jogadoresPresentes.push(id);
-            }
-            
-            // Força atualização imediata do checkbox específico
-            const checkbox = document.querySelector(`input[onchange*="${id}"]`);
-            if (checkbox) {
-                checkbox.checked = jogadoresPresentes.includes(id);
-            }
-            
-            exibirJogadoresPresentes();
-        };
-
-        window.editarJogador = function(id, event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            jogadorEditando = jogadores[id];
-            if (!jogadorEditando) return;
-            
-            document.getElementById('editNome').value = jogadorEditando.nome;
-            document.getElementById('editEstrelas').value = jogadorEditando.estrelas;
-            document.getElementById('editTipoJogador').value = jogadorEditando.tipo || 'mensalista';
-            document.getElementById('editModal').style.display = 'flex';
-        };
-
-        window.salvarEdicao = function() {
-            if (!jogadorEditando) return;
-            
-            const novasEstrelas = parseInt(document.getElementById('editEstrelas').value);
-            const novoTipo = document.getElementById('editTipoJogador').value;
-            const btnSalvar = document.getElementById('btnSalvar');
-            
-            btnSalvar.disabled = true;
-            btnSalvar.textContent = '⏳ Salvando...';
-            
-            const jogadorAtualizado = {
-                ...jogadorEditando,
-                estrelas: novasEstrelas,
-                tipo: novoTipo,
-                atualizadoEm: new Date().toISOString()
-            };
-            
-            salvarJogador(jogadorAtualizado);
-            
-            setTimeout(() => {
-                btnSalvar.disabled = false;
-                btnSalvar.innerHTML = '💾 Salvar';
-                fecharModal();
-                alert(`${jogadorEditando.nome} atualizado com sucesso!`);
-            }, 1000);
-        };
-
-        window.removerJogador = function() {
-            if (!jogadorEditando) return;
-            
-            if (confirm(`Tem certeza que deseja remover ${jogadorEditando.nome}?`)) {
-                const btnRemover = document.getElementById('btnRemover');
-                btnRemover.disabled = true;
-                btnRemover.textContent = '⏳ Removendo...';
-                
-                jogadoresPresentes = jogadoresPresentes.filter(jId => jId !== jogadorEditando.id);
-                
-                removerJogadorDB(jogadorEditando.id);
-                
-                setTimeout(() => {
-                    btnRemover.disabled = false;
-                    btnRemover.innerHTML = '🗑️ Remover';
-                    fecharModal();
-                    alert(`${jogadorEditando.nome} foi removido!`);
-                }, 1000);
-            }
-        };
-
-        window.fecharModal = function() {
-            document.getElementById('editModal').style.display = 'none';
-            jogadorEditando = null;
-        };
-
-        window.limparTodosCheckbox = function() {
-            jogadoresPresentes = [];
-            document.getElementById('teamsContainer').style.display = 'none';
-            document.getElementById('balanceInfo').style.display = 'none';
-            ultimaDistribuicao = null;
-            timesFormados = null;
-            exibirJogadoresPresentes();
-        };
-
-        // Algoritmo de separação de times - VERSÃO CORRIGIDA
-        window.separarTimes = function() {
-            if (jogadoresPresentes.length < 2) {
-                alert('Marque pelo menos 2 jogadores para formar os times!');
-                return;
-            }
-            
-            const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            const totalJogadoresReais = jogadoresDoJogo.length;
-            
-            // Determinar número de times
-            let numTimes;
-            const selectedValue = document.getElementById('teamCount').value;
-            if (selectedValue === 'auto') {
-                if (totalJogadoresReais <= 8) numTimes = 2;
-                else if (totalJogadoresReais <= 12) numTimes = 3;
-                else numTimes = 4;
-            } else {
-                numTimes = parseInt(selectedValue);
-            }
-            
-            // Calcular quantos jogadores genéricos são necessários
-            const jogadoresNecessarios = numTimes * 5;
-            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
-            
-            // Adicionar jogadores genéricos ANTES do balanceamento
-            const todosJogadores = [...jogadoresDoJogo];
-            for (let i = 0; i < genericosNecessarios; i++) {
-                todosJogadores.push({
-                    id: `generico_${i}`,
-                    nome: `Jogador Extra ${i + 1}`,
-                    estrelas: 5,
-                    tipo: 'mensalista',
-                    isGenerico: true
-                });
-            }
-            
-            // Agora rodar o algoritmo com TODOS os jogadores (reais + genéricos)
-            const totalJogadores = todosJogadores.length;
-            
-            // Separar jogadores por nível (incluindo genéricos)
-            const jogadores10Estrelas = todosJogadores.filter(j => j.estrelas === 10);
-            const jogadores9Estrelas = todosJogadores.filter(j => j.estrelas === 9);
-            const jogadores8Estrelas = todosJogadores.filter(j => j.estrelas === 8);
-            const outrosJogadores = todosJogadores.filter(j => j.estrelas < 8);
-            
-            outrosJogadores.sort((a, b) => b.estrelas - a.estrelas);
-            
-            // Criar times vazios
-            const times = Array.from({ length: numTimes }, () => []);
-            
-            // Distribuir jogadores 10 estrelas (máximo 1 por time)
-            jogadores10Estrelas.forEach((jogador, index) => {
-                if (index < numTimes) {
-                    times[index].push(jogador);
-                }
-            });
-            
-            // Se sobrar jogadores 10 estrelas, distribuir nos times com menor pontuação
-            for (let i = numTimes; i < jogadores10Estrelas.length; i++) {
-                const timeMenorPontuacao = times.reduce((menor, time, index) => {
-                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
-                    const pontuacaoMenor = times[menor].reduce((sum, j) => sum + j.estrelas, 0);
-                    return pontuacaoAtual < pontuacaoMenor ? index : menor;
-                }, 0);
-                times[timeMenorPontuacao].push(jogadores10Estrelas[i]);
-            }
-            
-            // Distribuir jogadores 9 e 8 estrelas usando algoritmo serpentina
-            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
-            let timeAtual = 0;
-            let direcao = 1;
-            
-            for (const jogador of jogadoresAltos) {
-                times[timeAtual].push(jogador);
-                
-                if (direcao === 1) {
-                    timeAtual++;
-                    if (timeAtual >= numTimes) {
-                        timeAtual = numTimes - 1;
-                        direcao = -1;
-                    }
-                } else {
-                    timeAtual--;
-                    if (timeAtual < 0) {
-                        timeAtual = 0;
-                        direcao = 1;
-                    }
-                }
-            }
-            
-            // Distribuir outros jogadores (incluindo genéricos) equilibrando quantidades
-            for (const jogador of outrosJogadores) {
-                const timeMenosJogadores = times.reduce((menor, time, index) => {
-                    return time.length < times[menor].length ? index : menor;
-                }, 0);
-                
-                const timesComMenorQuantidade = times
-                    .map((time, index) => ({ time, index, count: time.length }))
-                    .filter(t => t.count === times[timeMenosJogadores].length);
-                
-                if (timesComMenorQuantidade.length > 1) {
-                    const melhorTime = timesComMenorQuantidade.reduce((melhor, atual) => {
-                        const pontuacaoAtual = atual.time.reduce((sum, j) => sum + j.estrelas, 0);
-                        const pontuacaoMelhor = melhor.time.reduce((sum, j) => sum + j.estrelas, 0);
-                        return pontuacaoAtual < pontuacaoMelhor ? atual : melhor;
-                    });
-                    times[melhorTime.index].push(jogador);
-                } else {
-                    times[timeMenosJogadores].push(jogador);
-                }
-            }
-            
-            // Armazenar distribuição e mostrar modal de aprovação
-            ultimaDistribuicao = {
-                times: times,
-                genericosNecessarios: genericosNecessarios
-            };
-            
-            mostrarModalAprovacao(times);
-        };
-
-        // Nova função para mostrar modal de aprovação
-        function mostrarModalAprovacao(times) {
-            const modal = document.getElementById('aprovacaoModal');
-            const preview = document.getElementById('teamsPreview');
-            const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
-            
-            preview.innerHTML = times.map((time, index) => {
-                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
-                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
-                
-                return `
-                    <div class="preview-team">
-                        <h4>${nomesEquipes[index]} - Média: ${media}★</h4>
-                        <div class="preview-players">
-                            ${time.map(jogador => `
-                                ${jogador.isGenerico ? 
-                                    `<em>${jogador.nome} (${jogador.estrelas}★)</em>` : 
-                                    `${formatarNomeComTipo(jogador)} (${jogador.estrelas}★)`
-                                }`
-                            ).join(' • ')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            modal.style.display = 'flex';
-        }
-
-        // Funções do modal de aprovação
-        window.confirmarDistribuicao = function() {
-            if (!ultimaDistribuicao) return;
-            
-            // Fechar modal de aprovação
-            document.getElementById('aprovacaoModal').style.display = 'none';
-            
-            // Exibir os times na tela
-            exibirTimes(ultimaDistribuicao.times, ultimaDistribuicao.genericosNecessarios);
-            
-            // Mostrar modal financeiro
-            mostrarModalFinanceiro();
-        };
-
-        window.refazerDistribuicao = function() {
-            document.getElementById('aprovacaoModal').style.display = 'none';
-            ultimaDistribuicao = null;
-            // Gerar nova distribuição alternativa
-            gerarDistribuicaoAlternativa();
-        };
-
-        function gerarDistribuicaoAlternativa() {
-            if (jogadoresPresentes.length < 2) {
-                alert('Marque pelo menos 2 jogadores para formar os times!');
-                return;
-            }
-            
-            const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            const totalJogadoresReais = jogadoresDoJogo.length;
-            
-            // Determinar número de times
-            let numTimes;
-            const selectedValue = document.getElementById('teamCount').value;
-            if (selectedValue === 'auto') {
-                if (totalJogadoresReais <= 8) numTimes = 2;
-                else if (totalJogadoresReais <= 12) numTimes = 3;
-                else numTimes = 4;
-            } else {
-                numTimes = parseInt(selectedValue);
-            }
-            
-            // Calcular quantos jogadores genéricos são necessários
-            const jogadoresNecessarios = numTimes * 5;
-            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
-            
-            // Adicionar jogadores genéricos
-            const todosJogadores = [...jogadoresDoJogo];
-            for (let i = 0; i < genericosNecessarios; i++) {
-                todosJogadores.push({
-                    id: `generico_${i}`,
-                    nome: `Jogador Extra ${i + 1}`,
-                    estrelas: 5,
-                    tipo: 'mensalista',
-                    isGenerico: true
-                });
-            }
-            
-            // Algoritmo alternativo - embaralhar antes de distribuir
-            const jogadoresEmbaralhados = [...todosJogadores];
-            
-            // Embaralhar dentro de cada categoria para gerar resultado diferente
-            const jogadores10Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 10));
-            const jogadores9Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 9));
-            const jogadores8Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 8));
-            const outrosJogadores = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas < 8));
-            
-            // Criar times vazios
-            const times = Array.from({ length: numTimes }, () => []);
-            
-            // Distribuir jogadores 10 estrelas de forma alternada
-            jogadores10Estrelas.forEach((jogador, index) => {
-                const timeIndex = index % numTimes;
-                times[timeIndex].push(jogador);
-            });
-            
-            // Distribuir jogadores 9 e 8 estrelas usando serpentina invertida
-            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
-            let timeAtual = numTimes - 1; // Começar do final
-            let direcao = -1; // Direção inversa
-            
-            for (const jogador of jogadoresAltos) {
-                times[timeAtual].push(jogador);
-                
-                if (direcao === -1) {
-                    timeAtual--;
-                    if (timeAtual < 0) {
-                        timeAtual = 0;
-                        direcao = 1;
-                    }
-                } else {
-                    timeAtual++;
-                    if (timeAtual >= numTimes) {
-                        timeAtual = numTimes - 1;
-                        direcao = -1;
-                    }
-                }
-            }
-            
-            // Distribuir outros jogadores priorizando equilíbrio
-            for (const jogador of outrosJogadores) {
-                // Encontrar time com menor pontuação total
-                const timeMenorPontuacao = times.reduce((menorIndex, time, index) => {
-                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
-                    const pontuacaoMenor = times[menorIndex].reduce((sum, j) => sum + j.estrelas, 0);
-                    return pontuacaoAtual < pontuacaoMenor ? index : menorIndex;
-                }, 0);
-                
-                times[timeMenorPontuacao].push(jogador);
-            }
-            
-            // Armazenar distribuição e mostrar modal
-            ultimaDistribuicao = {
-                times: times,
-                genericosNecessarios: genericosNecessarios
-            };
-            
-            mostrarModalAprovacao(times);
-        }
-
-        // Função para embaralhar array (algoritmo Fisher-Yates)
-        function embaralharArray(array) {
-            const embaralhado = [...array];
-            for (let i = embaralhado.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [embaralhado[i], embaralhado[j]] = [embaralhado[j], embaralhado[i]];
-            }
-            return embaralhado;
-        }
-
-        window.cancelarAprovacao = function() {
-            document.getElementById('aprovacaoModal').style.display = 'none';
-            ultimaDistribuicao = null;
-        };
-
-        // Nova função para mostrar modal financeiro
-        function mostrarModalFinanceiro() {
-            if (!ultimaDistribuicao) return;
-            
-            // Preparar dados da sessão
-            timesFormados = ultimaDistribuicao.times;
-            
-            // Configurar modal
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('dataSessao').value = hoje;
-            document.getElementById('valorDiaria').value = '15.00';
-            
-            // Mostrar TODOS os jogadores presentes
-            const todosPresentes = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            const container = document.getElementById('todosPresentes');
-            
-            const mensalistas = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
-            const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
-            
-            container.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <h4 style="color: #4CAF50; margin-bottom: 8px; font-size: 14px;">
-                        👥 Mensalistas (${mensalistas.length})
-                    </h4>
-                    ${mensalistas.length > 0 ? 
-                        mensalistas.map(j => `
-                            <div style="padding: 4px 8px; background: #e8f5e8; border-radius: 4px; margin-bottom: 3px; font-size: 13px;">
-                                ${j.nome} (${j.estrelas}★)
-                            </div>
-                        `).join('') : 
-                        '<p style="color: #666; font-size: 12px; font-style: italic;">Nenhum mensalista presente</p>'
-                    }
-                </div>
-                
-                <div>
-                    <h4 style="color: #ff9800; margin-bottom: 8px; font-size: 14px;">
-                        💰 Avulsos (${avulsos.length}) - Cobrança: R$ ${(parseFloat(document.getElementById('valorDiaria').value || 15) * avulsos.length).toFixed(2)}
-                    </h4>
-                    ${avulsos.length > 0 ? 
-                        avulsos.map(j => `
-                            <div style="padding: 4px 8px; background: #fff3e0; border-radius: 4px; margin-bottom: 3px; font-size: 13px;">
-                                ${j.nome} (${j.estrelas}★) - R$ <span class="valor-individual">${document.getElementById('valorDiaria').value || '15.00'}</span>
-                            </div>
-                        `).join('') : 
-                        '<p style="color: #666; font-size: 12px; font-style: italic;">Nenhum avulso presente</p>'
-                    }
-                </div>
-            `;
-            
-            document.getElementById('sessaoModal').style.display = 'flex';
-        }
-
-        // Atualizar valores quando mudar o valor da diária
-        document.getElementById('valorDiaria').addEventListener('input', function() {
-            const valor = this.value;
-            const valoresIndividuais = document.querySelectorAll('.valor-individual');
-            valoresIndividuais.forEach(el => el.textContent = valor);
-            
-            // Atualizar total
-            const avulsos = jogadoresPresentes.filter(id => {
-                const jogador = jogadores[id];
-                return jogador && jogador.tipo === 'avulso';
-            });
-            const total = (parseFloat(valor) * avulsos.length).toFixed(2);
-            const tituloAvulsos = document.querySelector('h4[style*="color: #ff9800"]');
-            if (tituloAvulsos) {
-                tituloAvulsos.innerHTML = `💰 Avulsos (${avulsos.length}) - Cobrança: R$ ${total}`;
-            }
-        });
-
-        window.fecharSessaoModal = function() {
-            document.getElementById('sessaoModal').style.display = 'none';
-            timesFormados = null;
-        };
-
-        window.pularRegistroSessao = function() {
-            fecharSessaoModal();
-        };
-
-        window.salvarSessao = function() {
-            const data = document.getElementById('dataSessao').value;
-            const valor = parseFloat(document.getElementById('valorDiaria').value);
-            
-            if (!data || !valor || valor <= 0) {
-                alert('Por favor, preencha todos os campos corretamente!');
-                return;
-            }
-            
-            // Pegar TODOS os jogadores presentes
-            const todosPresentes = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            const avulsosPresentes = todosPresentes.filter(j => j.tipo === 'avulso');
-            const mensalistasPresentes = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
-            
-            const novaSessao = {
-                id: Date.now().toString(),
-                data: data,
-                valorDiaria: valor,
-                todosPresentes: jogadoresPresentes, // IDs de TODOS os presentes
-                times: timesFormados,
-                pagamentos: {}
-            };
-            
-            // Inicializar status de pagamento apenas para avulsos
-            avulsosPresentes.forEach(jogador => {
-                novaSessao.pagamentos[jogador.id] = 'pendente';
-            });
-            
-            // Para mensalistas, registrar como "mensalista" (não precisam pagar)
-            mensalistasPresentes.forEach(jogador => {
-                novaSessao.pagamentos[jogador.id] = 'mensalista';
-            });
-            
-            salvarSessaoDB(novaSessao);
-            fecharSessaoModal();
-            
-            const totalArrecadar = valor * avulsosPresentes.length;
-            alert(`Sessão registrada com sucesso!\n\nTotal de jogadores: ${todosPresentes.length}\n- Mensalistas: ${mensalistasPresentes.length}\n- Avulsos: ${avulsosPresentes.length}\n\nTotal a arrecadar: R$ ${totalArrecadar.toFixed(2)}`);
-        };
-
-        function exibirTimes(times, genericosAdicionados = 0) {
-            const container = document.getElementById('teamsContainer');
-            const numTimes = times.length;
-            
-            let gridClass = '';
-            switch(numTimes) {
-                case 2: gridClass = 'two-teams'; break;
-                case 3: gridClass = 'three-teams'; break;
-                case 4: gridClass = 'four-teams'; break;
-            }
-            
-            container.className = `teams-container ${gridClass}`;
-            container.style.display = 'grid';
-            
-            const estatisticasTimes = times.map(time => {
-                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
-                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
-                const mensalistas = time.filter(j => !j.isGenerico && (j.tipo || 'mensalista') === 'mensalista').length;
-                const avulsos = time.filter(j => !j.isGenerico && j.tipo === 'avulso').length;
-                const genericos = time.filter(j => j.isGenerico).length;
-                return { 
-                    totalEstrelas, 
-                    media: parseFloat(media), 
-                    jogadores: time.length,
-                    mensalistas,
-                    avulsos,
-                    genericos
-                };
-            });
-            
-            const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
-            
-            container.innerHTML = times.map((time, index) => `
-                <div class="team team-${index}">
-                    <h3>${nomesEquipes[index]}</h3>
-                    <div class="team-stats">
-                        <strong>Total: ${estatisticasTimes[index].totalEstrelas} ⭐</strong><br>
-                        <strong>Média: ${estatisticasTimes[index].media}</strong><br>
-                        <strong>Jogadores: ${estatisticasTimes[index].jogadores}</strong><br>
-                        <strong>Mensalistas: ${estatisticasTimes[index].mensalistas} | Avulsos: ${estatisticasTimes[index].avulsos}</strong><br>
-                        ${estatisticasTimes[index].genericos > 0 ? `<strong>Genéricos: ${estatisticasTimes[index].genericos}</strong>` : ''}
-                    </div>
-                    <div>
-                        ${time.map(jogador => `
-                            <div class="team-player" style="${jogador.isGenerico ? 'opacity: 0.7; font-style: italic;' : ''}">
-                                <div class="team-player-name">${jogador.isGenerico ? jogador.nome + ' 👤' : formatarNomeComTipo(jogador)}</div>
-                                <div class="team-player-stars">${criarEstrelas(jogador.estrelas)}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-            
-            const medias = estatisticasTimes.map(est => est.media);
-            const mediaGeral = medias.reduce((sum, m) => sum + m, 0) / medias.length;
-            const maiorDiferenca = Math.max(...medias) - Math.min(...medias);
-            
-            const quantidades = estatisticasTimes.map(est => est.jogadores);
-            const diferencaQuantidade = Math.max(...quantidades) - Math.min(...quantidades);
-            
-            const qualidadeBalance = maiorDiferenca <= 0.5 ? 'Excelente' : 
-                                   maiorDiferenca <= 1.0 ? 'Muito Bom' :
-                                   maiorDiferenca <= 1.5 ? 'Bom' : 
-                                   maiorDiferenca <= 2.0 ? 'Regular' : 'Pode melhorar';
-            
-            const balanceInfo = document.getElementById('balanceInfo');
-            balanceInfo.innerHTML = `
-                <h3>📊 Análise da Distribuição</h3>
-                <p><strong>Times formados:</strong> ${numTimes} times de 5 jogadores cada</p>
-                ${genericosAdicionados > 0 ? `<p><strong>Jogadores genéricos adicionados:</strong> ${genericosAdicionados}</p>` : ''}
-                <p><strong>Média geral:</strong> ${mediaGeral.toFixed(1)} estrelas</p>
-                <p><strong>Maior diferença:</strong> ${maiorDiferenca.toFixed(1)} estrelas</p>
-                <p><strong>Diferença de quantidade:</strong> ${diferencaQuantidade} jogador${diferencaQuantidade !== 1 ? 'es' : ''}</p>
-                <p><strong>Qualidade do balanceamento:</strong> ${qualidadeBalance}</p>
-                <p style="font-size: 13px; margin-top: 10px; color: #666;">
-                    ${maiorDiferenca <= 0.5 ? '🟢 Times perfeitamente balanceados!' : 
-                      maiorDiferenca <= 1.0 ? '🟢 Times muito bem balanceados!' :
-                      maiorDiferenca <= 1.5 ? '🟡 Times bem balanceados' : 
-                      maiorDiferenca <= 2.0 ? '🟡 Times razoavelmente balanceados' :
-                      '🔴 Considere redistribuir alguns jogadores'}
-                </p>
-                ${genericosAdicionados > 0 ? `<p style="font-size: 12px; margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404;"><strong>💡 Dica:</strong> Os jogadores genéricos (5⭐) podem ser substituídos por qualquer pessoa disponível na hora do jogo.</p>` : ''}
-            `;
-            
-            balanceInfo.style.display = 'block';
-            balanceInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // Funções do controle financeiro - ATUALIZADAS
-        window.mostrarAbaFinanceiro = function(aba) {
-            // Atualizar botões
-            document.getElementById('tabSessoes').style.background = '#666';
-            document.getElementById('tabSessoes').style.borderBottom = 'none';
-            document.getElementById('tabPendencias').style.background = '#666';
-            document.getElementById('tabPendencias').style.borderBottom = 'none';
-            document.getElementById('tabPagamentos').style.background = '#666';
-            document.getElementById('tabPagamentos').style.borderBottom = 'none';
-            
-            // Esconder todas as abas
-            document.getElementById('abaFinanceiroSessoes').style.display = 'none';
-            document.getElementById('abaFinanceiroPendencias').style.display = 'none';
-            document.getElementById('abaFinanceiroPagamentos').style.display = 'none';
-            
-            // Mostrar aba selecionada
-            if (aba === 'sessoes') {
-                document.getElementById('tabSessoes').style.background = '#4CAF50';
-                document.getElementById('tabSessoes').style.borderBottom = '3px solid #4CAF50';
-                document.getElementById('abaFinanceiroSessoes').style.display = 'block';
-                exibirSessoes();
-            } else if (aba === 'pendencias') {
-                document.getElementById('tabPendencias').style.background = '#4CAF50';
-                document.getElementById('tabPendencias').style.borderBottom = '3px solid #4CAF50';
-                document.getElementById('abaFinanceiroPendencias').style.display = 'block';
-                exibirPendencias();
-            } else if (aba === 'pagamentos') {
-                document.getElementById('tabPagamentos').style.background = '#4CAF50';
-                document.getElementById('tabPagamentos').style.borderBottom = '3px solid #4CAF50';
-                document.getElementById('abaFinanceiroPagamentos').style.display = 'block';
-                exibirControlePagamentos();
-            }
-        };
-
-        function exibirSessoes() {
-            const container = document.getElementById('listaSessoes');
-            const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
-            
-            if (sessoesArray.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="emoji">📋</span>
-                        Nenhuma sessão registrada ainda.<br>
-                        Separe times para registrar sessões automaticamente.
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = sessoesArray.map(sessao => {
-                // Pegar TODOS os presentes e separar por tipo
-                const todosPresentes = sessao.todosPresentes.map(id => jogadores[id]).filter(j => j);
-                const mensalistas = todosPresentes.filter(j => (j.tipo || 'mensalista') === 'mensalista');
-                const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
-                const totalArrecadado = sessao.valorDiaria * avulsos.length;
-                
-                return `
-                    <div class="sessao-item">
-                        <div class="sessao-header">
-                            <div class="sessao-data">${new Date(sessao.data).toLocaleDateString('pt-BR')}</div>
-                            <div class="sessao-valor">R$ ${totalArrecadado.toFixed(2)}</div>
-                        </div>
-                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
-                            <strong>Total de jogadores:</strong> ${todosPresentes.length} 
-                            (${mensalistas.length} mensalistas + ${avulsos.length} avulsos)
-                        </div>
-                        <div class="sessao-avulsos">
-                            <strong>Avulsos:</strong> ${avulsos.length > 0 ? avulsos.map(j => j.nome).join(', ') : 'Nenhum'}
-                        </div>
-                        <div class="sessao-avulsos">
-                            <strong>Mensalistas:</strong> ${mensalistas.length > 0 ? mensalistas.map(j => j.nome).join(', ') : 'Nenhum'}
-                        </div>
-                        <div style="font-size: 12px; color: #888; margin-top: 8px;">
-                            Valor individual: R$ ${sessao.valorDiaria.toFixed(2)}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function exibirPendencias() {
-            const container = document.getElementById('resumoPendencias');
-            const pendencias = {};
-            
-            // Calcular pendências por jogador (apenas avulsos)
-            Object.values(sessoes).forEach(sessao => {
-                Object.keys(sessao.pagamentos).forEach(jogadorId => {
-                    if (sessao.pagamentos[jogadorId] === 'pendente') {
-                        const jogador = jogadores[jogadorId];
-                        if (jogador && jogador.tipo === 'avulso') {
-                            if (!pendencias[jogadorId]) {
-                                pendencias[jogadorId] = {
-                                    nome: jogador.nome,
-                                    total: 0,
-                                    jogos: 0
-                                };
-                            }
-                            pendencias[jogadorId].total += sessao.valorDiaria;
-                            pendencias[jogadorId].jogos += 1;
-                        }
-                    }
-                });
-            });
-            
-            const pendenciasArray = Object.values(pendencias);
-            
-            if (pendenciasArray.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="emoji">✅</span>
-                        Todos os pagamentos estão em dia!
-                    </div>
-                `;
-                return;
-            }
-            
-            const totalGeral = pendenciasArray.reduce((sum, p) => sum + p.total, 0);
-            
-            container.innerHTML = `
-                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-                    <strong>Total a receber: R$ ${totalGeral.toFixed(2)}</strong>
-                </div>
-                ${pendenciasArray.map(pendencia => `
-                    <div class="pendencia-item">
-                        <div>
-                            <div class="pendencia-nome">${pendencia.nome}</div>
-                            <div style="font-size: 12px; color: #666;">${pendencia.jogos} ${pendencia.jogos === 1 ? 'jogo' : 'jogos'}</div>
-                        </div>
-                        <div class="pendencia-valor">R$ ${pendencia.total.toFixed(2)}</div>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        function exibirControlePagamentos() {
-            const container = document.getElementById('controlePagamentos');
-            const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
-            
-            if (sessoesArray.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="emoji">📋</span>
-                        Nenhuma sessão para controlar.
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = sessoesArray.map(sessao => {
-                // Filtrar apenas avulsos para o controle de pagamentos
-                const avulsos = sessao.todosPresentes
-                    .map(id => jogadores[id])
-                    .filter(j => j && j.tipo === 'avulso');
-                
-                if (avulsos.length === 0) {
-                    return `
-                        <div class="pagamento-item" style="opacity: 0.7;">
-                            <div class="pagamento-header">
-                                <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
-                                <span style="font-size: 12px; color: #666;">Apenas mensalistas</span>
-                            </div>
-                            <div style="font-size: 13px; color: #888; font-style: italic;">
-                                Nenhum avulso presente nesta sessão
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                return `
-                    <div class="pagamento-item">
-                        <div class="pagamento-header">
-                            <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
-                            <span style="font-size: 12px; color: #666;">R$ ${sessao.valorDiaria.toFixed(2)} cada</span>
-                        </div>
-                        ${avulsos.map(jogador => {
-                            const status = sessao.pagamentos[jogador.id] || 'pendente';
-                            return `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
-                                    <span>${jogador.nome}</span>
-                                    <div>
-                                        <span class="status-${status}">${status === 'pago' ? 'PAGO' : 'PENDENTE'}</span>
-                                        ${status === 'pendente' ? 
-                                            `<button class="btn-marcar-pago" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pago')">Marcar como Pago</button>` :
-                                            `<button class="btn-marcar-pendente" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pendente')">Marcar como Pendente</button>`
-                                        }
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        window.marcarPagamento = function(sessaoId, jogadorId, status) {
-            if (database) {
-                updateSyncStatus('syncing');
-                database.ref(`sessoes/${sessaoId}/pagamentos/${jogadorId}`).set(status);
-            } else {
-                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
-                if (sessoesLocal[sessaoId]) {
-                    sessoesLocal[sessaoId].pagamentos[jogadorId] = status;
-                    localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
-                    sessoes = sessoesLocal;
-                    updateFinanceiroUI();
-                }
-            }
-        };
-
-        // Event listeners
-        document.addEventListener('click', function(event) {
-            const editModal = document.getElementById('editModal');
-            const aprovacaoModal = document.getElementById('aprovacaoModal');
-            const sessaoModal = document.getElementById('sessaoModal');
-            
-            if (event.target === editModal) {
-                fecharModal();
-            }
-            if (event.target === aprovacaoModal) {
-                cancelarAprovacao();
-            }
-            if (event.target === sessaoModal) {
-                fecharSessaoModal();
-            }
-        });
-
-        document.addEventListener('touchstart', function() {}, true);
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeSidebar();
-                fecharModal();
-                document.getElementById('aprovacaoModal').style.display = 'none';
-                document.getElementById('sessaoModal').style.display = 'none';
-                ultimaDistribuicao = null;
-                timesFormados = null;
-            }
-        });
-
-        window.addEventListener('online', function() {
-            isOnline = true;
-            updateSyncStatus('synced');
-        });
-
-        window.addEventListener('offline', function() {
-            isOnline = false;
-            updateSyncStatus('offline');
-        });
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            initFirebase();
-        });
-    </script>
-</body>
-</html>

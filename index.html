@@ -318,6 +318,15 @@
             margin: 8px 0;
         }
 
+        /* NOVO: Botão de restrições */
+        .btn-restrictions {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            font-size: 14px;
+            padding: 12px 16px;
+            min-height: 44px;
+            margin: 10px 0;
+        }
+
         .filter-controls {
             background: #f8f9fa;
             border-radius: 12px;
@@ -371,16 +380,54 @@
             justify-content: center;
         }
 
+        /* NOVO: Seções de jogadores por tipo */
+        .players-section {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mensalistas-header {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .avulsos-header {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc02;
+        }
+
+        .players-container {
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
         .list-item {
             background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0;
             transition: all 0.2s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
             min-height: 70px;
+            border-radius: 0;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 8px 8px;
         }
 
         .list-item:active {
@@ -413,7 +460,6 @@
             transform: none;
         }
 
-        /* Forçar aparência nativa do checkbox em todos os browsers */
         .list-item input[type="checkbox"]:checked {
             background-color: #4CAF50;
             border-color: #4CAF50;
@@ -608,6 +654,96 @@
             margin: 0;
         }
 
+        /* NOVO: Modal de restrições */
+        .restrictions-modal-content {
+            max-width: 500px;
+            max-height: 80vh;
+        }
+
+        .player-selector {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .player-selector-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-selector-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-selector-item:hover {
+            background: #f8f9fa;
+        }
+
+        .player-selector-item.selected {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .restriction-item {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .restriction-players {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .restriction-note {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .delete-restriction {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* NOVO: Botão de exclusão de sessão */
+        .delete-session-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+        }
+
         .empty-state {
             text-align: center;
             color: #666;
@@ -719,6 +855,7 @@
             border-radius: 8px;
             margin-bottom: 10px;
             padding: 15px;
+            position: relative;
         }
 
         .sessao-header {
@@ -739,6 +876,9 @@
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .sessao-avulsos {
@@ -1005,6 +1145,11 @@
                 <h2>👥 Gerenciar Jogadores</h2>
                 <p style="color: #666; margin-bottom: 15px;">Total: <span id="totalJogadores">0</span> jogadores cadastrados</p>
                 
+                <!-- NOVO: Botão de restrições -->
+                <button class="btn btn-restrictions btn-full" onclick="abrirModalRestricoes()">
+                    🚫 Configurar Restrições entre Jogadores
+                </button>
+                
                 <div class="filter-controls">
                     <div class="filter-row">
                         <label for="sortOrderJogadores">Ordenar por:</label>
@@ -1161,6 +1306,56 @@
                 </button>
             </div>
         </div>
+
+        <!-- NOVO: Modal de Restrições -->
+        <div id="restricoesModal" class="edit-modal">
+            <div class="edit-modal-content restrictions-modal-content">
+                <h3>🚫 Configurar Restrições entre Jogadores</h3>
+                <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+                    Selecione jogadores que não podem ficar no mesmo time:
+                </p>
+                
+                <div class="form-group">
+                    <label>Selecionar Jogadores para Restringir:</label>
+                    <div class="player-selector" id="playerSelector">
+                        <!-- Lista de jogadores será gerada aqui -->
+                    </div>
+                    <button class="btn" onclick="criarRestricao()" id="btnCriarRestricao" style="margin-top: 10px;" disabled>
+                        ➕ Criar Restrição
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Restrições Ativas:</label>
+                    <div id="listaRestricoes">
+                        <!-- Lista de restrições será gerada aqui -->
+                    </div>
+                </div>
+                
+                <button class="btn btn-full" onclick="fecharModalRestricoes()" style="margin-top: 20px; background: #666;">
+                    ✅ Concluir
+                </button>
+            </div>
+        </div>
+
+        <!-- NOVO: Modal de Confirmação de Exclusão -->
+        <div id="confirmDeleteModal" class="edit-modal">
+            <div class="edit-modal-content" style="max-width: 350px;">
+                <h3>⚠️ Confirmar Exclusão</h3>
+                <p style="text-align: center; margin: 20px 0; color: #666; font-size: 15px;" id="deleteMessage">
+                    <!-- Mensagem será preenchida dinamicamente -->
+                </p>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-danger" onclick="confirmarExclusao()">
+                        🗑️ Excluir
+                    </button>
+                    <button class="btn" onclick="cancelarExclusao()" style="background: #666;">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1182,8 +1377,11 @@
         let jogadorEditando = null;
         let isOnline = navigator.onLine;
         let sessoes = {};
-        let timesFormados = null; // Para armazenar times antes do registro da sessão
-        let ultimaDistribuicao = null; // Para armazenar a última distribuição gerada
+        let restricoes = {}; // NOVO: Armazenar restrições
+        let timesFormados = null; 
+        let ultimaDistribuicao = null;
+        let selectedPlayersForRestriction = []; // NOVO: Jogadores selecionados para restrição
+        let sessaoParaExcluir = null; // NOVO: Sessão que será excluída
 
         // Inicializar Firebase
         function initFirebase() {
@@ -1200,6 +1398,11 @@
                 database.ref('sessoes').on('value', (snapshot) => {
                     sessoes = snapshot.val() || {};
                     updateFinanceiroUI();
+                });
+
+                // NOVO: Listener para restrições
+                database.ref('restricoes').on('value', (snapshot) => {
+                    restricoes = snapshot.val() || {};
                 });
 
                 database.ref('.info/connected').on('value', (snapshot) => {
@@ -1238,6 +1441,7 @@
         function useLocalMode() {
             jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
             sessoes = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+            restricoes = JSON.parse(localStorage.getItem('restricoesFutebol') || '{}'); // NOVO
             hideLoading();
             updateSyncStatus('offline');
             
@@ -1342,6 +1546,46 @@
             } else {
                 const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
                 sessoesLocal[sessao.id] = sessao;
+                localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
+                sessoes = sessoesLocal;
+                updateFinanceiroUI();
+            }
+        }
+
+        // NOVO: Funções para restrições
+        function salvarRestricaoDB(restricao) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('restricoes/' + restricao.id).set(restricao);
+            } else {
+                const restricoesLocal = JSON.parse(localStorage.getItem('restricoesFutebol') || '{}');
+                restricoesLocal[restricao.id] = restricao;
+                localStorage.setItem('restricoesFutebol', JSON.stringify(restricoesLocal));
+                restricoes = restricoesLocal;
+            }
+        }
+
+        function removerRestricaoDB(id) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('restricoes/' + id).remove();
+            } else {
+                const restricoesLocal = JSON.parse(localStorage.getItem('restricoesFutebol') || '{}');
+                delete restricoesLocal[id];
+                localStorage.setItem('restricoesFutebol', JSON.stringify(restricoesLocal));
+                restricoes = restricoesLocal;
+                exibirRestricoes();
+            }
+        }
+
+        // NOVO: Função para excluir sessão
+        function excluirSessaoDB(id) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('sessoes/' + id).remove();
+            } else {
+                const sessoesLocal = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
+                delete sessoesLocal[id];
                 localStorage.setItem('sessoesFutebol', JSON.stringify(sessoesLocal));
                 sessoes = sessoesLocal;
                 updateFinanceiroUI();
@@ -1490,6 +1734,7 @@
             exibirJogadores();
         };
 
+        // NOVO: Função para exibir jogadores presentes separados por tipo
         function exibirJogadoresPresentes() {
             const container = document.getElementById('jogadoresPresentes');
             if (Object.keys(jogadores).length === 0) {
@@ -1506,30 +1751,100 @@
             const sortOrder = document.getElementById('sortOrder').value;
             const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
             
-            container.innerHTML = jogadoresOrdenados.map(jogador => `
-                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''}" 
-                     onclick="togglePresenca('${jogador.id}')">
-                    <div class="item-content">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" 
-                                   ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
-                                   onchange="event.stopPropagation(); togglePresenca('${jogador.id}')" 
-                                   onclick="event.stopPropagation()">
-                        </div>
-                        <div class="player-info">
-                            <div class="player-name">${formatarNomeComTipo(jogador)}</div>
-                            <div class="player-stars">
-                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
-                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
-                            </div>
-                        </div>
-                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
-                            ✏️
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+            // Separar mensalistas e avulsos
+            const mensalistas = jogadoresOrdenados.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            const avulsos = jogadoresOrdenados.filter(j => j.tipo === 'avulso');
             
+            let html = '';
+            
+            // Seção Mensalistas
+            if (mensalistas.length > 0) {
+                const mensalistasPresentes = mensalistas.filter(j => jogadoresPresentes.includes(j.id)).length;
+                html += `
+                    <div class="players-section">
+                        <div class="section-header mensalistas-header">
+                            <span>👥 Mensalistas</span>
+                            <span>${mensalistasPresentes}/${mensalistas.length}</span>
+                        </div>
+                        <div class="players-container">
+                            ${mensalistas.map(jogador => `
+                                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''}" 
+                                     onclick="togglePresenca('${jogador.id}')">
+                                    <div class="item-content">
+                                        <div class="checkbox-wrapper">
+                                            <input type="checkbox" 
+                                                   ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
+                                                   onchange="event.stopPropagation(); togglePresenca('${jogador.id}')" 
+                                                   onclick="event.stopPropagation()">
+                                        </div>
+                                        <div class="player-info">
+                                            <div class="player-name">${jogador.nome}</div>
+                                            <div class="player-stars">
+                                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
+                                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                                            </div>
+                                        </div>
+                                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
+                                            ✏️
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Seção Avulsos
+            if (avulsos.length > 0) {
+                const avulsosPresentes = avulsos.filter(j => jogadoresPresentes.includes(j.id)).length;
+                html += `
+                    <div class="players-section">
+                        <div class="section-header avulsos-header">
+                            <span>💰 Avulsos</span>
+                            <span>${avulsosPresentes}/${avulsos.length}</span>
+                        </div>
+                        <div class="players-container">
+                            ${avulsos.map(jogador => `
+                                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''}" 
+                                     onclick="togglePresenca('${jogador.id}')">
+                                    <div class="item-content">
+                                        <div class="checkbox-wrapper">
+                                            <input type="checkbox" 
+                                                   ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} 
+                                                   onchange="event.stopPropagation(); togglePresenca('${jogador.id}')" 
+                                                   onclick="event.stopPropagation()">
+                                        </div>
+                                        <div class="player-info">
+                                            <div class="player-name">${jogador.nome}</div>
+                                            <div class="player-stars">
+                                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
+                                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                                            </div>
+                                        </div>
+                                        <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
+                                            ✏️
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Se não houver jogadores em nenhuma categoria
+            if (mensalistas.length === 0 && avulsos.length === 0) {
+                html = `
+                    <div class="empty-state">
+                        <span class="emoji">😅</span>
+                        Nenhum jogador cadastrado ainda.<br>
+                        Cadastre jogadores primeiro para poder separá-los em times.
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
             atualizarContador();
         }
 
@@ -1611,6 +1926,13 @@
                 
                 jogadoresPresentes = jogadoresPresentes.filter(jId => jId !== jogadorEditando.id);
                 
+                // NOVO: Remover das restrições também
+                Object.values(restricoes).forEach(restricao => {
+                    if (restricao.jogadores.includes(jogadorEditando.id)) {
+                        removerRestricaoDB(restricao.id);
+                    }
+                });
+                
                 removerJogadorDB(jogadorEditando.id);
                 
                 setTimeout(() => {
@@ -1636,7 +1958,133 @@
             exibirJogadoresPresentes();
         };
 
-        // Algoritmo de separação de times - VERSÃO CORRIGIDA
+        // NOVO: Funções para restrições
+        window.abrirModalRestricoes = function() {
+            selectedPlayersForRestriction = [];
+            document.getElementById('restricoesModal').style.display = 'flex';
+            exibirJogadoresParaRestricao();
+            exibirRestricoes();
+        };
+
+        window.fecharModalRestricoes = function() {
+            document.getElementById('restricoesModal').style.display = 'none';
+            selectedPlayersForRestriction = [];
+        };
+
+        function exibirJogadoresParaRestricao() {
+            const container = document.getElementById('playerSelector');
+            const jogadoresArray = Object.values(jogadores).sort((a, b) => a.nome.localeCompare(b.nome));
+            
+            if (jogadoresArray.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Nenhum jogador cadastrado</div>';
+                return;
+            }
+            
+            container.innerHTML = jogadoresArray.map(jogador => `
+                <div class="player-selector-item" onclick="togglePlayerSelection('${jogador.id}')">
+                    <input type="checkbox" id="check_${jogador.id}" onclick="event.stopPropagation(); togglePlayerSelection('${jogador.id}')">
+                    <label for="check_${jogador.id}">${formatarNomeComTipo(jogador)}</label>
+                </div>
+            `).join('');
+        }
+
+        window.togglePlayerSelection = function(playerId) {
+            const index = selectedPlayersForRestriction.indexOf(playerId);
+            const checkbox = document.getElementById(`check_${playerId}`);
+            const item = checkbox.closest('.player-selector-item');
+            
+            if (index > -1) {
+                selectedPlayersForRestriction.splice(index, 1);
+                checkbox.checked = false;
+                item.classList.remove('selected');
+            } else {
+                selectedPlayersForRestriction.push(playerId);
+                checkbox.checked = true;
+                item.classList.add('selected');
+            }
+            
+            // Habilitar/desabilitar botão de criar restrição
+            const btnCriar = document.getElementById('btnCriarRestricao');
+            btnCriar.disabled = selectedPlayersForRestriction.length < 2;
+        };
+
+        window.criarRestricao = function() {
+            if (selectedPlayersForRestriction.length < 2) {
+                alert('Selecione pelo menos 2 jogadores para criar uma restrição!');
+                return;
+            }
+            
+            // Verificar se já existe uma restrição com esses jogadores
+            const restricaoExistente = Object.values(restricoes).find(r => {
+                return selectedPlayersForRestriction.every(id => r.jogadores.includes(id)) && 
+                       r.jogadores.every(id => selectedPlayersForRestriction.includes(id)) &&
+                       r.jogadores.length === selectedPlayersForRestriction.length;
+            });
+            
+            if (restricaoExistente) {
+                alert('Já existe uma restrição com esses jogadores!');
+                return;
+            }
+            
+            const novaRestricao = {
+                id: Date.now().toString(),
+                jogadores: [...selectedPlayersForRestriction],
+                criadaEm: new Date().toISOString()
+            };
+            
+            salvarRestricaoDB(novaRestricao);
+            
+            // Limpar seleção
+            selectedPlayersForRestriction = [];
+            exibirJogadoresParaRestricao();
+            exibirRestricoes();
+            
+            const nomes = novaRestricao.jogadores.map(id => jogadores[id]?.nome).join(' e ');
+            alert(`Restrição criada: ${nomes} não podem ficar no mesmo time!`);
+        };
+
+        function exibirRestricoes() {
+            const container = document.getElementById('listaRestricoes');
+            const restricoesArray = Object.values(restricoes);
+            
+            if (restricoesArray.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666; font-style: italic;">Nenhuma restrição criada ainda</div>';
+                return;
+            }
+            
+            container.innerHTML = restricoesArray.map(restricao => {
+                const nomes = restricao.jogadores.map(id => {
+                    const jogador = jogadores[id];
+                    return jogador ? formatarNomeComTipo(jogador) : 'Jogador removido';
+                }).join(' • ');
+                
+                return `
+                    <div class="restriction-item">
+                        <button class="delete-restriction" onclick="removerRestricao('${restricao.id}')" title="Remover restrição">
+                            ✕
+                        </button>
+                        <div class="restriction-players">${nomes}</div>
+                        <div class="restriction-note">Não podem ficar no mesmo time</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.removerRestricao = function(id) {
+            const restricao = restricoes[id];
+            if (!restricao) return;
+            
+            const nomes = restricao.jogadores.map(jId => {
+                const jogador = jogadores[jId];
+                return jogador ? jogador.nome : 'Jogador removido';
+            }).join(' e ');
+            
+            if (confirm(`Remover restrição entre ${nomes}?`)) {
+                removerRestricaoDB(id);
+            }
+        };
+
+        // Algoritmo de separação de times - VERSÃO COM RESTRIÇÕES
         window.separarTimes = function() {
             if (jogadoresPresentes.length < 2) {
                 alert('Marque pelo menos 2 jogadores para formar os times!');
@@ -1673,90 +2121,133 @@
                 });
             }
             
-            // Agora rodar o algoritmo com TODOS os jogadores (reais + genéricos)
-            const totalJogadores = todosJogadores.length;
+            // Aplicar algoritmo com restrições
+            const resultado = distribuirComRestricoes(todosJogadores, numTimes);
+            
+            if (!resultado.sucesso) {
+                alert(resultado.mensagem);
+                return;
+            }
+            
+            // Armazenar distribuição e mostrar modal de aprovação
+            ultimaDistribuicao = {
+                times: resultado.times,
+                genericosNecessarios: genericosNecessarios
+            };
+            
+            mostrarModalAprovacao(resultado.times);
+        };
+
+        // NOVO: Função para distribuir com restrições
+        function distribuirComRestricoes(todosJogadores, numTimes, tentativa = 1) {
+            if (tentativa > 10) {
+                return {
+                    sucesso: false,
+                    mensagem: 'Não foi possível criar uma distribuição que respeite todas as restrições. Considere revisar as restrições criadas.'
+                };
+            }
             
             // Separar jogadores por nível (incluindo genéricos)
-            const jogadores10Estrelas = todosJogadores.filter(j => j.estrelas === 10);
-            const jogadores9Estrelas = todosJogadores.filter(j => j.estrelas === 9);
-            const jogadores8Estrelas = todosJogadores.filter(j => j.estrelas === 8);
-            const outrosJogadores = todosJogadores.filter(j => j.estrelas < 8);
-            
-            outrosJogadores.sort((a, b) => b.estrelas - a.estrelas);
+            const jogadores10Estrelas = embaralharArray(todosJogadores.filter(j => j.estrelas === 10));
+            const jogadores9Estrelas = embaralharArray(todosJogadores.filter(j => j.estrelas === 9));
+            const jogadores8Estrelas = embaralharArray(todosJogadores.filter(j => j.estrelas === 8));
+            const outrosJogadores = embaralharArray(todosJogadores.filter(j => j.estrelas < 8));
             
             // Criar times vazios
             const times = Array.from({ length: numTimes }, () => []);
             
             // Distribuir jogadores 10 estrelas (máximo 1 por time)
-            jogadores10Estrelas.forEach((jogador, index) => {
-                if (index < numTimes) {
-                    times[index].push(jogador);
+            for (let i = 0; i < jogadores10Estrelas.length; i++) {
+                const jogador = jogadores10Estrelas[i];
+                const timeDisponivel = encontrarTimeSemRestricao(jogador, times);
+                
+                if (timeDisponivel === -1) {
+                    return distribuirComRestricoes(todosJogadores, numTimes, tentativa + 1);
                 }
-            });
-            
-            // Se sobrar jogadores 10 estrelas, distribuir nos times com menor pontuação
-            for (let i = numTimes; i < jogadores10Estrelas.length; i++) {
-                const timeMenorPontuacao = times.reduce((menor, time, index) => {
-                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
-                    const pontuacaoMenor = times[menor].reduce((sum, j) => sum + j.estrelas, 0);
-                    return pontuacaoAtual < pontuacaoMenor ? index : menor;
-                }, 0);
-                times[timeMenorPontuacao].push(jogadores10Estrelas[i]);
+                
+                times[timeDisponivel].push(jogador);
             }
             
             // Distribuir jogadores 9 e 8 estrelas usando algoritmo serpentina
             const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
-            let timeAtual = 0;
-            let direcao = 1;
             
             for (const jogador of jogadoresAltos) {
-                times[timeAtual].push(jogador);
+                const timeDisponivel = encontrarTimeSemRestricao(jogador, times);
                 
-                if (direcao === 1) {
-                    timeAtual++;
-                    if (timeAtual >= numTimes) {
-                        timeAtual = numTimes - 1;
-                        direcao = -1;
-                    }
-                } else {
-                    timeAtual--;
-                    if (timeAtual < 0) {
-                        timeAtual = 0;
-                        direcao = 1;
-                    }
+                if (timeDisponivel === -1) {
+                    return distribuirComRestricoes(todosJogadores, numTimes, tentativa + 1);
                 }
+                
+                times[timeDisponivel].push(jogador);
             }
             
             // Distribuir outros jogadores (incluindo genéricos) equilibrando quantidades
             for (const jogador of outrosJogadores) {
-                const timeMenosJogadores = times.reduce((menor, time, index) => {
-                    return time.length < times[menor].length ? index : menor;
-                }, 0);
+                const timeDisponivel = encontrarTimeSemRestricao(jogador, times);
                 
-                const timesComMenorQuantidade = times
-                    .map((time, index) => ({ time, index, count: time.length }))
-                    .filter(t => t.count === times[timeMenosJogadores].length);
+                if (timeDisponivel === -1) {
+                    return distribuirComRestricoes(todosJogadores, numTimes, tentativa + 1);
+                }
                 
-                if (timesComMenorQuantidade.length > 1) {
-                    const melhorTime = timesComMenorQuantidade.reduce((melhor, atual) => {
-                        const pontuacaoAtual = atual.time.reduce((sum, j) => sum + j.estrelas, 0);
-                        const pontuacaoMelhor = melhor.time.reduce((sum, j) => sum + j.estrelas, 0);
-                        return pontuacaoAtual < pontuacaoMelhor ? atual : melhor;
-                    });
-                    times[melhorTime.index].push(jogador);
-                } else {
-                    times[timeMenosJogadores].push(jogador);
+                times[timeDisponivel].push(jogador);
+            }
+            
+            return {
+                sucesso: true,
+                times: times
+            };
+        }
+
+        // NOVO: Função para encontrar time sem restrição
+        function encontrarTimeSemRestricao(jogador, times) {
+            // Se é genérico, não há restrições
+            if (jogador.isGenerico) {
+                // Encontrar time com menos jogadores
+                let menorTime = 0;
+                for (let i = 1; i < times.length; i++) {
+                    if (times[i].length < times[menorTime].length) {
+                        menorTime = i;
+                    }
+                }
+                return menorTime;
+            }
+            
+            // Verificar cada time
+            const timesDisponiveis = [];
+            
+            for (let i = 0; i < times.length; i++) {
+                let podeEntrar = true;
+                
+                // Verificar se há algum jogador restrito neste time
+                for (const jogadorNoTime of times[i]) {
+                    if (jogadorNoTime.isGenerico) continue;
+                    
+                    if (temRestricao(jogador.id, jogadorNoTime.id)) {
+                        podeEntrar = false;
+                        break;
+                    }
+                }
+                
+                if (podeEntrar) {
+                    timesDisponiveis.push({index: i, tamanho: times[i].length});
                 }
             }
             
-            // Armazenar distribuição e mostrar modal de aprovação
-            ultimaDistribuicao = {
-                times: times,
-                genericosNecessarios: genericosNecessarios
-            };
+            if (timesDisponiveis.length === 0) {
+                return -1; // Nenhum time disponível
+            }
             
-            mostrarModalAprovacao(times);
-        };
+            // Retornar time com menos jogadores
+            timesDisponiveis.sort((a, b) => a.tamanho - b.tamanho);
+            return timesDisponiveis[0].index;
+        }
+
+        // NOVO: Função para verificar se dois jogadores têm restrição
+        function temRestricao(id1, id2) {
+            return Object.values(restricoes).some(restricao => 
+                restricao.jogadores.includes(id1) && restricao.jogadores.includes(id2)
+            );
+        }
 
         // Nova função para mostrar modal de aprovação
         function mostrarModalAprovacao(times) {
@@ -1808,102 +2299,14 @@
         };
 
         function gerarDistribuicaoAlternativa() {
-            if (jogadoresPresentes.length < 2) {
-                alert('Marque pelo menos 2 jogadores para formar os times!');
-                return;
-            }
-            
-            const jogadoresDoJogo = jogadoresPresentes.map(id => jogadores[id]).filter(j => j);
-            const totalJogadoresReais = jogadoresDoJogo.length;
-            
-            // Determinar número de times
-            let numTimes;
-            const selectedValue = document.getElementById('teamCount').value;
-            if (selectedValue === 'auto') {
-                if (totalJogadoresReais <= 8) numTimes = 2;
-                else if (totalJogadoresReais <= 12) numTimes = 3;
-                else numTimes = 4;
-            } else {
-                numTimes = parseInt(selectedValue);
-            }
-            
-            // Calcular quantos jogadores genéricos são necessários
-            const jogadoresNecessarios = numTimes * 5;
-            const genericosNecessarios = Math.max(0, jogadoresNecessarios - totalJogadoresReais);
-            
-            // Adicionar jogadores genéricos
-            const todosJogadores = [...jogadoresDoJogo];
-            for (let i = 0; i < genericosNecessarios; i++) {
-                todosJogadores.push({
-                    id: `generico_${i}`,
-                    nome: `Jogador Extra ${i + 1}`,
-                    estrelas: 5,
-                    tipo: 'mensalista',
-                    isGenerico: true
-                });
-            }
-            
-            // Algoritmo alternativo - embaralhar antes de distribuir
-            const jogadoresEmbaralhados = [...todosJogadores];
-            
-            // Embaralhar dentro de cada categoria para gerar resultado diferente
-            const jogadores10Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 10));
-            const jogadores9Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 9));
-            const jogadores8Estrelas = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas === 8));
-            const outrosJogadores = embaralharArray(jogadoresEmbaralhados.filter(j => j.estrelas < 8));
-            
-            // Criar times vazios
-            const times = Array.from({ length: numTimes }, () => []);
-            
-            // Distribuir jogadores 10 estrelas de forma alternada
-            jogadores10Estrelas.forEach((jogador, index) => {
-                const timeIndex = index % numTimes;
-                times[timeIndex].push(jogador);
-            });
-            
-            // Distribuir jogadores 9 e 8 estrelas usando serpentina invertida
-            const jogadoresAltos = [...jogadores9Estrelas, ...jogadores8Estrelas];
-            let timeAtual = numTimes - 1; // Começar do final
-            let direcao = -1; // Direção inversa
-            
-            for (const jogador of jogadoresAltos) {
-                times[timeAtual].push(jogador);
-                
-                if (direcao === -1) {
-                    timeAtual--;
-                    if (timeAtual < 0) {
-                        timeAtual = 0;
-                        direcao = 1;
-                    }
-                } else {
-                    timeAtual++;
-                    if (timeAtual >= numTimes) {
-                        timeAtual = numTimes - 1;
-                        direcao = -1;
-                    }
-                }
-            }
-            
-            // Distribuir outros jogadores priorizando equilíbrio
-            for (const jogador of outrosJogadores) {
-                // Encontrar time com menor pontuação total
-                const timeMenorPontuacao = times.reduce((menorIndex, time, index) => {
-                    const pontuacaoAtual = time.reduce((sum, j) => sum + j.estrelas, 0);
-                    const pontuacaoMenor = times[menorIndex].reduce((sum, j) => sum + j.estrelas, 0);
-                    return pontuacaoAtual < pontuacaoMenor ? index : menorIndex;
-                }, 0);
-                
-                times[timeMenorPontuacao].push(jogador);
-            }
-            
-            // Armazenar distribuição e mostrar modal
-            ultimaDistribuicao = {
-                times: times,
-                genericosNecessarios: genericosNecessarios
-            };
-            
-            mostrarModalAprovacao(times);
+            // Usar a mesma função separarTimes mas com embaralhamento diferente
+            separarTimes();
         }
+
+        window.cancelarAprovacao = function() {
+            document.getElementById('aprovacaoModal').style.display = 'none';
+            ultimaDistribuicao = null;
+        };
 
         // Função para embaralhar array (algoritmo Fisher-Yates)
         function embaralharArray(array) {
@@ -1914,11 +2317,6 @@
             }
             return embaralhado;
         }
-
-        window.cancelarAprovacao = function() {
-            document.getElementById('aprovacaoModal').style.display = 'none';
-            ultimaDistribuicao = null;
-        };
 
         // Nova função para mostrar modal financeiro
         function mostrarModalFinanceiro() {
@@ -2120,6 +2518,7 @@
                       maiorDiferenca <= 2.0 ? '🟡 Times razoavelmente balanceados' :
                       '🔴 Considere redistribuir alguns jogadores'}
                 </p>
+                ${Object.keys(restricoes).length > 0 ? '<p style="font-size: 12px; margin-top: 10px; color: #9c27b0;">🚫 Restrições entre jogadores foram respeitadas</p>' : ''}
                 ${genericosAdicionados > 0 ? `<p style="font-size: 12px; margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404;"><strong>💡 Dica:</strong> Os jogadores genéricos (5⭐) podem ser substituídos por qualquer pessoa disponível na hora do jogo.</p>` : ''}
             `;
             
@@ -2161,6 +2560,7 @@
             }
         };
 
+        // NOVO: Função para exibir sessões com botão de exclusão
         function exibirSessoes() {
             const container = document.getElementById('listaSessoes');
             const sessoesArray = Object.values(sessoes).sort((a, b) => new Date(b.data) - new Date(a.data));
@@ -2187,7 +2587,12 @@
                     <div class="sessao-item">
                         <div class="sessao-header">
                             <div class="sessao-data">${new Date(sessao.data).toLocaleDateString('pt-BR')}</div>
-                            <div class="sessao-valor">R$ ${totalArrecadado.toFixed(2)}</div>
+                            <div class="sessao-valor">
+                                R$ ${totalArrecadado.toFixed(2)}
+                                <button class="delete-session-btn" onclick="confirmarExclusaoSessao('${sessao.id}')" title="Excluir sessão">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
                         <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
                             <strong>Total de jogadores:</strong> ${todosPresentes.length} 
@@ -2206,6 +2611,46 @@
                 `;
             }).join('');
         }
+
+        // NOVO: Funções para exclusão de sessão
+        window.confirmarExclusaoSessao = function(sessaoId) {
+            const sessao = sessoes[sessaoId];
+            if (!sessao) return;
+            
+            sessaoParaExcluir = sessaoId;
+            
+            const data = new Date(sessao.data).toLocaleDateString('pt-BR');
+            const todosPresentes = sessao.todosPresentes.map(id => jogadores[id]).filter(j => j);
+            const avulsos = todosPresentes.filter(j => j.tipo === 'avulso');
+            const totalValor = (sessao.valorDiaria * avulsos.length).toFixed(2);
+            
+            document.getElementById('deleteMessage').innerHTML = `
+                Tem certeza que deseja excluir a sessão do dia <strong>${data}</strong>?<br><br>
+                Esta ação removerá:<br>
+                • ${todosPresentes.length} jogadores registrados<br>
+                • R$ ${totalValor} do controle financeiro<br>
+                • Todo o histórico de pagamentos<br><br>
+                <strong>Esta ação não pode ser desfeita!</strong>
+            `;
+            
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
+        };
+
+        window.confirmarExclusao = function() {
+            if (!sessaoParaExcluir) return;
+            
+            excluirSessaoDB(sessaoParaExcluir);
+            
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+            sessaoParaExcluir = null;
+            
+            alert('Sessão excluída com sucesso!');
+        };
+
+        window.cancelarExclusao = function() {
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+            sessaoParaExcluir = null;
+        };
 
         function exibirPendencias() {
             const container = document.getElementById('resumoPendencias');
@@ -2341,6 +2786,8 @@
             const editModal = document.getElementById('editModal');
             const aprovacaoModal = document.getElementById('aprovacaoModal');
             const sessaoModal = document.getElementById('sessaoModal');
+            const restricoesModal = document.getElementById('restricoesModal');
+            const confirmDeleteModal = document.getElementById('confirmDeleteModal');
             
             if (event.target === editModal) {
                 fecharModal();
@@ -2350,6 +2797,12 @@
             }
             if (event.target === sessaoModal) {
                 fecharSessaoModal();
+            }
+            if (event.target === restricoesModal) {
+                fecharModalRestricoes();
+            }
+            if (event.target === confirmDeleteModal) {
+                cancelarExclusao();
             }
         });
 
@@ -2361,8 +2814,12 @@
                 fecharModal();
                 document.getElementById('aprovacaoModal').style.display = 'none';
                 document.getElementById('sessaoModal').style.display = 'none';
+                document.getElementById('restricoesModal').style.display = 'none';
+                document.getElementById('confirmDeleteModal').style.display = 'none';
                 ultimaDistribuicao = null;
                 timesFormados = null;
+                selectedPlayersForRestriction = [];
+                sessaoParaExcluir = null;
             }
         });
 

@@ -375,58 +375,56 @@
             margin: 12px 0;
         }
 
-        /* Campo de Pesquisa - Sticky */
+        /* ==========================================
+           HEADER STICKY COMPACTO (Opção A)
+           Max ~100px de altura
+           ========================================== */
         .search-filter-sticky {
             position: sticky;
             top: 60px;
             z-index: 50;
             background: white;
-            padding: 12px 15px;
-            margin: 0 -15px 15px -15px;
+            padding: 8px 12px;
+            margin: 0 -15px 10px -15px;
             border-bottom: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
         }
 
-        .search-filter-sticky .filter-controls {
-            padding: 12px;
-            margin-bottom: 0;
-            border: none;
-            background: #f8f9fa;
-        }
-
+        /* Linha 1: Campo de Pesquisa */
         .search-container {
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .search-container input {
             width: 100%;
-            padding: 14px 45px 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 16px;
+            padding: 10px 40px 10px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 15px;
             transition: all 0.2s;
             background: #f8f9fa;
+            height: 42px;
         }
 
         .search-container input:focus {
             outline: none;
             border-color: #4CAF50;
             background: white;
-            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
         .clear-search-btn {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             background: #999;
             border: none;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -436,6 +434,97 @@
 
         .clear-search-btn:active {
             background: #666;
+        }
+
+        /* Linha 2: Filtros Compactos em Linha */
+        .compact-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compact-filters select {
+            flex: 1;
+            padding: 8px 28px 8px 10px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: 1.5px solid #ddd;
+            height: 38px;
+            min-width: 0;
+            background: white;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            background-size: 14px;
+            -webkit-appearance: none;
+            appearance: none;
+            color: #333;
+        }
+
+        .compact-filters select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .selected-counter {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            min-width: 75px;
+            text-align: center;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.25);
+        }
+
+        /* Botões de Ação Rápida */
+        .quick-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .quick-action-btn {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.2s;
+            height: 34px;
+        }
+
+        .quick-action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .quick-action-btn.mensalistas {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .quick-action-btn.avulsos {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .quick-action-btn.limpar {
+            background: #ffebee;
+            color: #c62828;
         }
 
         .no-results {
@@ -451,7 +540,7 @@
             display: block;
         }
 
-        /* Filtros */
+        /* Filtros para outras seções (mantém estilo original) */
         .filter-controls {
             background: #f8f9fa;
             border-radius: 12px;
@@ -485,21 +574,25 @@
             min-width: 100px;
         }
 
-        .selected-counter {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+        /* Indicador de Pendência Financeira */
+        .pendencia-badge {
+            background: #f44336;
             color: white;
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            font-size: 10px;
             font-weight: 700;
-            white-space: nowrap;
-            min-width: 110px;
-            text-align: center;
-            min-height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 6px;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .list-item.has-pendencia {
+            border-left: 3px solid #f44336;
         }
 
         /* Seções de jogadores */
@@ -1228,15 +1321,27 @@
            MEDIA QUERIES
            ========================================== */
 
-        /* Telas pequenas */
+        /* Telas muito pequenas (até 360px) */
         @media (max-width: 360px) {
             .header-title h1 { font-size: 15px; }
-            .filter-controls select { min-width: 80px; font-size: 13px; }
-            .selected-counter { min-width: 90px; font-size: 12px; }
+            .compact-filters select { font-size: 12px; padding: 6px 24px 6px 8px; }
+            .selected-counter { min-width: 65px; font-size: 11px; padding: 6px 8px; }
+            .quick-action-btn { font-size: 10px; padding: 6px 8px; }
             .btn { font-size: 14px; padding: 14px 16px; }
         }
 
-        /* Filtros em coluna para mobile */
+        /* Telas pequenas (até 400px) */
+        @media (max-width: 400px) {
+            .quick-actions {
+                gap: 4px;
+            }
+            .quick-action-btn {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+        }
+
+        /* Filtros em coluna para outras seções (não o header principal) */
         @media (max-width: 500px) {
             .filter-row {
                 flex-direction: column;
@@ -1245,7 +1350,6 @@
             }
             .filter-controls label { margin-bottom: 4px; }
             .filter-controls select { width: 100%; }
-            .selected-counter { width: 100%; }
         }
 
         /* Tablets e Desktop */
@@ -1284,18 +1388,23 @@
             .sidebar { width: 320px; left: -320px; }
         }
 
-        /* Landscape mobile */
+        /* Landscape mobile - otimização */
         @media (max-height: 500px) and (orientation: landscape) {
             .main-content { padding-bottom: 80px; }
             .edit-modal-content, .quick-add-content { max-height: 95vh; padding: 15px; }
             .fab-button { width: 50px; height: 50px; font-size: 24px; bottom: 15px; right: 15px; }
-            .search-filter-sticky { padding: 8px 15px; }
+            .search-filter-sticky { padding: 6px 12px; }
+            .search-container { margin-bottom: 6px; }
+            .search-container input { height: 36px; padding: 8px 35px 8px 12px; font-size: 14px; }
+            .compact-filters select { height: 32px; font-size: 12px; }
+            .selected-counter { height: 32px; font-size: 11px; }
+            .quick-actions { display: none; } /* Esconde em landscape para economizar espaço */
         }
 
         /* Acessibilidade touch */
         @media (pointer: coarse) {
             .btn, .list-item, .edit-btn, .menu-item { min-height: 48px; }
-            input, select { min-height: 52px; }
+            input:not(.search-container input), select:not(.compact-filters select) { min-height: 52px; }
         }
     </style>
 </head>
@@ -1368,46 +1477,53 @@
                 <h2>⚽ Quem está presente?</h2>
                 <p style="color: #666; margin-bottom: 15px;">Marque os jogadores presentes:</p>
                 
-                <!-- Container Sticky para Pesquisa e Filtros -->
+                <!-- Container Sticky para Pesquisa e Filtros (COMPACTO) -->
                 <div class="search-filter-sticky">
-                    <!-- Campo de Pesquisa -->
+                    <!-- Linha 1: Pesquisa -->
                     <div class="search-container">
                         <input type="text" id="searchJogador" placeholder="🔍 Pesquisar jogador..." oninput="filtrarJogadores()">
                         <button class="clear-search-btn" id="clearSearchBtn" onclick="limparPesquisa()" style="display: none;">✕</button>
                     </div>
                     
-                    <div class="filter-controls" style="margin-bottom: 0;">
-                        <div class="filter-row">
-                            <label for="teamCount">Times:</label>
-                            <select id="teamCount">
-                                <option value="2">2 Times</option>
-                                <option value="3" selected>3 Times</option>
-                                <option value="4">4 Times</option>
-                                <option value="auto">Automático</option>
-                            </select>
-                            <label for="sortOrder">Ordenar:</label>
-                            <select id="sortOrder" onchange="atualizarOrdenacao()">
-                                <option value="alfabetica-az">A-Z</option>
-                                <option value="alfabetica-za">Z-A</option>
-                                <option value="estrelas-maior">⭐ Maior</option>
-                                <option value="estrelas-menor">⭐ Menor</option>
-                            </select>
-                            <div class="selected-counter">
-                                <span id="totalSelecionados">0</span>
-                            </div>
+                    <!-- Linha 2: Filtros Compactos -->
+                    <div class="compact-filters">
+                        <select id="teamCount" title="Quantidade de times">
+                            <option value="2">2 Times</option>
+                            <option value="3" selected>3 Times</option>
+                            <option value="4">4 Times</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                        <select id="sortOrder" onchange="atualizarOrdenacao()" title="Ordenação">
+                            <option value="alfabetica-az">A-Z</option>
+                            <option value="alfabetica-za">Z-A</option>
+                            <option value="estrelas-maior">⭐↓</option>
+                            <option value="estrelas-menor">⭐↑</option>
+                        </select>
+                        <div class="selected-counter">
+                            <span id="totalSelecionados">0</span>
                         </div>
+                    </div>
+                    
+                    <!-- Linha 3: Ações Rápidas -->
+                    <div class="quick-actions">
+                        <button class="quick-action-btn mensalistas" onclick="marcarTodosMensalistas()">
+                            ✓ Mensalistas
+                        </button>
+                        <button class="quick-action-btn avulsos" onclick="marcarTodosAvulsos()">
+                            ✓ Avulsos
+                        </button>
+                        <button class="quick-action-btn limpar" onclick="limparTodosCheckbox()">
+                            ✕ Limpar
+                        </button>
                     </div>
                 </div>
                 <!-- Fim do Container Sticky -->
                 
                 <div id="jogadoresPresentes"></div>
                 
-                <div style="text-align: center; margin: 30px 0;">
-                    <button class="btn btn-full" onclick="separarTimes()">
+                <div style="text-align: center; margin: 25px 0;">
+                    <button class="btn btn-full" onclick="separarTimes()" style="font-size: 17px;">
                         🎯 Separar Times
-                    </button>
-                    <button class="btn btn-danger btn-full" onclick="limparTodosCheckbox()">
-                        🔄 Desmarcar Todos
                     </button>
                 </div>
 
@@ -2141,6 +2257,17 @@
         };
 
         // NOVO: Função para exibir jogadores presentes separados por tipo
+        // NOVO: Função helper para calcular pendências de um jogador
+        function calcularPendenciaJogador(jogadorId) {
+            let total = 0;
+            Object.values(sessoes).forEach(sessao => {
+                if (sessao.pagamentos && sessao.pagamentos[jogadorId] === 'pendente') {
+                    total += sessao.valorDiaria || 0;
+                }
+            });
+            return total;
+        }
+
         function exibirJogadoresPresentes() {
             const container = document.getElementById('jogadoresPresentes');
             if (Object.keys(jogadores).length === 0) {
@@ -2224,7 +2351,7 @@
                 `;
             }
             
-            // Seção Avulsos
+            // Seção Avulsos (com indicador de pendência)
             if (avulsos.length > 0) {
                 const avulsosPresentes = avulsos.filter(j => jogadoresPresentes.includes(j.id)).length;
                 html += `
@@ -2234,8 +2361,11 @@
                             <span>${avulsosPresentes}/${avulsos.length}</span>
                         </div>
                         <div class="players-container">
-                            ${avulsos.map(jogador => `
-                                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''}" 
+                            ${avulsos.map(jogador => {
+                                const pendencia = calcularPendenciaJogador(jogador.id);
+                                const temPendencia = pendencia > 0;
+                                return `
+                                <div class="list-item ${jogadoresPresentes.includes(jogador.id) ? 'checked' : ''} ${temPendencia ? 'has-pendencia' : ''}" 
                                      onclick="togglePresenca('${jogador.id}')">
                                     <div class="item-content">
                                         <div class="checkbox-wrapper">
@@ -2245,7 +2375,10 @@
                                                    onclick="event.stopPropagation()">
                                         </div>
                                         <div class="player-info">
-                                            <div class="player-name">${jogador.nome}</div>
+                                            <div class="player-name">
+                                                ${jogador.nome}
+                                                ${temPendencia ? `<span class="pendencia-badge">R$${pendencia.toFixed(0)}</span>` : ''}
+                                            </div>
                                             <div class="player-stars">
                                                 <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
                                                 <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
@@ -2256,7 +2389,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            `).join('')}
+                            `}).join('')}
                         </div>
                     </div>
                 `;
@@ -2381,6 +2514,10 @@
                 jogadoresPresentes.splice(index, 1);
             } else {
                 jogadoresPresentes.push(id);
+                // Vibração ao marcar (feedback tátil)
+                if (navigator.vibrate) {
+                    navigator.vibrate(30);
+                }
             }
             
             // Salvar seleção no localStorage
@@ -2392,6 +2529,44 @@
                 checkbox.checked = jogadoresPresentes.includes(id);
             }
             
+            exibirJogadoresPresentes();
+        };
+
+        // NOVO: Marcar todos os mensalistas
+        window.marcarTodosMensalistas = function() {
+            const mensalistas = Object.values(jogadores).filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            
+            mensalistas.forEach(jogador => {
+                if (!jogadoresPresentes.includes(jogador.id)) {
+                    jogadoresPresentes.push(jogador.id);
+                }
+            });
+            
+            // Vibração de confirmação
+            if (navigator.vibrate) {
+                navigator.vibrate([30, 50, 30]);
+            }
+            
+            salvarSelecao();
+            exibirJogadoresPresentes();
+        };
+
+        // NOVO: Marcar todos os avulsos
+        window.marcarTodosAvulsos = function() {
+            const avulsos = Object.values(jogadores).filter(j => j.tipo === 'avulso');
+            
+            avulsos.forEach(jogador => {
+                if (!jogadoresPresentes.includes(jogador.id)) {
+                    jogadoresPresentes.push(jogador.id);
+                }
+            });
+            
+            // Vibração de confirmação
+            if (navigator.vibrate) {
+                navigator.vibrate([30, 50, 30]);
+            }
+            
+            salvarSelecao();
             exibirJogadoresPresentes();
         };
 
@@ -2473,6 +2648,11 @@
             jogadoresPresentes = [];
             // Limpar seleção do localStorage
             localStorage.removeItem('jogadoresPresentesSelecionados');
+            
+            // Vibração de confirmação
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
             
             document.getElementById('teamsContainer').style.display = 'none';
             document.getElementById('balanceInfo').style.display = 'none';

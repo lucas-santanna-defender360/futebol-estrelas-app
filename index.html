@@ -17,11 +17,24 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Desabilitar pull-to-refresh */
+        html, body {
+            overscroll-behavior: none;
+            overscroll-behavior-y: contain;
+        }
+
+        html {
+            overflow: hidden;
+            height: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             overflow-x: hidden;
+            overflow-y: auto;
+            height: 100%;
             font-size: 16px;
         }
 
@@ -1003,6 +1016,219 @@
             color: #666;
             line-height: 1.3;
         }
+
+        /* Campo de Pesquisa */
+        .search-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ccc;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .clear-search-btn:hover {
+            background: #999;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .no-results .emoji {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Botão Flutuante (FAB) */
+        .fab-button {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .fab-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal de Cadastro Rápido */
+        .quick-add-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .quick-add-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .quick-add-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Histórico de Times */
+        .historico-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .historico-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .historico-data {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .historico-info {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .historico-times {
+            padding: 15px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .historico-times.two-cols {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .historico-times.three-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 600px) {
+            .historico-times.two-cols,
+            .historico-times.three-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .historico-time {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .historico-time h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .historico-time-media {
+            font-size: 11px;
+            background: #e3f2fd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1976D2;
+        }
+
+        .historico-jogadores {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .historico-delete-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .historico-delete-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
     </style>
 </head>
 <body>
@@ -1040,6 +1266,10 @@
                     <span class="menu-icon">⚽</span>
                     <span>Separar Times</span>
                 </button>
+                <button class="menu-item" onclick="showSection('historico')">
+                    <span class="menu-icon">📜</span>
+                    <span>Histórico de Times</span>
+                </button>
                 <button class="menu-item" onclick="showSection('financeiro')">
                     <span class="menu-icon">💰</span>
                     <span>Controle Financeiro</span>
@@ -1069,6 +1299,12 @@
             <div id="separar" class="content-section active">
                 <h2>⚽ Quem está presente?</h2>
                 <p style="color: #666; margin-bottom: 20px;">Marque os jogadores presentes:</p>
+                
+                <!-- Campo de Pesquisa -->
+                <div class="search-container">
+                    <input type="text" id="searchJogador" placeholder="🔍 Pesquisar jogador..." oninput="filtrarJogadores()">
+                    <button class="clear-search-btn" id="clearSearchBtn" onclick="limparPesquisa()" style="display: none;">✕</button>
+                </div>
                 
                 <div class="filter-controls">
                     <div class="filter-row">
@@ -1107,6 +1343,68 @@
 
                 <div class="teams-container" id="teamsContainer" style="display: none;">
                     <!-- Times serão gerados dinamicamente aqui -->
+                </div>
+                
+                <!-- Botão Flutuante para Adicionar Jogador -->
+                <button class="fab-button" onclick="abrirCadastroRapido()" title="Adicionar jogador rapidamente">
+                    ➕
+                </button>
+            </div>
+
+            <!-- Modal de Cadastro Rápido -->
+            <div id="quickAddModal" class="quick-add-modal">
+                <div class="quick-add-content">
+                    <h3>➕ Cadastro Rápido</h3>
+                    <div class="form-group">
+                        <label for="quickNome">Nome do Jogador:</label>
+                        <input type="text" id="quickNome" placeholder="Digite o nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="quickEstrelas">Nível de Habilidade:</label>
+                        <select id="quickEstrelas">
+                            <option value="1">⭐ 1 Estrela</option>
+                            <option value="2">⭐⭐ 2 Estrelas</option>
+                            <option value="3">⭐⭐⭐ 3 Estrelas</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
+                            <option value="5" selected>⭐⭐⭐⭐⭐ 5 Estrelas</option>
+                            <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
+                            <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
+                            <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
+                            <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
+                            <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickTipo">Tipo de Jogador:</label>
+                        <select id="quickTipo">
+                            <option value="mensalista">Mensalista</option>
+                            <option value="avulso">Avulso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="quickJaSelecionar" checked style="width: auto; margin-right: 8px;">
+                            Já marcar como presente
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn" id="btnQuickAdd" onclick="cadastrarRapido()">
+                            ➕ Cadastrar
+                        </button>
+                        <button class="btn" onclick="fecharCadastroRapido()" style="background: #666;">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção Histórico de Times -->
+            <div id="historico" class="content-section">
+                <h2>📜 Histórico de Times</h2>
+                <p style="color: #666; margin-bottom: 20px;">Veja os times separados anteriormente:</p>
+                
+                <div id="listaHistorico">
+                    <!-- Histórico será gerado dinamicamente aqui -->
                 </div>
             </div>
 
@@ -1378,13 +1676,34 @@
         let isOnline = navigator.onLine;
         let sessoes = {};
         let restricoes = {}; // NOVO: Armazenar restrições
+        let historicoTimes = {}; // NOVO: Armazenar histórico de times
         let timesFormados = null; 
         let ultimaDistribuicao = null;
         let selectedPlayersForRestriction = []; // NOVO: Jogadores selecionados para restrição
         let sessaoParaExcluir = null; // NOVO: Sessão que será excluída
 
+        // Carregar seleção salva do localStorage
+        function carregarSelecaoSalva() {
+            const selecaoSalva = localStorage.getItem('jogadoresPresentesSelecionados');
+            if (selecaoSalva) {
+                try {
+                    jogadoresPresentes = JSON.parse(selecaoSalva);
+                } catch (e) {
+                    jogadoresPresentes = [];
+                }
+            }
+        }
+
+        // Salvar seleção no localStorage
+        function salvarSelecao() {
+            localStorage.setItem('jogadoresPresentesSelecionados', JSON.stringify(jogadoresPresentes));
+        }
+
         // Inicializar Firebase
         function initFirebase() {
+            // Carregar seleção salva antes de tudo
+            carregarSelecaoSalva();
+            
             try {
                 app = firebase.initializeApp(firebaseConfig);
                 database = firebase.database();
@@ -1403,6 +1722,15 @@
                 // NOVO: Listener para restrições
                 database.ref('restricoes').on('value', (snapshot) => {
                     restricoes = snapshot.val() || {};
+                });
+
+                // NOVO: Listener para histórico de times
+                database.ref('historicoTimes').on('value', (snapshot) => {
+                    historicoTimes = snapshot.val() || {};
+                    const currentSection = document.querySelector('.content-section.active')?.id;
+                    if (currentSection === 'historico') {
+                        exibirHistorico();
+                    }
                 });
 
                 database.ref('.info/connected').on('value', (snapshot) => {
@@ -1442,6 +1770,10 @@
             jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
             sessoes = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
             restricoes = JSON.parse(localStorage.getItem('restricoesFutebol') || '{}'); // NOVO
+            historicoTimes = JSON.parse(localStorage.getItem('historicoTimesFutebol') || '{}'); // NOVO
+            // Carregar seleção salva
+            carregarSelecaoSalva();
+            
             hideLoading();
             updateSyncStatus('offline');
             
@@ -1618,6 +1950,8 @@
                 exibirJogadoresPresentes();
             } else if (sectionName === 'financeiro') {
                 mostrarAbaFinanceiro('sessoes');
+            } else if (sectionName === 'historico') {
+                exibirHistorico();
             }
         };
 
@@ -1751,9 +2085,32 @@
             const sortOrder = document.getElementById('sortOrder').value;
             const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
             
+            // Aplicar filtro de pesquisa
+            const searchInput = document.getElementById('searchJogador');
+            const termoPesquisa = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            
+            let jogadoresFiltrados = jogadoresOrdenados;
+            if (termoPesquisa.length > 0) {
+                jogadoresFiltrados = jogadoresOrdenados.filter(j => 
+                    j.nome.toLowerCase().includes(termoPesquisa)
+                );
+            }
+            
             // Separar mensalistas e avulsos
-            const mensalistas = jogadoresOrdenados.filter(j => (j.tipo || 'mensalista') === 'mensalista');
-            const avulsos = jogadoresOrdenados.filter(j => j.tipo === 'avulso');
+            const mensalistas = jogadoresFiltrados.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            const avulsos = jogadoresFiltrados.filter(j => j.tipo === 'avulso');
+            
+            // Se não encontrou nenhum jogador com o filtro
+            if (jogadoresFiltrados.length === 0 && termoPesquisa.length > 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <span class="emoji">🔍</span>
+                        Nenhum jogador encontrado com "${termoPesquisa}"
+                    </div>
+                `;
+                atualizarContador();
+                return;
+            }
             
             let html = '';
             
@@ -1852,6 +2209,94 @@
             exibirJogadoresPresentes();
         };
 
+        // Função de filtro de pesquisa
+        window.filtrarJogadores = function() {
+            const searchInput = document.getElementById('searchJogador');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const termo = searchInput.value.trim();
+            
+            // Mostrar/esconder botão de limpar
+            clearBtn.style.display = termo.length > 0 ? 'flex' : 'none';
+            
+            exibirJogadoresPresentes();
+        };
+
+        window.limparPesquisa = function() {
+            document.getElementById('searchJogador').value = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            exibirJogadoresPresentes();
+        };
+
+        // Funções do Cadastro Rápido (FAB)
+        window.abrirCadastroRapido = function() {
+            document.getElementById('quickAddModal').style.display = 'flex';
+            document.getElementById('quickNome').value = '';
+            document.getElementById('quickEstrelas').value = '5';
+            document.getElementById('quickTipo').value = 'mensalista';
+            document.getElementById('quickJaSelecionar').checked = true;
+            // Focar no campo de nome
+            setTimeout(() => {
+                document.getElementById('quickNome').focus();
+            }, 100);
+        };
+
+        window.fecharCadastroRapido = function() {
+            document.getElementById('quickAddModal').style.display = 'none';
+        };
+
+        window.cadastrarRapido = function() {
+            const nome = document.getElementById('quickNome').value.trim();
+            const estrelas = parseInt(document.getElementById('quickEstrelas').value);
+            const tipo = document.getElementById('quickTipo').value;
+            const jaSelecionar = document.getElementById('quickJaSelecionar').checked;
+            const btnQuickAdd = document.getElementById('btnQuickAdd');
+            
+            if (!nome) {
+                alert('Por favor, digite o nome do jogador!');
+                return;
+            }
+            
+            // Verificar se já existe
+            const jogadorExistente = Object.values(jogadores).find(j => 
+                j.nome.toLowerCase() === nome.toLowerCase()
+            );
+            
+            if (jogadorExistente) {
+                alert('Jogador já cadastrado!');
+                return;
+            }
+            
+            btnQuickAdd.disabled = true;
+            btnQuickAdd.textContent = '⏳ Cadastrando...';
+            
+            const novoJogador = {
+                id: Date.now().toString(),
+                nome: nome,
+                estrelas: estrelas,
+                tipo: tipo,
+                criadoEm: new Date().toISOString()
+            };
+            
+            salvarJogador(novoJogador);
+            
+            // Se marcou para já selecionar como presente
+            if (jaSelecionar) {
+                jogadoresPresentes.push(novoJogador.id);
+                salvarSelecao();
+            }
+            
+            setTimeout(() => {
+                btnQuickAdd.disabled = false;
+                btnQuickAdd.innerHTML = '➕ Cadastrar';
+                fecharCadastroRapido();
+                
+                // Limpar pesquisa para mostrar todos os jogadores
+                limparPesquisa();
+                
+                alert(`${nome} cadastrado com sucesso!${jaSelecionar ? ' E já marcado como presente!' : ''}`);
+            }, 800);
+        };
+
         function atualizarContador() {
             const total = jogadoresPresentes.length;
             document.getElementById('totalSelecionados').textContent = `${total} selecionados`;
@@ -1865,6 +2310,9 @@
             } else {
                 jogadoresPresentes.push(id);
             }
+            
+            // Salvar seleção no localStorage
+            salvarSelecao();
             
             // Força atualização imediata do checkbox específico
             const checkbox = document.querySelector(`input[onchange*="${id}"]`);
@@ -1951,6 +2399,9 @@
 
         window.limparTodosCheckbox = function() {
             jogadoresPresentes = [];
+            // Limpar seleção do localStorage
+            localStorage.removeItem('jogadoresPresentesSelecionados');
+            
             document.getElementById('teamsContainer').style.display = 'none';
             document.getElementById('balanceInfo').style.display = 'none';
             ultimaDistribuicao = null;
@@ -2286,6 +2737,24 @@
             
             // Exibir os times na tela
             exibirTimes(ultimaDistribuicao.times, ultimaDistribuicao.genericosNecessarios);
+            
+            // NOVO: Salvar no histórico de times
+            const registroHistorico = {
+                id: Date.now().toString(),
+                data: new Date().toISOString(),
+                times: ultimaDistribuicao.times.map(time => 
+                    time.map(j => ({
+                        id: j.id,
+                        nome: j.nome,
+                        estrelas: j.estrelas,
+                        tipo: j.tipo,
+                        isGenerico: j.isGenerico || false
+                    }))
+                ),
+                totalJogadores: jogadoresPresentes.length,
+                genericosAdicionados: ultimaDistribuicao.genericosNecessarios
+            };
+            salvarHistoricoTimes(registroHistorico);
             
             // Mostrar modal financeiro
             mostrarModalFinanceiro();
@@ -2781,6 +3250,94 @@
             }
         };
 
+        // NOVO: Funções do Histórico de Times
+        function salvarHistoricoTimes(registro) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('historicoTimes/' + registro.id).set(registro);
+            } else {
+                const historicoLocal = JSON.parse(localStorage.getItem('historicoTimesFutebol') || '{}');
+                historicoLocal[registro.id] = registro;
+                localStorage.setItem('historicoTimesFutebol', JSON.stringify(historicoLocal));
+                historicoTimes = historicoLocal;
+            }
+        }
+
+        function excluirHistoricoTimes(id) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('historicoTimes/' + id).remove();
+            } else {
+                const historicoLocal = JSON.parse(localStorage.getItem('historicoTimesFutebol') || '{}');
+                delete historicoLocal[id];
+                localStorage.setItem('historicoTimesFutebol', JSON.stringify(historicoLocal));
+                historicoTimes = historicoLocal;
+                exibirHistorico();
+            }
+        }
+
+        window.confirmarExclusaoHistorico = function(id) {
+            if (confirm('Tem certeza que deseja excluir este registro do histórico?')) {
+                excluirHistoricoTimes(id);
+                alert('Registro excluído com sucesso!');
+            }
+        };
+
+        function exibirHistorico() {
+            const container = document.getElementById('listaHistorico');
+            const historicoArray = Object.values(historicoTimes).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (historicoArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📜</span>
+                        Nenhum histórico de times ainda.<br>
+                        Separe times para criar registros no histórico.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = historicoArray.map(registro => {
+                const numTimes = registro.times.length;
+                const gridClass = numTimes === 2 ? 'two-cols' : numTimes >= 3 ? 'three-cols' : '';
+                const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
+                const coresEquipes = ['#2196F3', '#FF5722', '#4CAF50', '#FF9800'];
+                
+                return `
+                    <div class="historico-item">
+                        <div class="historico-header">
+                            <div>
+                                <div class="historico-data">${new Date(registro.data).toLocaleDateString('pt-BR')}</div>
+                                <div class="historico-info">${registro.totalJogadores} jogadores • ${numTimes} times</div>
+                            </div>
+                            <button class="historico-delete-btn" onclick="confirmarExclusaoHistorico('${registro.id}')">
+                                🗑️ Excluir
+                            </button>
+                        </div>
+                        <div class="historico-times ${gridClass}">
+                            ${registro.times.map((time, index) => {
+                                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
+                                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
+                                
+                                return `
+                                    <div class="historico-time" style="border-left-color: ${coresEquipes[index]}">
+                                        <h4>
+                                            ${nomesEquipes[index]}
+                                            <span class="historico-time-media">${media}★</span>
+                                        </h4>
+                                        <div class="historico-jogadores">
+                                            ${time.map(j => j.isGenerico ? `<em>${j.nome}</em>` : j.nome).join(' • ')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Event listeners
         document.addEventListener('click', function(event) {
             const editModal = document.getElementById('editModal');
@@ -2788,6 +3345,7 @@
             const sessaoModal = document.getElementById('sessaoModal');
             const restricoesModal = document.getElementById('restricoesModal');
             const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+            const quickAddModal = document.getElementById('quickAddModal');
             
             if (event.target === editModal) {
                 fecharModal();
@@ -2804,9 +3362,28 @@
             if (event.target === confirmDeleteModal) {
                 cancelarExclusao();
             }
+            if (event.target === quickAddModal) {
+                fecharCadastroRapido();
+            }
         });
 
         document.addEventListener('touchstart', function() {}, true);
+
+        // Prevenir pull-to-refresh em mobile
+        let lastTouchY = 0;
+        document.addEventListener('touchstart', function(e) {
+            lastTouchY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            const touchY = e.touches[0].clientY;
+            const touchYDelta = touchY - lastTouchY;
+            
+            // Se está no topo da página e tentando puxar para baixo (pull-to-refresh)
+            if (window.scrollY === 0 && touchYDelta > 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
@@ -2816,6 +3393,7 @@
                 document.getElementById('sessaoModal').style.display = 'none';
                 document.getElementById('restricoesModal').style.display = 'none';
                 document.getElementById('confirmDeleteModal').style.display = 'none';
+                document.getElementById('quickAddModal').style.display = 'none';
                 ultimaDistribuicao = null;
                 timesFormados = null;
                 selectedPlayersForRestriction = [];

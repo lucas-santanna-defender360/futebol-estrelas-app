@@ -17,15 +17,9 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Desabilitar pull-to-refresh */
+        /* Desabilitar pull-to-refresh - apenas CSS */
         html, body {
-            overscroll-behavior: none;
             overscroll-behavior-y: contain;
-        }
-
-        html {
-            overflow: hidden;
-            height: 100%;
         }
 
         body {
@@ -33,8 +27,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             overflow-x: hidden;
-            overflow-y: auto;
-            height: 100%;
             font-size: 16px;
         }
 
@@ -1017,10 +1009,28 @@
             line-height: 1.3;
         }
 
-        /* Campo de Pesquisa */
+        /* Campo de Pesquisa - Sticky */
+        .search-filter-sticky {
+            position: sticky;
+            top: 60px;
+            z-index: 50;
+            background: white;
+            padding: 12px 15px;
+            margin: 0 -15px 15px -15px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .search-filter-sticky .filter-controls {
+            padding: 12px;
+            margin-bottom: 0;
+            border: none;
+            background: #f8f9fa;
+        }
+
         .search-container {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .search-container input {
@@ -1298,35 +1308,39 @@
             <!-- Seção Separar Times -->
             <div id="separar" class="content-section active">
                 <h2>⚽ Quem está presente?</h2>
-                <p style="color: #666; margin-bottom: 20px;">Marque os jogadores presentes:</p>
+                <p style="color: #666; margin-bottom: 15px;">Marque os jogadores presentes:</p>
                 
-                <!-- Campo de Pesquisa -->
-                <div class="search-container">
-                    <input type="text" id="searchJogador" placeholder="🔍 Pesquisar jogador..." oninput="filtrarJogadores()">
-                    <button class="clear-search-btn" id="clearSearchBtn" onclick="limparPesquisa()" style="display: none;">✕</button>
-                </div>
-                
-                <div class="filter-controls">
-                    <div class="filter-row">
-                        <label for="teamCount">Times:</label>
-                        <select id="teamCount">
-                            <option value="2">2 Times</option>
-                            <option value="3" selected>3 Times</option>
-                            <option value="4">4 Times</option>
-                            <option value="auto">Automático</option>
-                        </select>
-                        <label for="sortOrder">Ordenar:</label>
-                        <select id="sortOrder" onchange="atualizarOrdenacao()">
-                            <option value="alfabetica-az">A-Z</option>
-                            <option value="alfabetica-za">Z-A</option>
-                            <option value="estrelas-maior">⭐ Maior</option>
-                            <option value="estrelas-menor">⭐ Menor</option>
-                        </select>
-                        <div class="selected-counter">
-                            <span id="totalSelecionados">0</span>
+                <!-- Container Sticky para Pesquisa e Filtros -->
+                <div class="search-filter-sticky">
+                    <!-- Campo de Pesquisa -->
+                    <div class="search-container">
+                        <input type="text" id="searchJogador" placeholder="🔍 Pesquisar jogador..." oninput="filtrarJogadores()">
+                        <button class="clear-search-btn" id="clearSearchBtn" onclick="limparPesquisa()" style="display: none;">✕</button>
+                    </div>
+                    
+                    <div class="filter-controls" style="margin-bottom: 0;">
+                        <div class="filter-row">
+                            <label for="teamCount">Times:</label>
+                            <select id="teamCount">
+                                <option value="2">2 Times</option>
+                                <option value="3" selected>3 Times</option>
+                                <option value="4">4 Times</option>
+                                <option value="auto">Automático</option>
+                            </select>
+                            <label for="sortOrder">Ordenar:</label>
+                            <select id="sortOrder" onchange="atualizarOrdenacao()">
+                                <option value="alfabetica-az">A-Z</option>
+                                <option value="alfabetica-za">Z-A</option>
+                                <option value="estrelas-maior">⭐ Maior</option>
+                                <option value="estrelas-menor">⭐ Menor</option>
+                            </select>
+                            <div class="selected-counter">
+                                <span id="totalSelecionados">0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- Fim do Container Sticky -->
                 
                 <div id="jogadoresPresentes"></div>
                 
@@ -3368,22 +3382,6 @@
         });
 
         document.addEventListener('touchstart', function() {}, true);
-
-        // Prevenir pull-to-refresh em mobile
-        let lastTouchY = 0;
-        document.addEventListener('touchstart', function(e) {
-            lastTouchY = e.touches[0].clientY;
-        }, { passive: true });
-
-        document.addEventListener('touchmove', function(e) {
-            const touchY = e.touches[0].clientY;
-            const touchYDelta = touchY - lastTouchY;
-            
-            // Se está no topo da página e tentando puxar para baixo (pull-to-refresh)
-            if (window.scrollY === 0 && touchYDelta > 0) {
-                e.preventDefault();
-            }
-        }, { passive: false });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {

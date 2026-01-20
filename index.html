@@ -17,6 +17,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Desabilitar pull-to-refresh - apenas CSS */
+        html, body {
+            overscroll-behavior-y: contain;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -486,22 +491,32 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            flex-wrap: wrap;
         }
 
         .list-item .stars {
-            font-size: 13px;
-            line-height: 1;
+            display: none; /* Esconde o visual de estrelas repetidas */
         }
 
         .list-item .star-count {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+            background: #f0f0f0;
+            padding: 3px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .list-item .star-count::before {
+            content: '⭐';
             font-size: 12px;
-            color: #777;
-            font-weight: 500;
         }
 
         .list-item.checked .star-count {
-            color: #388e3c;
+            color: #2E7D32;
+            background: #e8f5e9;
         }
 
         .list-item .edit-btn {
@@ -796,6 +811,227 @@
         .team-3 h3 { color: #FF9800; }
         .team-3 .team-player { border-left-color: #FF9800; }
 
+        /* ==========================================
+           ESTILOS CHECK-IN / PIX
+           ========================================== */
+        .checkin-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .checkin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkin-card-header h3 {
+            color: #2E7D32;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .btn-config-jogo {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .checkin-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .checkin-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin: 0 0 15px 0;
+        }
+
+        .checkin-placeholder {
+            color: #888;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .jogo-info {
+            display: grid;
+            gap: 10px;
+        }
+
+        .jogo-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+
+        .jogo-info-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .jogo-info-item .label {
+            color: #666;
+            min-width: 80px;
+        }
+
+        .jogo-info-item .value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-confirmar-presenca {
+            width: 100%;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-confirmar-presenca:active {
+            transform: scale(0.98);
+        }
+
+        .confirmado-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .confirmado-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .confirmado-nome {
+            font-weight: 600;
+        }
+
+        .confirmado-tipo {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e0e0e0;
+        }
+
+        .confirmado-tipo.mensalista {
+            background: #e8f5e9;
+            color: #2E7D32;
+        }
+
+        .confirmado-tipo.avulso {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .confirmado-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .status-pix {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-pix.pendente {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-pix.enviado {
+            background: #e3f2fd;
+            color: #1976D2;
+        }
+
+        .status-pix.confirmado {
+            background: #e8f5e9;
+            color: #2E7D32;
+        }
+
+        .pix-info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #4CAF50;
+        }
+
+        .pix-chave {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pix-chave-valor {
+            flex: 1;
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .btn-copiar-pix {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-enviar-comprovante {
+            width: 100%;
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
         /* Responsivo */
         @media (max-width: 767px) {
             .teams-container.two-teams,
@@ -1003,6 +1239,237 @@
             color: #666;
             line-height: 1.3;
         }
+
+        /* Campo de Pesquisa - Sticky */
+        .search-filter-sticky {
+            position: sticky;
+            top: 60px;
+            z-index: 50;
+            background: white;
+            padding: 12px 15px;
+            margin: 0 -15px 15px -15px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .search-filter-sticky .filter-controls {
+            padding: 12px;
+            margin-bottom: 0;
+            border: none;
+            background: #f8f9fa;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ccc;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .clear-search-btn:hover {
+            background: #999;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .no-results .emoji {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Botão Flutuante (FAB) */
+        .fab-button {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .fab-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal de Cadastro Rápido */
+        .quick-add-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .quick-add-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .quick-add-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Histórico de Times */
+        .historico-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .historico-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .historico-data {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .historico-info {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .historico-times {
+            padding: 15px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .historico-times.two-cols {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .historico-times.three-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 600px) {
+            .historico-times.two-cols,
+            .historico-times.three-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .historico-time {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .historico-time h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .historico-time-media {
+            font-size: 11px;
+            background: #e3f2fd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1976D2;
+        }
+
+        .historico-jogadores {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .historico-delete-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .historico-delete-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
     </style>
 </head>
 <body>
@@ -1040,6 +1507,14 @@
                     <span class="menu-icon">⚽</span>
                     <span>Separar Times</span>
                 </button>
+                <button class="menu-item" onclick="showSection('checkin')">
+                    <span class="menu-icon">✅</span>
+                    <span>Check-in / PIX</span>
+                </button>
+                <button class="menu-item" onclick="showSection('historico')">
+                    <span class="menu-icon">📜</span>
+                    <span>Histórico de Times</span>
+                </button>
                 <button class="menu-item" onclick="showSection('financeiro')">
                     <span class="menu-icon">💰</span>
                     <span>Controle Financeiro</span>
@@ -1068,29 +1543,39 @@
             <!-- Seção Separar Times -->
             <div id="separar" class="content-section active">
                 <h2>⚽ Quem está presente?</h2>
-                <p style="color: #666; margin-bottom: 20px;">Marque os jogadores presentes:</p>
+                <p style="color: #666; margin-bottom: 15px;">Marque os jogadores presentes:</p>
                 
-                <div class="filter-controls">
-                    <div class="filter-row">
-                        <label for="teamCount">Times:</label>
-                        <select id="teamCount">
-                            <option value="2">2 Times</option>
-                            <option value="3" selected>3 Times</option>
-                            <option value="4">4 Times</option>
-                            <option value="auto">Automático</option>
-                        </select>
-                        <label for="sortOrder">Ordenar:</label>
-                        <select id="sortOrder" onchange="atualizarOrdenacao()">
-                            <option value="alfabetica-az">A-Z</option>
-                            <option value="alfabetica-za">Z-A</option>
-                            <option value="estrelas-maior">⭐ Maior</option>
-                            <option value="estrelas-menor">⭐ Menor</option>
-                        </select>
-                        <div class="selected-counter">
-                            <span id="totalSelecionados">0</span>
+                <!-- Container Sticky para Pesquisa e Filtros -->
+                <div class="search-filter-sticky">
+                    <!-- Campo de Pesquisa -->
+                    <div class="search-container">
+                        <input type="text" id="searchJogador" placeholder="🔍 Pesquisar jogador..." oninput="filtrarJogadores()">
+                        <button class="clear-search-btn" id="clearSearchBtn" onclick="limparPesquisa()" style="display: none;">✕</button>
+                    </div>
+                    
+                    <div class="filter-controls" style="margin-bottom: 0;">
+                        <div class="filter-row">
+                            <label for="teamCount">Times:</label>
+                            <select id="teamCount">
+                                <option value="2">2 Times</option>
+                                <option value="3" selected>3 Times</option>
+                                <option value="4">4 Times</option>
+                                <option value="auto">Automático</option>
+                            </select>
+                            <label for="sortOrder">Ordenar:</label>
+                            <select id="sortOrder" onchange="atualizarOrdenacao()">
+                                <option value="alfabetica-az">A-Z</option>
+                                <option value="alfabetica-za">Z-A</option>
+                                <option value="estrelas-maior">⭐ Maior</option>
+                                <option value="estrelas-menor">⭐ Menor</option>
+                            </select>
+                            <div class="selected-counter">
+                                <span id="totalSelecionados">0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- Fim do Container Sticky -->
                 
                 <div id="jogadoresPresentes"></div>
                 
@@ -1107,6 +1592,109 @@
 
                 <div class="teams-container" id="teamsContainer" style="display: none;">
                     <!-- Times serão gerados dinamicamente aqui -->
+                </div>
+                
+                <!-- Botão Flutuante para Adicionar Jogador -->
+                <button class="fab-button" onclick="abrirCadastroRapido()" title="Adicionar jogador rapidamente">
+                    ➕
+                </button>
+            </div>
+
+            <!-- Modal de Cadastro Rápido -->
+            <div id="quickAddModal" class="quick-add-modal">
+                <div class="quick-add-content">
+                    <h3>➕ Cadastro Rápido</h3>
+                    <div class="form-group">
+                        <label for="quickNome">Nome do Jogador:</label>
+                        <input type="text" id="quickNome" placeholder="Digite o nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="quickEstrelas">Nível (0.5 a 5.0):</label>
+                        <select id="quickEstrelas">
+                            <option value="0.5">☆ 0.5</option>
+                            <option value="1">★ 1.0</option>
+                            <option value="1.5">★½ 1.5</option>
+                            <option value="2">★★ 2.0</option>
+                            <option value="2.5" selected>★★½ 2.5</option>
+                            <option value="3">★★★ 3.0</option>
+                            <option value="3.5">★★★½ 3.5</option>
+                            <option value="4">★★★★ 4.0</option>
+                            <option value="4.5">★★★★½ 4.5</option>
+                            <option value="5">★★★★★ 5.0</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickTipo">Tipo de Jogador:</label>
+                        <select id="quickTipo">
+                            <option value="mensalista">Mensalista</option>
+                            <option value="avulso">Avulso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="quickJaSelecionar" checked style="width: auto; margin-right: 8px;">
+                            Já marcar como presente
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn" id="btnQuickAdd" onclick="cadastrarRapido()">
+                            ➕ Cadastrar
+                        </button>
+                        <button class="btn" onclick="fecharCadastroRapido()" style="background: #666;">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção Check-in / PIX -->
+            <div id="checkin" class="content-section">
+                <h2>✅ Check-in / PIX</h2>
+                <p style="color: #666; margin-bottom: 20px;">Confirme sua presença e envie o comprovante de pagamento:</p>
+                
+                <!-- Card do Próximo Jogo -->
+                <div class="checkin-card" id="proximoJogoCard">
+                    <div class="checkin-card-header">
+                        <h3>⚽ Próximo Jogo</h3>
+                        <button class="btn-config-jogo" onclick="abrirConfigJogo()">⚙️</button>
+                    </div>
+                    <div id="infoProximoJogo">
+                        <p class="checkin-placeholder">Nenhum jogo configurado. Configure o próximo jogo para habilitar check-ins.</p>
+                    </div>
+                </div>
+                
+                <!-- Área de Confirmação -->
+                <div class="checkin-section" id="areaConfirmacao" style="display: none;">
+                    <h3>📋 Sua Confirmação</h3>
+                    <div id="statusConfirmacao">
+                        <!-- Status será preenchido dinamicamente -->
+                    </div>
+                </div>
+                
+                <!-- Lista de Confirmados -->
+                <div class="checkin-section">
+                    <h3>👥 Confirmados (<span id="totalConfirmados">0</span>)</h3>
+                    <div id="listaConfirmados">
+                        <p class="checkin-placeholder">Nenhuma confirmação ainda.</p>
+                    </div>
+                </div>
+                
+                <!-- Área de PIX -->
+                <div class="checkin-section" id="areaPix" style="display: none;">
+                    <h3>💳 Dados para PIX</h3>
+                    <div id="dadosPix">
+                        <!-- Dados do PIX serão preenchidos dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção Histórico de Times -->
+            <div id="historico" class="content-section">
+                <h2>📜 Histórico de Times</h2>
+                <p style="color: #666; margin-bottom: 20px;">Veja os times separados anteriormente:</p>
+                
+                <div id="listaHistorico">
+                    <!-- Histórico será gerado dinamicamente aqui -->
                 </div>
             </div>
 
@@ -1178,18 +1766,18 @@
                     <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador">
                 </div>
                 <div class="form-group">
-                    <label for="estrelas">Nível de Habilidade:</label>
+                    <label for="estrelas">Nível de Habilidade (0.5 a 5.0):</label>
                     <select id="estrelas">
-                        <option value="1">⭐ 1 Estrela</option>
-                        <option value="2">⭐⭐ 2 Estrelas</option>
-                        <option value="3">⭐⭐⭐ 3 Estrelas</option>
-                        <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 Estrelas</option>
-                        <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
-                        <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
-                        <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
-                        <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
-                        <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
+                        <option value="0.5">☆ 0.5</option>
+                        <option value="1">★ 1.0</option>
+                        <option value="1.5">★½ 1.5</option>
+                        <option value="2">★★ 2.0</option>
+                        <option value="2.5" selected>★★½ 2.5</option>
+                        <option value="3">★★★ 3.0</option>
+                        <option value="3.5">★★★½ 3.5</option>
+                        <option value="4">★★★★ 4.0</option>
+                        <option value="4.5">★★★★½ 4.5</option>
+                        <option value="5">★★★★★ 5.0</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1272,18 +1860,18 @@
                     <input type="text" id="editNome" readonly style="background: #f5f5f5;">
                 </div>
                 <div class="form-group">
-                    <label for="editEstrelas">Nível de Habilidade:</label>
+                    <label for="editEstrelas">Nível de Habilidade (0.5 a 5.0):</label>
                     <select id="editEstrelas">
-                        <option value="1">⭐ 1 Estrela</option>
-                        <option value="2">⭐⭐ 2 Estrelas</option>
-                        <option value="3">⭐⭐⭐ 3 Estrelas</option>
-                        <option value="4">⭐⭐⭐⭐ 4 Estrelas</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 Estrelas</option>
-                        <option value="6">⭐⭐⭐⭐⭐⭐ 6 Estrelas</option>
-                        <option value="7">⭐⭐⭐⭐⭐⭐⭐ 7 Estrelas</option>
-                        <option value="8">⭐⭐⭐⭐⭐⭐⭐⭐ 8 Estrelas</option>
-                        <option value="9">⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Estrelas</option>
-                        <option value="10">⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Estrelas</option>
+                        <option value="0.5">☆ 0.5</option>
+                        <option value="1">★ 1.0</option>
+                        <option value="1.5">★½ 1.5</option>
+                        <option value="2">★★ 2.0</option>
+                        <option value="2.5">★★½ 2.5</option>
+                        <option value="3">★★★ 3.0</option>
+                        <option value="3.5">★★★½ 3.5</option>
+                        <option value="4">★★★★ 4.0</option>
+                        <option value="4.5">★★★★½ 4.5</option>
+                        <option value="5">★★★★★ 5.0</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1356,6 +1944,87 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Configurar Próximo Jogo -->
+        <div id="configJogoModal" class="edit-modal">
+            <div class="edit-modal-content">
+                <h3>⚙️ Configurar Próximo Jogo</h3>
+                <div class="form-group">
+                    <label for="jogoData">Data:</label>
+                    <input type="date" id="jogoData">
+                </div>
+                <div class="form-group">
+                    <label for="jogoHora">Horário:</label>
+                    <input type="time" id="jogoHora" value="19:00">
+                </div>
+                <div class="form-group">
+                    <label for="jogoLocal">Local:</label>
+                    <input type="text" id="jogoLocal" placeholder="Ex: Quadra do Clube">
+                </div>
+                <div class="form-group">
+                    <label for="jogoValor">Valor por Avulso (R$):</label>
+                    <input type="number" id="jogoValor" value="15.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="jogoPix">Chave PIX:</label>
+                    <input type="text" id="jogoPix" placeholder="Ex: email@exemplo.com">
+                </div>
+                <div class="form-group">
+                    <label for="jogoPixNome">Nome do Recebedor:</label>
+                    <input type="text" id="jogoPixNome" placeholder="Ex: João da Silva">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="salvarConfigJogo()">
+                        💾 Salvar
+                    </button>
+                    <button class="btn" onclick="fecharConfigJogo()" style="background: #666;">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Presença -->
+        <div id="confirmPresencaModal" class="edit-modal">
+            <div class="edit-modal-content">
+                <h3>✅ Confirmar Presença</h3>
+                <div class="form-group">
+                    <label for="confirmNome">Seu Nome:</label>
+                    <select id="confirmNome">
+                        <option value="">Selecione seu nome...</option>
+                    </select>
+                </div>
+                <div id="confirmTipoInfo" style="margin: 15px 0; padding: 10px; border-radius: 8px; background: #f5f5f5;"></div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="confirmarPresenca()">
+                        ✅ Confirmar Presença
+                    </button>
+                    <button class="btn" onclick="fecharConfirmPresenca()" style="background: #666;">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Enviar Comprovante PIX -->
+        <div id="comprovanteModal" class="edit-modal">
+            <div class="edit-modal-content">
+                <h3>📸 Enviar Comprovante PIX</h3>
+                <div class="form-group">
+                    <label>Selecione a imagem do comprovante:</label>
+                    <input type="file" id="comprovanteFile" accept="image/*" capture="environment" style="margin-top: 10px;">
+                </div>
+                <div id="previewComprovante" style="margin: 15px 0; text-align: center;"></div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="enviarComprovante()" id="btnEnviarComprovante" disabled>
+                        📤 Enviar Comprovante
+                    </button>
+                    <button class="btn" onclick="fecharComprovanteModal()" style="background: #666;">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1378,13 +2047,36 @@
         let isOnline = navigator.onLine;
         let sessoes = {};
         let restricoes = {}; // NOVO: Armazenar restrições
+        let historicoTimes = {}; // NOVO: Armazenar histórico de times
+        let proximoJogo = null; // CHECK-IN: Configuração do próximo jogo
+        let checkins = {}; // CHECK-IN: Confirmações de presença
         let timesFormados = null; 
         let ultimaDistribuicao = null;
         let selectedPlayersForRestriction = []; // NOVO: Jogadores selecionados para restrição
         let sessaoParaExcluir = null; // NOVO: Sessão que será excluída
 
+        // Carregar seleção salva do localStorage
+        function carregarSelecaoSalva() {
+            const selecaoSalva = localStorage.getItem('jogadoresPresentesSelecionados');
+            if (selecaoSalva) {
+                try {
+                    jogadoresPresentes = JSON.parse(selecaoSalva);
+                } catch (e) {
+                    jogadoresPresentes = [];
+                }
+            }
+        }
+
+        // Salvar seleção no localStorage
+        function salvarSelecao() {
+            localStorage.setItem('jogadoresPresentesSelecionados', JSON.stringify(jogadoresPresentes));
+        }
+
         // Inicializar Firebase
         function initFirebase() {
+            // Carregar seleção salva antes de tudo
+            carregarSelecaoSalva();
+            
             try {
                 app = firebase.initializeApp(firebaseConfig);
                 database = firebase.database();
@@ -1403,6 +2095,33 @@
                 // NOVO: Listener para restrições
                 database.ref('restricoes').on('value', (snapshot) => {
                     restricoes = snapshot.val() || {};
+                });
+
+                // NOVO: Listener para histórico de times
+                database.ref('historicoTimes').on('value', (snapshot) => {
+                    historicoTimes = snapshot.val() || {};
+                    const currentSection = document.querySelector('.content-section.active')?.id;
+                    if (currentSection === 'historico') {
+                        exibirHistorico();
+                    }
+                });
+
+                // CHECK-IN: Listener para próximo jogo
+                database.ref('proximoJogo').on('value', (snapshot) => {
+                    proximoJogo = snapshot.val();
+                    const currentSection = document.querySelector('.content-section.active')?.id;
+                    if (currentSection === 'checkin') {
+                        exibirProximoJogo();
+                    }
+                });
+
+                // CHECK-IN: Listener para confirmações
+                database.ref('checkins').on('value', (snapshot) => {
+                    checkins = snapshot.val() || {};
+                    const currentSection = document.querySelector('.content-section.active')?.id;
+                    if (currentSection === 'checkin') {
+                        exibirConfirmados();
+                    }
                 });
 
                 database.ref('.info/connected').on('value', (snapshot) => {
@@ -1442,6 +2161,10 @@
             jogadores = JSON.parse(localStorage.getItem('jogadoresFutebol') || '{}');
             sessoes = JSON.parse(localStorage.getItem('sessoesFutebol') || '{}');
             restricoes = JSON.parse(localStorage.getItem('restricoesFutebol') || '{}'); // NOVO
+            historicoTimes = JSON.parse(localStorage.getItem('historicoTimesFutebol') || '{}'); // NOVO
+            // Carregar seleção salva
+            carregarSelecaoSalva();
+            
             hideLoading();
             updateSyncStatus('offline');
             
@@ -1618,12 +2341,17 @@
                 exibirJogadoresPresentes();
             } else if (sectionName === 'financeiro') {
                 mostrarAbaFinanceiro('sessoes');
+            } else if (sectionName === 'historico') {
+                exibirHistorico();
+            } else if (sectionName === 'checkin') {
+                exibirProximoJogo();
+                exibirConfirmados();
             }
         };
 
         window.cadastrarJogador = function() {
             const nome = document.getElementById('nomeJogador').value.trim();
-            const estrelas = parseInt(document.getElementById('estrelas').value);
+            const estrelas = parseFloat(document.getElementById('estrelas').value);
             const tipo = document.getElementById('tipoJogador').value;
             const btnCadastrar = document.getElementById('btnCadastrar');
             
@@ -1665,8 +2393,21 @@
             }, 1000);
         };
 
+        // Função para exibir nível de forma compacta (0.5 a 5.0)
         function criarEstrelas(quantidade) {
-            return '⭐'.repeat(Math.min(quantidade, 10));
+            const valor = parseFloat(quantidade);
+            // Se o valor é maior que 5, foi do sistema antigo - converter
+            const valorConvertido = valor > 5 ? valor / 2 : valor;
+            return valorConvertido.toFixed(1);
+        }
+
+        // Função para migrar jogador do sistema antigo (1-10) para novo (0.5-5)
+        function migrarEstrelas(jogador) {
+            if (jogador.estrelas > 5) {
+                jogador.estrelas = jogador.estrelas / 2;
+                jogador.migrado = true;
+            }
+            return jogador;
         }
 
         function formatarNomeComTipo(jogador) {
@@ -1718,8 +2459,7 @@
                         <div class="player-info">
                             <div class="player-name">${formatarNomeComTipo(jogador)}</div>
                             <div class="player-stars">
-                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
-                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                                <span class="star-count">${criarEstrelas(jogador.estrelas)}</span>
                             </div>
                         </div>
                         <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
@@ -1751,9 +2491,32 @@
             const sortOrder = document.getElementById('sortOrder').value;
             const jogadoresOrdenados = ordenarJogadores(jogadores, sortOrder);
             
+            // Aplicar filtro de pesquisa
+            const searchInput = document.getElementById('searchJogador');
+            const termoPesquisa = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            
+            let jogadoresFiltrados = jogadoresOrdenados;
+            if (termoPesquisa.length > 0) {
+                jogadoresFiltrados = jogadoresOrdenados.filter(j => 
+                    j.nome.toLowerCase().includes(termoPesquisa)
+                );
+            }
+            
             // Separar mensalistas e avulsos
-            const mensalistas = jogadoresOrdenados.filter(j => (j.tipo || 'mensalista') === 'mensalista');
-            const avulsos = jogadoresOrdenados.filter(j => j.tipo === 'avulso');
+            const mensalistas = jogadoresFiltrados.filter(j => (j.tipo || 'mensalista') === 'mensalista');
+            const avulsos = jogadoresFiltrados.filter(j => j.tipo === 'avulso');
+            
+            // Se não encontrou nenhum jogador com o filtro
+            if (jogadoresFiltrados.length === 0 && termoPesquisa.length > 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <span class="emoji">🔍</span>
+                        Nenhum jogador encontrado com "${termoPesquisa}"
+                    </div>
+                `;
+                atualizarContador();
+                return;
+            }
             
             let html = '';
             
@@ -1780,8 +2543,7 @@
                                         <div class="player-info">
                                             <div class="player-name">${jogador.nome}</div>
                                             <div class="player-stars">
-                                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
-                                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                                                <span class="star-count">${criarEstrelas(jogador.estrelas)}</span>
                                             </div>
                                         </div>
                                         <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
@@ -1818,8 +2580,7 @@
                                         <div class="player-info">
                                             <div class="player-name">${jogador.nome}</div>
                                             <div class="player-stars">
-                                                <span class="stars">${criarEstrelas(jogador.estrelas)}</span>
-                                                <span class="star-count">${jogador.estrelas} ${jogador.estrelas === 1 ? 'estrela' : 'estrelas'}</span>
+                                                <span class="star-count">${criarEstrelas(jogador.estrelas)}</span>
                                             </div>
                                         </div>
                                         <button class="edit-btn" onclick="editarJogador('${jogador.id}', event)">
@@ -1852,6 +2613,94 @@
             exibirJogadoresPresentes();
         };
 
+        // Função de filtro de pesquisa
+        window.filtrarJogadores = function() {
+            const searchInput = document.getElementById('searchJogador');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const termo = searchInput.value.trim();
+            
+            // Mostrar/esconder botão de limpar
+            clearBtn.style.display = termo.length > 0 ? 'flex' : 'none';
+            
+            exibirJogadoresPresentes();
+        };
+
+        window.limparPesquisa = function() {
+            document.getElementById('searchJogador').value = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            exibirJogadoresPresentes();
+        };
+
+        // Funções do Cadastro Rápido (FAB)
+        window.abrirCadastroRapido = function() {
+            document.getElementById('quickAddModal').style.display = 'flex';
+            document.getElementById('quickNome').value = '';
+            document.getElementById('quickEstrelas').value = '5';
+            document.getElementById('quickTipo').value = 'mensalista';
+            document.getElementById('quickJaSelecionar').checked = true;
+            // Focar no campo de nome
+            setTimeout(() => {
+                document.getElementById('quickNome').focus();
+            }, 100);
+        };
+
+        window.fecharCadastroRapido = function() {
+            document.getElementById('quickAddModal').style.display = 'none';
+        };
+
+        window.cadastrarRapido = function() {
+            const nome = document.getElementById('quickNome').value.trim();
+            const estrelas = parseFloat(document.getElementById('quickEstrelas').value);
+            const tipo = document.getElementById('quickTipo').value;
+            const jaSelecionar = document.getElementById('quickJaSelecionar').checked;
+            const btnQuickAdd = document.getElementById('btnQuickAdd');
+            
+            if (!nome) {
+                alert('Por favor, digite o nome do jogador!');
+                return;
+            }
+            
+            // Verificar se já existe
+            const jogadorExistente = Object.values(jogadores).find(j => 
+                j.nome.toLowerCase() === nome.toLowerCase()
+            );
+            
+            if (jogadorExistente) {
+                alert('Jogador já cadastrado!');
+                return;
+            }
+            
+            btnQuickAdd.disabled = true;
+            btnQuickAdd.textContent = '⏳ Cadastrando...';
+            
+            const novoJogador = {
+                id: Date.now().toString(),
+                nome: nome,
+                estrelas: estrelas,
+                tipo: tipo,
+                criadoEm: new Date().toISOString()
+            };
+            
+            salvarJogador(novoJogador);
+            
+            // Se marcou para já selecionar como presente
+            if (jaSelecionar) {
+                jogadoresPresentes.push(novoJogador.id);
+                salvarSelecao();
+            }
+            
+            setTimeout(() => {
+                btnQuickAdd.disabled = false;
+                btnQuickAdd.innerHTML = '➕ Cadastrar';
+                fecharCadastroRapido();
+                
+                // Limpar pesquisa para mostrar todos os jogadores
+                limparPesquisa();
+                
+                alert(`${nome} cadastrado com sucesso!${jaSelecionar ? ' E já marcado como presente!' : ''}`);
+            }, 800);
+        };
+
         function atualizarContador() {
             const total = jogadoresPresentes.length;
             document.getElementById('totalSelecionados').textContent = `${total} selecionados`;
@@ -1865,6 +2714,9 @@
             } else {
                 jogadoresPresentes.push(id);
             }
+            
+            // Salvar seleção no localStorage
+            salvarSelecao();
             
             // Força atualização imediata do checkbox específico
             const checkbox = document.querySelector(`input[onchange*="${id}"]`);
@@ -1892,7 +2744,7 @@
         window.salvarEdicao = function() {
             if (!jogadorEditando) return;
             
-            const novasEstrelas = parseInt(document.getElementById('editEstrelas').value);
+            const novasEstrelas = parseFloat(document.getElementById('editEstrelas').value);
             const novoTipo = document.getElementById('editTipoJogador').value;
             const btnSalvar = document.getElementById('btnSalvar');
             
@@ -1951,6 +2803,9 @@
 
         window.limparTodosCheckbox = function() {
             jogadoresPresentes = [];
+            // Limpar seleção do localStorage
+            localStorage.removeItem('jogadoresPresentesSelecionados');
+            
             document.getElementById('teamsContainer').style.display = 'none';
             document.getElementById('balanceInfo').style.display = 'none';
             ultimaDistribuicao = null;
@@ -2286,6 +3141,24 @@
             
             // Exibir os times na tela
             exibirTimes(ultimaDistribuicao.times, ultimaDistribuicao.genericosNecessarios);
+            
+            // NOVO: Salvar no histórico de times
+            const registroHistorico = {
+                id: Date.now().toString(),
+                data: new Date().toISOString(),
+                times: ultimaDistribuicao.times.map(time => 
+                    time.map(j => ({
+                        id: j.id,
+                        nome: j.nome,
+                        estrelas: j.estrelas,
+                        tipo: j.tipo,
+                        isGenerico: j.isGenerico || false
+                    }))
+                ),
+                totalJogadores: jogadoresPresentes.length,
+                genericosAdicionados: ultimaDistribuicao.genericosNecessarios
+            };
+            salvarHistoricoTimes(registroHistorico);
             
             // Mostrar modal financeiro
             mostrarModalFinanceiro();
@@ -2781,6 +3654,94 @@
             }
         };
 
+        // NOVO: Funções do Histórico de Times
+        function salvarHistoricoTimes(registro) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('historicoTimes/' + registro.id).set(registro);
+            } else {
+                const historicoLocal = JSON.parse(localStorage.getItem('historicoTimesFutebol') || '{}');
+                historicoLocal[registro.id] = registro;
+                localStorage.setItem('historicoTimesFutebol', JSON.stringify(historicoLocal));
+                historicoTimes = historicoLocal;
+            }
+        }
+
+        function excluirHistoricoTimes(id) {
+            if (database) {
+                updateSyncStatus('syncing');
+                database.ref('historicoTimes/' + id).remove();
+            } else {
+                const historicoLocal = JSON.parse(localStorage.getItem('historicoTimesFutebol') || '{}');
+                delete historicoLocal[id];
+                localStorage.setItem('historicoTimesFutebol', JSON.stringify(historicoLocal));
+                historicoTimes = historicoLocal;
+                exibirHistorico();
+            }
+        }
+
+        window.confirmarExclusaoHistorico = function(id) {
+            if (confirm('Tem certeza que deseja excluir este registro do histórico?')) {
+                excluirHistoricoTimes(id);
+                alert('Registro excluído com sucesso!');
+            }
+        };
+
+        function exibirHistorico() {
+            const container = document.getElementById('listaHistorico');
+            const historicoArray = Object.values(historicoTimes).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (historicoArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📜</span>
+                        Nenhum histórico de times ainda.<br>
+                        Separe times para criar registros no histórico.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = historicoArray.map(registro => {
+                const numTimes = registro.times.length;
+                const gridClass = numTimes === 2 ? 'two-cols' : numTimes >= 3 ? 'three-cols' : '';
+                const nomesEquipes = ['🔵 Time A', '🔴 Time B', '🟢 Time C', '🟡 Time D'];
+                const coresEquipes = ['#2196F3', '#FF5722', '#4CAF50', '#FF9800'];
+                
+                return `
+                    <div class="historico-item">
+                        <div class="historico-header">
+                            <div>
+                                <div class="historico-data">${new Date(registro.data).toLocaleDateString('pt-BR')}</div>
+                                <div class="historico-info">${registro.totalJogadores} jogadores • ${numTimes} times</div>
+                            </div>
+                            <button class="historico-delete-btn" onclick="confirmarExclusaoHistorico('${registro.id}')">
+                                🗑️ Excluir
+                            </button>
+                        </div>
+                        <div class="historico-times ${gridClass}">
+                            ${registro.times.map((time, index) => {
+                                const totalEstrelas = time.reduce((sum, j) => sum + j.estrelas, 0);
+                                const media = time.length > 0 ? (totalEstrelas / time.length).toFixed(1) : 0;
+                                
+                                return `
+                                    <div class="historico-time" style="border-left-color: ${coresEquipes[index]}">
+                                        <h4>
+                                            ${nomesEquipes[index]}
+                                            <span class="historico-time-media">${media}★</span>
+                                        </h4>
+                                        <div class="historico-jogadores">
+                                            ${time.map(j => j.isGenerico ? `<em>${j.nome}</em>` : j.nome).join(' • ')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Event listeners
         document.addEventListener('click', function(event) {
             const editModal = document.getElementById('editModal');
@@ -2788,6 +3749,10 @@
             const sessaoModal = document.getElementById('sessaoModal');
             const restricoesModal = document.getElementById('restricoesModal');
             const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+            const quickAddModal = document.getElementById('quickAddModal');
+            const configJogoModal = document.getElementById('configJogoModal');
+            const confirmPresencaModal = document.getElementById('confirmPresencaModal');
+            const comprovanteModal = document.getElementById('comprovanteModal');
             
             if (event.target === editModal) {
                 fecharModal();
@@ -2804,6 +3769,18 @@
             if (event.target === confirmDeleteModal) {
                 cancelarExclusao();
             }
+            if (event.target === quickAddModal) {
+                fecharCadastroRapido();
+            }
+            if (event.target === configJogoModal) {
+                fecharConfigJogo();
+            }
+            if (event.target === confirmPresencaModal) {
+                fecharConfirmPresenca();
+            }
+            if (event.target === comprovanteModal) {
+                fecharComprovanteModal();
+            }
         });
 
         document.addEventListener('touchstart', function() {}, true);
@@ -2816,6 +3793,10 @@
                 document.getElementById('sessaoModal').style.display = 'none';
                 document.getElementById('restricoesModal').style.display = 'none';
                 document.getElementById('confirmDeleteModal').style.display = 'none';
+                document.getElementById('quickAddModal').style.display = 'none';
+                document.getElementById('configJogoModal').style.display = 'none';
+                document.getElementById('confirmPresencaModal').style.display = 'none';
+                document.getElementById('comprovanteModal').style.display = 'none';
                 ultimaDistribuicao = null;
                 timesFormados = null;
                 selectedPlayersForRestriction = [];
@@ -2832,6 +3813,319 @@
             isOnline = false;
             updateSyncStatus('offline');
         });
+
+        // ==========================================
+        // FUNÇÕES DE CHECK-IN / PIX
+        // ==========================================
+
+        // Exibir informações do próximo jogo
+        function exibirProximoJogo() {
+            const container = document.getElementById('infoProximoJogo');
+            const areaConfirmacao = document.getElementById('areaConfirmacao');
+            const areaPix = document.getElementById('areaPix');
+            
+            if (!proximoJogo) {
+                container.innerHTML = '<p class="checkin-placeholder">Nenhum jogo configurado. Configure o próximo jogo para habilitar check-ins.</p>';
+                areaConfirmacao.style.display = 'none';
+                areaPix.style.display = 'none';
+                return;
+            }
+            
+            const dataFormatada = new Date(proximoJogo.data + 'T00:00:00').toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+            
+            container.innerHTML = `
+                <div class="jogo-info">
+                    <div class="jogo-info-item">
+                        <span class="icon">📅</span>
+                        <span class="label">Data:</span>
+                        <span class="value">${dataFormatada}</span>
+                    </div>
+                    <div class="jogo-info-item">
+                        <span class="icon">🕐</span>
+                        <span class="label">Horário:</span>
+                        <span class="value">${proximoJogo.hora || '19:00'}</span>
+                    </div>
+                    <div class="jogo-info-item">
+                        <span class="icon">📍</span>
+                        <span class="label">Local:</span>
+                        <span class="value">${proximoJogo.local || 'A definir'}</span>
+                    </div>
+                    <div class="jogo-info-item">
+                        <span class="icon">💰</span>
+                        <span class="label">Valor Avulso:</span>
+                        <span class="value">R$ ${parseFloat(proximoJogo.valor || 15).toFixed(2)}</span>
+                    </div>
+                </div>
+                <button class="btn-confirmar-presenca" onclick="abrirConfirmPresenca()">
+                    ✅ Confirmar Minha Presença
+                </button>
+            `;
+            
+            areaConfirmacao.style.display = 'block';
+            
+            // Mostrar área de PIX se tiver chave configurada
+            if (proximoJogo.pixChave) {
+                areaPix.style.display = 'block';
+                document.getElementById('dadosPix').innerHTML = `
+                    <div class="pix-info-card">
+                        <p style="margin-bottom: 10px; color: #666;">Envie o PIX para:</p>
+                        <p style="font-weight: 600; margin-bottom: 15px;">${proximoJogo.pixNome || 'Organizador'}</p>
+                        <div class="pix-chave">
+                            <div class="pix-chave-valor" id="pixChaveValor">${proximoJogo.pixChave}</div>
+                            <button class="btn-copiar-pix" onclick="copiarPix()">📋 Copiar</button>
+                        </div>
+                        <button class="btn-enviar-comprovante" onclick="abrirComprovanteModal()">
+                            📸 Enviar Comprovante
+                        </button>
+                    </div>
+                `;
+            } else {
+                areaPix.style.display = 'none';
+            }
+        }
+
+        // Exibir lista de confirmados
+        function exibirConfirmados() {
+            const container = document.getElementById('listaConfirmados');
+            const totalSpan = document.getElementById('totalConfirmados');
+            
+            const confirmadosArray = Object.values(checkins).filter(c => c.jogoId === proximoJogo?.id);
+            totalSpan.textContent = confirmadosArray.length;
+            
+            if (confirmadosArray.length === 0) {
+                container.innerHTML = '<p class="checkin-placeholder">Nenhuma confirmação ainda.</p>';
+                return;
+            }
+            
+            container.innerHTML = confirmadosArray.map(checkin => {
+                const jogador = jogadores[checkin.jogadorId];
+                if (!jogador) return '';
+                
+                const tipo = jogador.tipo || 'mensalista';
+                let statusPix = '';
+                
+                if (tipo === 'avulso') {
+                    if (checkin.comprovanteEnviado) {
+                        statusPix = '<span class="status-pix enviado">📤 Enviado</span>';
+                    } else {
+                        statusPix = '<span class="status-pix pendente">💰 Pendente</span>';
+                    }
+                }
+                
+                return `
+                    <div class="confirmado-item">
+                        <div class="confirmado-info">
+                            <span class="confirmado-nome">${jogador.nome}</span>
+                            <span class="confirmado-tipo ${tipo}">${tipo === 'mensalista' ? 'M' : 'A'}</span>
+                        </div>
+                        <div class="confirmado-status">
+                            ${statusPix}
+                            <span style="color: #4CAF50;">✅</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Abrir modal de configuração do jogo
+        window.abrirConfigJogo = function() {
+            if (proximoJogo) {
+                document.getElementById('jogoData').value = proximoJogo.data || '';
+                document.getElementById('jogoHora').value = proximoJogo.hora || '19:00';
+                document.getElementById('jogoLocal').value = proximoJogo.local || '';
+                document.getElementById('jogoValor').value = proximoJogo.valor || '15.00';
+                document.getElementById('jogoPix').value = proximoJogo.pixChave || '';
+                document.getElementById('jogoPixNome').value = proximoJogo.pixNome || '';
+            } else {
+                // Setar data padrão como próximo sábado
+                const hoje = new Date();
+                const diasParaSabado = (6 - hoje.getDay() + 7) % 7 || 7;
+                const proximoSabado = new Date(hoje);
+                proximoSabado.setDate(hoje.getDate() + diasParaSabado);
+                document.getElementById('jogoData').value = proximoSabado.toISOString().split('T')[0];
+            }
+            document.getElementById('configJogoModal').style.display = 'flex';
+        };
+
+        window.fecharConfigJogo = function() {
+            document.getElementById('configJogoModal').style.display = 'none';
+        };
+
+        window.salvarConfigJogo = function() {
+            const data = document.getElementById('jogoData').value;
+            const hora = document.getElementById('jogoHora').value;
+            const local = document.getElementById('jogoLocal').value;
+            const valor = document.getElementById('jogoValor').value;
+            const pixChave = document.getElementById('jogoPix').value;
+            const pixNome = document.getElementById('jogoPixNome').value;
+            
+            if (!data) {
+                alert('Por favor, selecione uma data!');
+                return;
+            }
+            
+            const novoJogo = {
+                id: data.replace(/-/g, ''),
+                data: data,
+                hora: hora,
+                local: local,
+                valor: parseFloat(valor) || 15,
+                pixChave: pixChave,
+                pixNome: pixNome,
+                criadoEm: new Date().toISOString()
+            };
+            
+            if (database) {
+                database.ref('proximoJogo').set(novoJogo);
+            } else {
+                localStorage.setItem('proximoJogo', JSON.stringify(novoJogo));
+                proximoJogo = novoJogo;
+                exibirProximoJogo();
+            }
+            
+            fecharConfigJogo();
+            alert('Jogo configurado com sucesso!');
+        };
+
+        // Abrir modal de confirmação de presença
+        window.abrirConfirmPresenca = function() {
+            const select = document.getElementById('confirmNome');
+            select.innerHTML = '<option value="">Selecione seu nome...</option>';
+            
+            const jogadoresArray = Object.values(jogadores).sort((a, b) => a.nome.localeCompare(b.nome));
+            jogadoresArray.forEach(jogador => {
+                const jaConfirmou = Object.values(checkins).some(c => 
+                    c.jogadorId === jogador.id && c.jogoId === proximoJogo?.id
+                );
+                if (!jaConfirmou) {
+                    const tipo = jogador.tipo || 'mensalista';
+                    select.innerHTML += `<option value="${jogador.id}" data-tipo="${tipo}">${jogador.nome} (${tipo === 'mensalista' ? 'M' : 'A'})</option>`;
+                }
+            });
+            
+            document.getElementById('confirmTipoInfo').innerHTML = '';
+            document.getElementById('confirmPresencaModal').style.display = 'flex';
+        };
+
+        // Atualizar info de tipo quando selecionar jogador
+        document.getElementById('confirmNome')?.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            const tipo = selected.dataset?.tipo;
+            const infoDiv = document.getElementById('confirmTipoInfo');
+            
+            if (!tipo) {
+                infoDiv.innerHTML = '';
+                return;
+            }
+            
+            if (tipo === 'mensalista') {
+                infoDiv.innerHTML = `
+                    <p style="color: #2E7D32; font-weight: 600;">✅ Você é mensalista!</p>
+                    <p style="color: #666; font-size: 14px;">Não precisa pagar a diária.</p>
+                `;
+                infoDiv.style.background = '#e8f5e9';
+            } else {
+                infoDiv.innerHTML = `
+                    <p style="color: #e65100; font-weight: 600;">💰 Você é avulso</p>
+                    <p style="color: #666; font-size: 14px;">Valor: R$ ${parseFloat(proximoJogo?.valor || 15).toFixed(2)}</p>
+                    <p style="color: #666; font-size: 14px;">Envie o PIX após confirmar presença.</p>
+                `;
+                infoDiv.style.background = '#fff3e0';
+            }
+        });
+
+        window.fecharConfirmPresenca = function() {
+            document.getElementById('confirmPresencaModal').style.display = 'none';
+        };
+
+        window.confirmarPresenca = function() {
+            const jogadorId = document.getElementById('confirmNome').value;
+            
+            if (!jogadorId) {
+                alert('Por favor, selecione seu nome!');
+                return;
+            }
+            
+            if (!proximoJogo) {
+                alert('Nenhum jogo configurado!');
+                return;
+            }
+            
+            const jogador = jogadores[jogadorId];
+            const novoCheckin = {
+                id: Date.now().toString(),
+                jogadorId: jogadorId,
+                jogoId: proximoJogo.id,
+                tipo: jogador.tipo || 'mensalista',
+                confirmedAt: new Date().toISOString(),
+                comprovanteEnviado: false
+            };
+            
+            if (database) {
+                database.ref('checkins/' + novoCheckin.id).set(novoCheckin);
+            } else {
+                checkins[novoCheckin.id] = novoCheckin;
+                localStorage.setItem('checkins', JSON.stringify(checkins));
+                exibirConfirmados();
+            }
+            
+            fecharConfirmPresenca();
+            alert(`Presença de ${jogador.nome} confirmada!`);
+        };
+
+        // Funções de comprovante PIX
+        window.copiarPix = function() {
+            const pixChave = document.getElementById('pixChaveValor').textContent;
+            navigator.clipboard.writeText(pixChave).then(() => {
+                alert('Chave PIX copiada!');
+            }).catch(() => {
+                // Fallback para navegadores que não suportam clipboard
+                const textArea = document.createElement('textarea');
+                textArea.value = pixChave;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Chave PIX copiada!');
+            });
+        };
+
+        window.abrirComprovanteModal = function() {
+            document.getElementById('comprovanteFile').value = '';
+            document.getElementById('previewComprovante').innerHTML = '';
+            document.getElementById('btnEnviarComprovante').disabled = true;
+            document.getElementById('comprovanteModal').style.display = 'flex';
+        };
+
+        window.fecharComprovanteModal = function() {
+            document.getElementById('comprovanteModal').style.display = 'none';
+        };
+
+        // Preview do comprovante
+        document.getElementById('comprovanteFile')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewComprovante').innerHTML = `
+                        <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                    `;
+                    document.getElementById('btnEnviarComprovante').disabled = false;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.enviarComprovante = function() {
+            // Como não temos storage de arquivos no Firebase gratuito,
+            // apenas marcamos como enviado e salvamos uma referência
+            alert('Funcionalidade de upload em desenvolvimento.\n\nPor enquanto, envie o comprovante pelo WhatsApp do grupo.');
+            fecharComprovanteModal();
+        };
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {

@@ -8,6 +8,7 @@
     <!-- Firebase SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
     
     <style>
         * {
@@ -28,6 +29,188 @@
             min-height: 100vh;
             overflow-x: hidden;
             font-size: 16px;
+        }
+
+        /* ==========================================
+           TELA DE LOGIN
+           ========================================== */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header .logo {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border: none;
+            background: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .login-tab.active {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            margin-bottom: -2px;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 18px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .btn-login.primary {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+
+        .btn-login.google {
+            background: white;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-login.google:hover {
+            background: #f5f5f5;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .login-divider span {
+            padding: 0 15px;
+        }
+
+        .login-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        .cpf-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
 
         .loading {
@@ -213,6 +396,93 @@
             font-size: 20px;
             width: 24px;
             text-align: center;
+        }
+
+        /* Sistema de Usuários e Permissões */
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .user-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e0e0e0;
+            color: #666;
+            width: fit-content;
+        }
+
+        .user-badge.admin {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .user-badge.jogador {
+            background: #e3f2fd;
+            color: #1976D2;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #ffcdd2;
+        }
+
+        /* Esconder elementos de admin para não-admins */
+        body:not(.is-admin) .admin-only {
+            display: none !important;
+        }
+
+        /* Badge de Admin no menu */
+        .menu-item.admin-only::after {
+            content: '🔐';
+            font-size: 12px;
+            margin-left: auto;
         }
 
         .overlay {
@@ -490,33 +760,58 @@
         .list-item .player-stars {
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .list-item .stars {
-            display: none; /* Esconde o visual de estrelas repetidas */
+            gap: 2px;
         }
 
         .list-item .star-count {
-            font-size: 13px;
-            color: #666;
-            font-weight: 600;
-            background: #f0f0f0;
-            padding: 3px 10px;
-            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 1px;
+            font-size: 14px;
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 15px;
         }
 
-        .list-item .star-count::before {
-            content: '⭐';
+        .list-item .star-count .star {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .list-item .star-count .star.filled {
+            color: #FFB800;
+        }
+
+        .list-item .star-count .star.half {
+            color: #FFB800;
+            position: relative;
+        }
+
+        .list-item .star-count .star.half::after {
+            content: '☆';
+            position: absolute;
+            left: 0;
+            color: #ddd;
+            clip-path: inset(0 0 0 50%);
+        }
+
+        .list-item .star-count .star.empty {
+            color: #ddd;
+        }
+
+        .list-item .star-count .star-number {
             font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-left: 6px;
         }
 
         .list-item.checked .star-count {
-            color: #2E7D32;
             background: #e8f5e9;
+        }
+
+        .list-item.checked .star-count .star-number {
+            color: #2E7D32;
         }
 
         .list-item .edit-btn {
@@ -1473,8 +1768,112 @@
     </style>
 </head>
 <body>
+    <!-- Tela de Login/Cadastro -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">⚽</div>
+                <h1>Separador de Times</h1>
+                <p>Faça login para continuar</p>
+            </div>
+            
+            <div class="login-error" id="loginError"></div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="showLoginTab('login')">Entrar</button>
+                <button class="login-tab" onclick="showLoginTab('cadastro')">Cadastrar</button>
+            </div>
+            
+            <!-- Formulário de Login -->
+            <div class="login-form active" id="formLogin">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginSenha">Senha:</label>
+                    <input type="password" id="loginSenha" placeholder="Sua senha">
+                </div>
+                <button class="btn-login primary" onclick="fazerLogin()">
+                    🔐 Entrar
+                </button>
+                <button class="btn-login google" onclick="loginComGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Entrar com Google
+                </button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="showLoginTab('recuperar'); return false;" style="color: #4CAF50; font-size: 14px;">Esqueci minha senha</a>
+                </p>
+            </div>
+            
+            <!-- Formulário de Cadastro -->
+            <div class="login-form" id="formCadastro">
+                <div class="form-group">
+                    <label for="cadastroNome">Nome Completo:</label>
+                    <input type="text" id="cadastroNome" placeholder="Seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroEmail">Email:</label>
+                    <input type="email" id="cadastroEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroCPF">CPF:</label>
+                    <input type="text" id="cadastroCPF" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
+                    <p class="cpf-info">🔒 Usado apenas para identificação segura</p>
+                </div>
+                <div class="form-group">
+                    <label for="cadastroTelefone">Telefone (WhatsApp):</label>
+                    <input type="tel" id="cadastroTelefone" placeholder="(11) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroSenha">Senha:</label>
+                    <input type="password" id="cadastroSenha" placeholder="Mínimo 6 caracteres">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroSenha2">Confirmar Senha:</label>
+                    <input type="password" id="cadastroSenha2" placeholder="Repita a senha">
+                </div>
+                <button class="btn-login primary" onclick="fazerCadastro()">
+                    ✅ Criar Conta
+                </button>
+                <div class="login-divider"><span>ou</span></div>
+                <button class="btn-login google" onclick="loginComGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Cadastrar com Google
+                </button>
+            </div>
+            
+            <!-- Formulário Recuperar Senha -->
+            <div class="login-form" id="formRecuperar">
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    Digite seu email para receber instruções de recuperação de senha.
+                </p>
+                <div class="form-group">
+                    <label for="recuperarEmail">Email:</label>
+                    <input type="email" id="recuperarEmail" placeholder="seu@email.com">
+                </div>
+                <button class="btn-login primary" onclick="recuperarSenha()">
+                    📧 Enviar Email de Recuperação
+                </button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="showLoginTab('login'); return false;" style="color: #4CAF50; font-size: 14px;">← Voltar para login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Screen -->
-    <div class="loading" id="loadingScreen">
+    <div class="loading" id="loadingScreen" style="display: none;">
         <div class="spinner"></div>
         <h2>Carregando Dados...</h2>
         <p>Sincronizando com a nuvem</p>
@@ -1488,20 +1887,30 @@
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
             <div class="header-title">
                 <h1>⚽ Separador de Times</h1>
-                <p>Compartilhado com o grupo</p>
+                <p id="headerUserInfo">Compartilhado com o grupo</p>
             </div>
-            <div style="width: 48px;"></div>
+            <button class="menu-btn" onclick="abrirPerfilUsuario()" id="btnPerfil" style="font-size: 20px;">👤</button>
         </div>
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div>
-                    <h3>Menu</h3>
-                    <p>Navegação</p>
+                    <h3 id="sidebarUserName">Menu</h3>
+                    <p id="sidebarUserRole">Navegação</p>
                 </div>
                 <button class="close-btn" onclick="closeSidebar()">✕</button>
             </div>
+            
+            <!-- Info do Usuário -->
+            <div class="sidebar-user-info" id="sidebarUserInfo">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Usuário</span>
+                    <span class="user-badge" id="userBadge">Jogador</span>
+                </div>
+            </div>
+            
             <div class="sidebar-menu">
                 <button class="menu-item active" onclick="showSection('separar')">
                     <span class="menu-icon">⚽</span>
@@ -1515,21 +1924,28 @@
                     <span class="menu-icon">📜</span>
                     <span>Histórico de Times</span>
                 </button>
-                <button class="menu-item" onclick="showSection('financeiro')">
+                <button class="menu-item admin-only" onclick="showSection('financeiro')">
                     <span class="menu-icon">💰</span>
                     <span>Controle Financeiro</span>
                 </button>
-                <button class="menu-item" onclick="showSection('jogadores')">
+                <button class="menu-item admin-only" onclick="showSection('jogadores')">
                     <span class="menu-icon">👥</span>
                     <span>Gerenciar Jogadores</span>
                 </button>
-                <button class="menu-item" onclick="showSection('cadastro')">
+                <button class="menu-item admin-only" onclick="showSection('cadastro')">
                     <span class="menu-icon">➕</span>
                     <span>Cadastrar Jogador</span>
                 </button>
+                <button class="menu-item admin-only" onclick="showSection('usuarios')">
+                    <span class="menu-icon">🔐</span>
+                    <span>Gerenciar Usuários</span>
+                </button>
             </div>
             <div style="padding: 15px; border-top: 1px solid #e0e0e0; margin-top: auto;">
-                <div id="sidebarSyncStatus" style="font-size: 12px; color: #666; display: flex; align-items: center; gap: 8px;">
+                <button class="btn-logout" onclick="fazerLogout()">
+                    🚪 Sair da Conta
+                </button>
+                <div id="sidebarSyncStatus" style="font-size: 12px; color: #666; display: flex; align-items: center; gap: 8px; margin-top: 10px;">
                     🟢 Sincronizado
                 </div>
             </div>
@@ -1791,6 +2207,33 @@
                     ➕ Cadastrar Jogador
                 </button>
             </div>
+
+            <!-- Seção Gerenciar Usuários (Admin Only) -->
+            <div id="usuarios" class="content-section">
+                <h2>🔐 Gerenciar Usuários</h2>
+                <p style="color: #666; margin-bottom: 20px;">Gerencie os usuários e permissões do grupo:</p>
+                
+                <div class="info-banner" style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-color: #FF9800;">
+                    <h4 style="color: #e65100;">👑 Você é Admin</h4>
+                    <p style="color: #e65100;">Você pode designar outros admins para ajudar na organização.</p>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2E7D32;" id="totalUsuarios">0</div>
+                        <div style="font-size: 12px; color: #666;">Usuários</div>
+                    </div>
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #e65100;" id="totalAdmins">0</div>
+                        <div style="font-size: 12px; color: #666;">Admins</div>
+                    </div>
+                </div>
+                
+                <div id="listaUsuarios">
+                    <!-- Lista será gerada dinamicamente -->
+                </div>
+            </div>
         </div>
 
         <!-- Modal de Aprovação de Times -->
@@ -2040,7 +2483,12 @@
             measurementId: "G-B16XPZN9R8"
         };
 
-        let app, database;
+        let app, database, auth;
+        let currentUser = null; // Usuário logado atual
+        let currentUserData = null; // Dados do perfil do usuário
+        let usuarios = {}; // Todos os usuários cadastrados
+        let isAdmin = false; // Se o usuário atual é admin
+        
         let jogadores = {};
         let jogadoresPresentes = [];
         let jogadorEditando = null;
@@ -2054,6 +2502,295 @@
         let ultimaDistribuicao = null;
         let selectedPlayersForRestriction = []; // NOVO: Jogadores selecionados para restrição
         let sessaoParaExcluir = null; // NOVO: Sessão que será excluída
+
+        // ==========================================
+        // FUNÇÕES DE AUTENTICAÇÃO
+        // ==========================================
+
+        // Máscaras de input
+        function mascaraCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            input.value = value;
+        }
+
+        function mascaraTelefone(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 2) {
+                value = '(' + value.slice(0, 2) + ') ' + value.slice(2);
+            }
+            if (value.length > 10) {
+                value = value.slice(0, 10) + '-' + value.slice(10);
+            }
+            input.value = value;
+        }
+
+        // Validar CPF
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+            
+            let soma = 0;
+            for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
+            let resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf[9])) return false;
+            
+            soma = 0;
+            for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf[10])) return false;
+            
+            return true;
+        }
+
+        // Mostrar/ocultar abas de login
+        window.showLoginTab = function(tab) {
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelectorAll('.login-tab')[0].classList.add('active');
+                document.getElementById('formLogin').classList.add('active');
+            } else if (tab === 'cadastro') {
+                document.querySelectorAll('.login-tab')[1].classList.add('active');
+                document.getElementById('formCadastro').classList.add('active');
+            } else if (tab === 'recuperar') {
+                document.getElementById('formRecuperar').classList.add('active');
+            }
+            
+            hideLoginError();
+        };
+
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideLoginError() {
+            document.getElementById('loginError').classList.remove('show');
+        }
+
+        // Login com Email/Senha
+        window.fazerLogin = function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const senha = document.getElementById('loginSenha').value;
+            
+            if (!email || !senha) {
+                showLoginError('Por favor, preencha email e senha.');
+                return;
+            }
+            
+            auth.signInWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    // Login bem sucedido - o onAuthStateChanged vai cuidar do resto
+                })
+                .catch((error) => {
+                    console.error('Erro no login:', error);
+                    if (error.code === 'auth/user-not-found') {
+                        showLoginError('Usuário não encontrado. Faça seu cadastro.');
+                    } else if (error.code === 'auth/wrong-password') {
+                        showLoginError('Senha incorreta.');
+                    } else if (error.code === 'auth/invalid-email') {
+                        showLoginError('Email inválido.');
+                    } else {
+                        showLoginError('Erro ao fazer login. Tente novamente.');
+                    }
+                });
+        };
+
+        // Login com Google
+        window.loginComGoogle = function() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    // Verificar se é primeiro acesso do Google
+                    const user = result.user;
+                    database.ref('usuarios/' + user.uid).once('value', (snapshot) => {
+                        if (!snapshot.exists()) {
+                            // Primeiro acesso - criar perfil
+                            criarPerfilUsuario(user.uid, {
+                                nome: user.displayName || 'Usuário Google',
+                                email: user.email,
+                                cpf: '',
+                                telefone: '',
+                                fotoURL: user.photoURL || '',
+                                provider: 'google'
+                            });
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erro no login com Google:', error);
+                    showLoginError('Erro ao fazer login com Google. Tente novamente.');
+                });
+        };
+
+        // Cadastro
+        window.fazerCadastro = function() {
+            const nome = document.getElementById('cadastroNome').value.trim();
+            const email = document.getElementById('cadastroEmail').value.trim();
+            const cpf = document.getElementById('cadastroCPF').value.trim();
+            const telefone = document.getElementById('cadastroTelefone').value.trim();
+            const senha = document.getElementById('cadastroSenha').value;
+            const senha2 = document.getElementById('cadastroSenha2').value;
+            
+            // Validações
+            if (!nome || !email || !cpf || !senha) {
+                showLoginError('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            if (!validarCPF(cpf)) {
+                showLoginError('CPF inválido. Verifique o número digitado.');
+                return;
+            }
+            
+            if (senha.length < 6) {
+                showLoginError('A senha deve ter pelo menos 6 caracteres.');
+                return;
+            }
+            
+            if (senha !== senha2) {
+                showLoginError('As senhas não coincidem.');
+                return;
+            }
+            
+            // Criar conta
+            auth.createUserWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    // Atualizar nome de exibição
+                    user.updateProfile({ displayName: nome });
+                    // Criar perfil no banco
+                    criarPerfilUsuario(user.uid, {
+                        nome: nome,
+                        email: email,
+                        cpf: cpf.replace(/\D/g, ''),
+                        telefone: telefone.replace(/\D/g, ''),
+                        fotoURL: '',
+                        provider: 'email'
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erro no cadastro:', error);
+                    if (error.code === 'auth/email-already-in-use') {
+                        showLoginError('Este email já está cadastrado. Faça login.');
+                    } else if (error.code === 'auth/invalid-email') {
+                        showLoginError('Email inválido.');
+                    } else if (error.code === 'auth/weak-password') {
+                        showLoginError('Senha muito fraca. Use pelo menos 6 caracteres.');
+                    } else {
+                        showLoginError('Erro ao criar conta. Tente novamente.');
+                    }
+                });
+        };
+
+        // Criar perfil do usuário no banco
+        function criarPerfilUsuario(uid, dados) {
+            // Verificar se é o primeiro usuário (será admin)
+            database.ref('usuarios').once('value', (snapshot) => {
+                const totalUsuarios = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+                const isFirstUser = totalUsuarios === 0;
+                
+                const perfil = {
+                    ...dados,
+                    uid: uid,
+                    role: isFirstUser ? 'admin' : 'jogador',
+                    status: 'ativo', // Todos entram como ativos
+                    role: isFirstUser ? 'admin' : 'jogador', // Primeiro é admin, resto jogador
+                    criadoEm: new Date().toISOString()
+                };
+                
+                database.ref('usuarios/' + uid).set(perfil);
+                
+                if (isFirstUser) {
+                    alert('🎉 Parabéns! Você é o primeiro usuário e foi definido como ADMIN do grupo!');
+                }
+            });
+        }
+
+        // Recuperar senha
+        window.recuperarSenha = function() {
+            const email = document.getElementById('recuperarEmail').value.trim();
+            
+            if (!email) {
+                showLoginError('Digite seu email para recuperar a senha.');
+                return;
+            }
+            
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    alert('Email de recuperação enviado! Verifique sua caixa de entrada.');
+                    showLoginTab('login');
+                })
+                .catch((error) => {
+                    console.error('Erro ao recuperar senha:', error);
+                    if (error.code === 'auth/user-not-found') {
+                        showLoginError('Email não encontrado.');
+                    } else {
+                        showLoginError('Erro ao enviar email. Tente novamente.');
+                    }
+                });
+        };
+
+        // Logout
+        window.fazerLogout = function() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                auth.signOut().then(() => {
+                    currentUser = null;
+                    currentUserData = null;
+                    isAdmin = false;
+                    document.body.classList.remove('is-admin');
+                    document.getElementById('loginScreen').style.display = 'flex';
+                    document.getElementById('mainApp').style.display = 'none';
+                }).catch((error) => {
+                    console.error('Erro ao fazer logout:', error);
+                });
+            }
+        };
+
+        // Atualizar UI com dados do usuário
+        function atualizarUIUsuario() {
+            if (!currentUserData) return;
+            
+            // Atualizar sidebar
+            document.getElementById('userName').textContent = currentUserData.nome || 'Usuário';
+            document.getElementById('sidebarUserName').textContent = currentUserData.nome || 'Menu';
+            
+            const badge = document.getElementById('userBadge');
+            const roleName = currentUserData.role === 'admin' ? 'Admin' : 'Jogador';
+            badge.textContent = roleName;
+            badge.className = 'user-badge ' + currentUserData.role;
+            
+            document.getElementById('sidebarUserRole').textContent = roleName;
+            
+            // Avatar
+            if (currentUserData.fotoURL) {
+                document.getElementById('userAvatar').innerHTML = `<img src="${currentUserData.fotoURL}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            } else {
+                const inicial = (currentUserData.nome || 'U')[0].toUpperCase();
+                document.getElementById('userAvatar').textContent = inicial;
+            }
+            
+            // Header
+            document.getElementById('headerUserInfo').textContent = `Olá, ${(currentUserData.nome || 'Usuário').split(' ')[0]}!`;
+            
+            // Permissões de admin
+            isAdmin = currentUserData.role === 'admin';
+            if (isAdmin) {
+                document.body.classList.add('is-admin');
+            } else {
+                document.body.classList.remove('is-admin');
+            }
+        }
 
         // Carregar seleção salva do localStorage
         function carregarSelecaoSalva() {
@@ -2080,60 +2817,111 @@
             try {
                 app = firebase.initializeApp(firebaseConfig);
                 database = firebase.database();
+                auth = firebase.auth();
                 
-                database.ref('jogadores').on('value', (snapshot) => {
-                    jogadores = snapshot.val() || {};
-                    updateUI();
-                    updateSyncStatus('synced');
-                });
-
-                database.ref('sessoes').on('value', (snapshot) => {
-                    sessoes = snapshot.val() || {};
-                    updateFinanceiroUI();
-                });
-
-                // NOVO: Listener para restrições
-                database.ref('restricoes').on('value', (snapshot) => {
-                    restricoes = snapshot.val() || {};
-                });
-
-                // NOVO: Listener para histórico de times
-                database.ref('historicoTimes').on('value', (snapshot) => {
-                    historicoTimes = snapshot.val() || {};
-                    const currentSection = document.querySelector('.content-section.active')?.id;
-                    if (currentSection === 'historico') {
-                        exibirHistorico();
+                // Observar estado de autenticação
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        // Usuário está logado
+                        currentUser = user;
+                        
+                        // Buscar dados do perfil
+                        database.ref('usuarios/' + user.uid).on('value', (snapshot) => {
+                            if (snapshot.exists()) {
+                                currentUserData = snapshot.val();
+                                
+                                atualizarUIUsuario();
+                                
+                                // Esconder login e mostrar app
+                                document.getElementById('loginScreen').style.display = 'none';
+                                document.getElementById('loadingScreen').style.display = 'flex';
+                                
+                                // Carregar dados do app
+                                carregarDadosApp();
+                            } else {
+                                // Perfil não existe - criar (caso de login com Google)
+                                criarPerfilUsuario(user.uid, {
+                                    nome: user.displayName || 'Usuário',
+                                    email: user.email,
+                                    cpf: '',
+                                    telefone: '',
+                                    fotoURL: user.photoURL || '',
+                                    provider: user.providerData[0]?.providerId || 'unknown'
+                                });
+                            }
+                        });
+                    } else {
+                        // Usuário não está logado - mostrar tela de login
+                        currentUser = null;
+                        currentUserData = null;
+                        document.getElementById('loadingScreen').style.display = 'none';
+                        document.getElementById('loginScreen').style.display = 'flex';
+                        document.getElementById('mainApp').style.display = 'none';
                     }
                 });
-
-                // CHECK-IN: Listener para próximo jogo
-                database.ref('proximoJogo').on('value', (snapshot) => {
-                    proximoJogo = snapshot.val();
-                    const currentSection = document.querySelector('.content-section.active')?.id;
-                    if (currentSection === 'checkin') {
-                        exibirProximoJogo();
-                    }
-                });
-
-                // CHECK-IN: Listener para confirmações
-                database.ref('checkins').on('value', (snapshot) => {
-                    checkins = snapshot.val() || {};
-                    const currentSection = document.querySelector('.content-section.active')?.id;
-                    if (currentSection === 'checkin') {
-                        exibirConfirmados();
-                    }
-                });
-
-                database.ref('.info/connected').on('value', (snapshot) => {
-                    isOnline = snapshot.val() === true;
-                    updateSyncStatus(isOnline ? 'synced' : 'offline');
-                });
-
-                hideLoading();
+                
             } catch (error) {
                 console.error('Erro ao conectar com Firebase:', error);
                 showFirebaseError();
             }
+        }
+
+        // Carregar dados do app após login
+        function carregarDadosApp() {
+            database.ref('jogadores').on('value', (snapshot) => {
+                jogadores = snapshot.val() || {};
+                updateUI();
+                updateSyncStatus('synced');
+            });
+
+            database.ref('sessoes').on('value', (snapshot) => {
+                sessoes = snapshot.val() || {};
+                updateFinanceiroUI();
+            });
+
+            database.ref('restricoes').on('value', (snapshot) => {
+                restricoes = snapshot.val() || {};
+            });
+
+            database.ref('historicoTimes').on('value', (snapshot) => {
+                historicoTimes = snapshot.val() || {};
+                const currentSection = document.querySelector('.content-section.active')?.id;
+                if (currentSection === 'historico') {
+                    exibirHistorico();
+                }
+            });
+
+            database.ref('proximoJogo').on('value', (snapshot) => {
+                proximoJogo = snapshot.val();
+                const currentSection = document.querySelector('.content-section.active')?.id;
+                if (currentSection === 'checkin') {
+                    exibirProximoJogo();
+                }
+            });
+
+            database.ref('checkins').on('value', (snapshot) => {
+                checkins = snapshot.val() || {};
+                const currentSection = document.querySelector('.content-section.active')?.id;
+                if (currentSection === 'checkin') {
+                    exibirConfirmados();
+                }
+            });
+
+            // Listener para usuários (admin only)
+            database.ref('usuarios').on('value', (snapshot) => {
+                usuarios = snapshot.val() || {};
+                const currentSection = document.querySelector('.content-section.active')?.id;
+                if (currentSection === 'usuarios') {
+                    exibirUsuarios();
+                }
+            });
+
+            database.ref('.info/connected').on('value', (snapshot) => {
+                isOnline = snapshot.val() === true;
+                updateSyncStatus(isOnline ? 'synced' : 'offline');
+            });
+
+            hideLoading();
         }
 
         function showFirebaseError() {
@@ -2346,7 +3134,107 @@
             } else if (sectionName === 'checkin') {
                 exibirProximoJogo();
                 exibirConfirmados();
+            } else if (sectionName === 'usuarios') {
+                exibirUsuarios();
             }
+        };
+
+        // ==========================================
+        // FUNÇÕES DE GERENCIAMENTO DE USUÁRIOS
+        // ==========================================
+
+        function exibirUsuarios() {
+            const container = document.getElementById('listaUsuarios');
+            let usuariosArray = Object.values(usuarios);
+            
+            // Atualizar estatísticas
+            document.getElementById('totalUsuarios').textContent = usuariosArray.length;
+            document.getElementById('totalAdmins').textContent = usuariosArray.filter(u => u.role === 'admin').length;
+            
+            // Ordenar: admins primeiro, depois por nome
+            usuariosArray.sort((a, b) => {
+                if (a.role === 'admin' && b.role !== 'admin') return -1;
+                if (a.role !== 'admin' && b.role === 'admin') return 1;
+                return (a.nome || '').localeCompare(b.nome || '');
+            });
+            
+            if (usuariosArray.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">👥</span>
+                        Nenhum usuário cadastrado.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = usuariosArray.map(usuario => {
+                const isCurrentUser = usuario.uid === currentUser?.uid;
+                
+                const roleBadge = usuario.role === 'admin'
+                    ? '<span style="background: #fff3e0; color: #e65100; padding: 2px 8px; border-radius: 10px; font-size: 11px;">👑 Admin</span>'
+                    : '<span style="background: #e3f2fd; color: #1976D2; padding: 2px 8px; border-radius: 10px; font-size: 11px;">Jogador</span>';
+                
+                let acoes = '';
+                
+                if (!isCurrentUser && isAdmin) {
+                    if (usuario.role === 'admin') {
+                        acoes = `
+                            <button class="btn" onclick="removerAdmin('${usuario.uid}')" style="background: #FF9800; padding: 8px 12px; font-size: 12px; margin: 2px;">
+                                👤 Remover Admin
+                            </button>
+                        `;
+                    } else {
+                        acoes = `
+                            <button class="btn" onclick="promoverAdmin('${usuario.uid}')" style="background: #9C27B0; padding: 8px 12px; font-size: 12px; margin: 2px;">
+                                👑 Tornar Admin
+                            </button>
+                        `;
+                    }
+                }
+                
+                return `
+                    <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 10px; ${usuario.role === 'admin' ? 'border-left: 4px solid #FF9800;' : ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 16px; margin-bottom: 5px;">
+                                    ${usuario.nome || 'Sem nome'} ${isCurrentUser ? '<span style="color: #4CAF50; font-size: 12px;">(você)</span>' : ''}
+                                </div>
+                                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">
+                                    📧 ${usuario.email || 'Sem email'}
+                                </div>
+                                <div style="margin-top: 8px;">
+                                    ${roleBadge}
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                ${acoes}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.promoverAdmin = function(uid) {
+            const usuario = usuarios[uid];
+            if (!usuario) return;
+            if (!confirm(`Tornar ${usuario.nome} um Admin? Ele terá acesso total para gerenciar jogadores, times e finanças.`)) return;
+            database.ref('usuarios/' + uid + '/role').set('admin');
+            alert(`${usuario.nome} agora é Admin!`);
+        };
+
+        window.removerAdmin = function(uid) {
+            const usuario = usuarios[uid];
+            if (!usuario) return;
+            if (!confirm(`Remover permissão de Admin de ${usuario.nome}?`)) return;
+            database.ref('usuarios/' + uid + '/role').set('jogador');
+            alert('Permissão de Admin removida.');
+        };
+
+        // Abrir perfil do usuário
+        window.abrirPerfilUsuario = function() {
+            alert(`👤 ${currentUserData?.nome || 'Usuário'}\n📧 ${currentUserData?.email || ''}\n🏷️ ${currentUserData?.role === 'admin' ? 'Administrador' : 'Jogador'}`);
         };
 
         window.cadastrarJogador = function() {
@@ -2393,12 +3281,23 @@
             }, 1000);
         };
 
-        // Função para exibir nível de forma compacta (0.5 a 5.0)
+        // Função para exibir estrelas visuais (0.5 a 5.0)
         function criarEstrelas(quantidade) {
             const valor = parseFloat(quantidade);
             // Se o valor é maior que 5, foi do sistema antigo - converter
             const valorConvertido = valor > 5 ? valor / 2 : valor;
-            return valorConvertido.toFixed(1);
+            
+            const cheias = Math.floor(valorConvertido);
+            const temMeia = valorConvertido % 1 !== 0;
+            const vazias = 5 - cheias - (temMeia ? 1 : 0);
+            
+            let resultado = '';
+            resultado += '<span class="star filled">★</span>'.repeat(cheias);
+            if (temMeia) resultado += '<span class="star half">★</span>';
+            resultado += '<span class="star empty">☆</span>'.repeat(vazias);
+            resultado += `<span class="star-number">${valorConvertido.toFixed(1)}</span>`;
+            
+            return resultado;
         }
 
         // Função para migrar jogador do sistema antigo (1-10) para novo (0.5-5)

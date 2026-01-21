@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Separador de Times - Futebol</title>
+    <title>Separador de Times - Futebol [HOMOLOG]</title>
     
     <!-- Firebase SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
@@ -1887,7 +1887,10 @@
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
             <div class="header-title">
                 <h1>⚽ Separador de Times</h1>
-                <p id="headerUserInfo">Compartilhado com o grupo</p>
+                <p id="headerUserInfo" style="display: flex; align-items: center; gap: 5px;">
+                    <span style="background: #FF9800; color: white; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">HOMOLOG</span>
+                    Ambiente de Testes
+                </p>
             </div>
             <button class="menu-btn" onclick="abrirPerfilUsuario()" id="btnPerfil" style="font-size: 20px;">👤</button>
         </div>
@@ -2472,15 +2475,17 @@
 
     <script>
         // Configuração do Firebase
+        // ==========================================
+        // 🟡 AMBIENTE: HOMOLOGAÇÃO
+        // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyAHTD1vEIh8ehAFR2M4APiE8Ky9HEAuPU",
-            authDomain: "futebol-estrelas.firebaseapp.com",
-            databaseURL: "https://futebol-estrelas-default-rtdb.firebaseio.com",
-            projectId: "futebol-estrelas",
-            storageBucket: "futebol-estrelas.firebasestorage.app",
-            messagingSenderId: "96538381574",
-            appId: "1:96538381574:web:dee50b846e46a898aeaecf",
-            measurementId: "G-B16XPZN9R8"
+            apiKey: "AIzaSyB0qqEF9KGcgnswKqrKFsUcpKcQlB6Amcw",
+            authDomain: "futebol-estrelas-homol.firebaseapp.com",
+            databaseURL: "https://futebol-estrelas-homol-default-rtdb.firebaseio.com",
+            projectId: "futebol-estrelas-homol",
+            storageBucket: "futebol-estrelas-homol.firebasestorage.app",
+            messagingSenderId: "602388438169",
+            appId: "1:602388438169:web:1b2351651f6776ee4c2c08"
         };
 
         let app, database, auth;

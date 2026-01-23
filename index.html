@@ -1233,20 +1233,135 @@
         .pagamento-item {
             background: white;
             border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
 
         .pagamento-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #f0f0f0;
         }
 
+        .pagamento-header strong {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .pagamento-valor-info {
+            font-size: 13px;
+            color: #666;
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* Item de jogador no controle de pagamentos */
+        .pagamento-jogador-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .pagamento-jogador-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .pagamento-jogador-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .pagamento-jogador-nome {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .pagamento-jogador-valor {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #f44336;
+            transition: 0.3s;
+            border-radius: 32px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-status {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 65px;
+            text-align: right;
+        }
+
+        .toggle-status.pago {
+            color: #4CAF50;
+        }
+
+        .toggle-status.pendente {
+            color: #f44336;
+        }
+
+        /* Status badges antigos - mantidos para compatibilidade */
         .status-pago {
             background: #4CAF50;
             color: white;
@@ -1288,13 +1403,13 @@
 
         /* Teams Preview - VERSÃO MOBILE OTIMIZADA */
         .teams-preview {
-            max-height: calc(100vh - 300px);
             overflow-y: auto;
             background: #f5f5f5;
             border-radius: 12px;
             padding: 12px;
             margin: 0;
             -webkit-overflow-scrolling: touch;
+            flex: 1;
         }
 
         .preview-team {
@@ -1373,24 +1488,29 @@
         .preview-team.time-3 { border-left-color: #FF9800; }
         .preview-team.time-3 h4 { color: #E65100; }
 
-        /* Modal de Aprovação - FULL SCREEN NO MOBILE */
+        /* Modal de Aprovação - BOTTOM SHEET 90% */
+        #aprovacaoModal {
+            align-items: flex-end;
+        }
+
         #aprovacaoModal .edit-modal-content {
             padding: 0;
-            border-radius: 0;
-            height: 100vh;
-            height: 100dvh;
-            max-height: none;
+            border-radius: 20px 20px 0 0;
+            height: 90vh;
+            height: 90dvh;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
+            animation: slideUp 0.3s ease;
         }
 
         .aprovacao-header {
             background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
             padding: 20px;
-            padding-top: calc(20px + env(safe-area-inset-top));
             text-align: center;
             flex-shrink: 0;
+            border-radius: 20px 20px 0 0;
         }
 
         .aprovacao-header h3 {
@@ -1436,22 +1556,20 @@
         }
 
         @media (min-width: 768px) {
+            #aprovacaoModal {
+                align-items: center;
+            }
+            
             #aprovacaoModal .edit-modal-content {
                 border-radius: 20px;
                 max-width: 600px;
                 height: auto;
-                max-height: 90vh;
+                max-height: 85vh;
                 margin: auto;
             }
             
             .aprovacao-header {
                 border-radius: 20px 20px 0 0;
-                padding-top: 20px;
-            }
-            
-            .aprovacao-footer {
-                border-radius: 0 0 20px 20px;
-                padding-bottom: 16px;
             }
         }
 
@@ -3623,33 +3741,40 @@
                     return `
                         <div class="pagamento-item" style="opacity: 0.7;">
                             <div class="pagamento-header">
-                                <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
-                                <span style="font-size: 12px; color: #666;">Apenas mensalistas</span>
+                                <strong>📅 ${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                                <span class="pagamento-valor-info">Apenas mensalistas</span>
                             </div>
-                            <div style="font-size: 13px; color: #888; font-style: italic;">
+                            <div style="font-size: 13px; color: #888; font-style: italic; text-align: center; padding: 10px 0;">
                                 Nenhum avulso presente nesta sessão
                             </div>
                         </div>
                     `;
                 }
                 
+                // Calcular totais
+                const totalPago = avulsos.filter(j => sessao.pagamentos[j.id] === 'pago').length;
+                const totalPendente = avulsos.length - totalPago;
+                
                 return `
                     <div class="pagamento-item">
                         <div class="pagamento-header">
-                            <strong>${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
-                            <span style="font-size: 12px; color: #666;">R$ ${sessao.valorDiaria.toFixed(2)} cada</span>
+                            <strong>📅 ${new Date(sessao.data).toLocaleDateString('pt-BR')}</strong>
+                            <span class="pagamento-valor-info">R$ ${sessao.valorDiaria.toFixed(2)} • ${totalPago}/${avulsos.length} pagos</span>
                         </div>
                         ${avulsos.map(jogador => {
-                            const status = sessao.pagamentos[jogador.id] || 'pendente';
+                            const isPago = sessao.pagamentos[jogador.id] === 'pago';
                             return `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
-                                    <span>${jogador.nome}</span>
-                                    <div>
-                                        <span class="status-${status}">${status === 'pago' ? 'PAGO' : 'PENDENTE'}</span>
-                                        ${status === 'pendente' ? 
-                                            `<button class="btn-marcar-pago" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pago')">Marcar como Pago</button>` :
-                                            `<button class="btn-marcar-pendente" onclick="marcarPagamento('${sessao.id}', '${jogador.id}', 'pendente')">Marcar como Pendente</button>`
-                                        }
+                                <div class="pagamento-jogador-item">
+                                    <div class="pagamento-jogador-info">
+                                        <span class="pagamento-jogador-nome">${jogador.nome}</span>
+                                        <span class="pagamento-jogador-valor">R$ ${sessao.valorDiaria.toFixed(2)}</span>
+                                    </div>
+                                    <div class="toggle-label">
+                                        <span class="toggle-status ${isPago ? 'pago' : 'pendente'}">${isPago ? '✅ Pago' : '❌ Pendente'}</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" ${isPago ? 'checked' : ''} onchange="marcarPagamento('${sessao.id}', '${jogador.id}', this.checked ? 'pago' : 'pendente')">
+                                            <span class="toggle-slider"></span>
+                                        </label>
                                     </div>
                                 </div>
                             `;
